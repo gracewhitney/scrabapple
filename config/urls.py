@@ -21,7 +21,9 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("oauth/", include("social_django.urls", namespace="social")),
+    path("auth/", include("django.contrib.auth.urls")),
     path('', include("common.urls")),
+    path('', include("scrabble.urls", namespace="scrabble")),
     path("health-check/", lambda request: HttpResponse("ok")),
 ]
 

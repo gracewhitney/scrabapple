@@ -30,6 +30,8 @@ class TimestampedModel(models.Model):
 class User(AbstractUser, TimestampedModel):
     email = models.EmailField(unique=True)
     username = None  # disable the AbstractUser.username field
+
+    one_time_passcode = models.CharField(max_length=32, default="")
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 

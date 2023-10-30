@@ -1,0 +1,12 @@
+{% extends "base_templates/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create New Game{% endblock %}
+
+{% block body %}
+  <div class="container">
+    <h1>Create New Game</h1>
+    <p>Enter up to 3 other players below to create your game.</p>
+    {% crispy form %}
+  </div>
+{% endblock %}

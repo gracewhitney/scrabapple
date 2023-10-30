@@ -1,13 +1,14 @@
-from django.contrib.auth import logout
+from django.contrib import messages
+from django.contrib.auth import logout, login
 from django.conf import settings
-from django.shortcuts import redirect, render
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.shortcuts import redirect, render, get_object_or_404
+from django.urls import reverse
+from django.views.generic import FormView
 from django.views.generic.base import TemplateView, View
 from django.http.response import HttpResponse
-# START_FEATURE crispy_forms
-from django.views.generic.edit import FormView
 
-from common.forms import SampleForm
-# END_FEATURE crispy_forms
+from common.models import User
 
 
 class IndexView(TemplateView):
@@ -45,11 +46,23 @@ class DjangoReactView(TemplateView):
 # END_FEATURE django_react
 
 
-# START_FEATURE crispy_forms
-class SampleFormView(FormView):
-    # TODO: delete me; this is just a reference example
-    form_class = SampleForm
-# END_FEATURE crispy_forms
+class OneTimeLoginView(FormView):
+    form = SetPasswordForm
+    template_name = "common/set_password.html"
+
+    def get(self, request, *args, **kwargs):
+        messages.info(request, "Please set a new password for your account.")
+        return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        user = get_object_or_404(User, one_time_passcode=self.kwargs["one_time_passcode"])
+        login(self.request, user)
+        user.one_time_passcode = ""
+        user.set_password(form.cleaned_data["password"])
+        user.save()
+        messages.success(self.request, "You have successfully reset your password.")
+        return redirect(self.request.GET.get("next", reverse("index")))
+
 
 def error_404(request, exception):
     return render(request, "errors/404.html", status=404)
