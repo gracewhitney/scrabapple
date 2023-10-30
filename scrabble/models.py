@@ -40,6 +40,6 @@ class GamePlayer(TimestampedModel):
 class GameTurn(TimestampedModel):
     game_player = models.ForeignKey(User, related_name="turns", on_delete=models.CASCADE)
     turn_count = models.IntegerField()
-    turn_action = models.CharField(choices=TurnAction.choices)
+    turn_action = models.CharField(choices=TurnAction.choices, max_length=32)
     score = models.IntegerField()
     rack_before_turn = ArrayField(models.CharField(max_length=1), size=7)

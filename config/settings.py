@@ -28,26 +28,18 @@ env = environ.Env(
     # site have a "deny all" robots.txt and a non-production warning on all pages
     PRODUCTION=(bool, True),
 
-    # START_FEATURE django_react
     # Set to True to use JavaScript assets served on localhost:3000 via `nwb serve`
     WEBPACK_LOADER_HOTLOAD=(bool, False),
-    # END_FEATURE django_react
 
-    # START_FEATURE django_ses
     # Set to configure AWS SES to run in a region other than us-east-1
     AWS_SES_REGION_NAME=(str, "us-east-1"),
     AWS_SES_REGION_ENDPOINT=(str, "email.us-east-1.amazonaws.com"),
-    # END_FEATURE django_ses
 
-    # START_FEATURE sentry
     # Set to the DSN from sentry.io to send errors to Sentry
     SENTRY_DSN=(str, None),
-    # END_FEATURE sentry
 
-    # START_FEATURE debug_toolbar
     # Set to True to enable the Django Debug Toolbar
     DEBUG_TOOLBAR=(bool, False),
-    # END_FEATURE debug_toolbar
 )
 # If ALLWED_HOSTS has been configured, then we're running on a server and
 # can skip looking for a .env file (this assumes that .env files
@@ -64,9 +56,7 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: do not run with debug turned on in production!
 DEBUG = env("DEBUG")
 
-# START_FEATURE debug_toolbar
 DEBUG_TOOLBAR = DEBUG and env("DEBUG_TOOLBAR")
-# END_FEATURE debug_toolbar
 
 # run with this set to False on server environments
 LOCALHOST = env("LOCALHOST")
@@ -79,12 +69,6 @@ PRODUCTION = env("PRODUCTION")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 if LOCALHOST is True:
     ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
-else:
-    # START_FEATURE elastic_beanstalk
-    # if using AWS hosting
-    from ec2_metadata import ec2_metadata
-    ALLOWED_HOSTS.append(ec2_metadata.private_ipv4)
-    # END_FEATURE elastic_beanstalk
 
 # Application definition
 THIRD_PARTY_APPS = [
@@ -95,34 +79,21 @@ THIRD_PARTY_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
-
-    # START_FEATURE django_social
     "social_django",
-    # END_FEATURE django_social
-
-    # START_FEATURE crispy_forms
     "crispy_forms",
     "crispy_bootstrap5",
-    # END_FEATURE crispy_forms
-
-    # START_FEATURE django_react
     "django_react_components",
     "webpack_loader",
-    # END_FEATURE django_react
-
-    # START_FEATURE sass_bootstrap
     "sass_processor",
-    # END_FEATURE sass_bootstrap
 ]
 
 
-# START_FEATURE debug_toolbar
 if DEBUG_TOOLBAR:
     THIRD_PARTY_APPS += ["debug_toolbar"]
-# END_FEATURE debug_toolbar
 
 LOCAL_APPS = [
     "common",
+    "scrabble"
 ]
 
 INSTALLED_APPS = THIRD_PARTY_APPS + LOCAL_APPS
@@ -136,17 +107,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # START_FEATURE user_action_tracking
-    "common.middleware.UserActionTrackingMiddleware"
-    # END_FEATURE user_action_tracking
 ]
 
 MAINTENANCE_MODE = env("MAINTENANCE_MODE")
-
-
-# START_FEATURE user_action_tracking
-USER_TRACKING_EXEMPT_ROUTES = []
-# END_FEATURE user_action_tracking
 
 
 ROOT_URLCONF = "config.urls"
@@ -197,7 +160,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# START_FEATURE django_ses
 if LOCALHOST:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
     DEFAULT_FROM_EMAIL = "webmaster@localhost"
@@ -207,7 +169,6 @@ else:
     AWS_SES_REGION_ENDPOINT = env("AWS_SES_REGION_ENDPOINT")
     AWS_SES_RETURN_PATH = env("DEFAULT_FROM_EMAIL")
     DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
-# END_FEATURE django_ses
 
 # Logging
 # https://docs.djangoproject.com/en/dev/topics/logging/#django-security
@@ -269,9 +230,8 @@ STATICFILES_DIRS = [
 
 AUTH_USER_MODEL = "common.User"
 
-
-# START_FEATURE django_social
 AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
     "social_core.backends.google.GoogleOAuth2",
 ]
 
@@ -280,16 +240,10 @@ LOGIN_REDIRECT_URL = "index"
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env("GOOGLE_OAUTH2_KEY")
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env("GOOGLE_OAUTH2_SECRET")
-# END_FEATURE django_social
 
-
-# START_FEATURE crispy_forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
-# END_FEATURE crispy_forms
 
-
-# START_FEATURE bootstrap_messages
 # Bootstrap styling for Django messages
 MESSAGE_TAGS = {
     messages.DEBUG: "alert-info",
@@ -298,10 +252,7 @@ MESSAGE_TAGS = {
     messages.WARNING: "alert-warning",
     messages.ERROR: "alert-danger",
 }
-# END_FEATURE bootstrap_messages
 
-
-# START_FEATURE django_storages
 if LOCALHOST is True:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
     MEDIA_ROOT = ""
@@ -310,17 +261,13 @@ else:
     AWS_DEFAULT_ACL = "private"
     AWS_S3_FILE_OVERWRITE = False
     AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
-# END_FEATURE django_storages
 
 
-# START_FEATURE debug_toolbar
 INTERNAL_IPS = ["127.0.0.1"]
 if DEBUG_TOOLBAR:
     MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
-# END_FEATURE debug_toolbar
 
 
-# START_FEATURE django_react
 if DEBUG:
     WEBPACK_LOADER_HOTLOAD = env("WEBPACK_LOADER_HOTLOAD")
     if WEBPACK_LOADER_HOTLOAD:
@@ -329,10 +276,8 @@ if DEBUG:
                 "LOADER_CLASS": "config.webpack_loader.DynamicWebpackLoader"
             }
         }
-# END_FEATURE django_react
 
 
-# START_FEATURE sentry
 SENTRY_DSN = env("SENTRY_DSN")
 if LOCALHOST is False and SENTRY_DSN:
     import sentry_sdk
@@ -345,10 +290,8 @@ if LOCALHOST is False and SENTRY_DSN:
     )
     # Silence "invalid HTTP_HOST" errors
     ignore_logger("django.security.DisallowedHost")
-# END_FEATURE sentry
 
 
-# START_FEATURE security_settings
 if LOCALHOST is False:
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -370,10 +313,8 @@ if LOCALHOST is False:
     SESSION_COOKIE_AGE = 60 * 60 * 3  # 3 hours
     CSRF_COOKIE_SECURE = True
     CSRF_COOKIE_HTTPONLY = True  # Only do this if you are not accessing the CSRF cookie with JS
-# END_FEATURE security_settings
 
 
-# START_FEATURE sass_bootstrap
 SASS_PRECISION = 8  # Bootstrap's sass requires a precision of at least 8 to prevent layout errors
 SASS_PROCESSOR_CUSTOM_FUNCTIONS = {
     'django-static': 'django.templatetags.static.static',
@@ -384,4 +325,3 @@ SASS_PROCESSOR_INCLUDE_DIRS = [
 ]
 SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
 COMPRESS_ROOT = SASS_PROCESSOR_ROOT
-# END_FEATURE sass_bootstrap
