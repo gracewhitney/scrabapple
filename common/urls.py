@@ -11,6 +11,7 @@ urlpatterns = [
     # END_FEATURE django_react
     path("logout", views.LogoutView.as_view(), name="logout"),
     path("robots.txt", views.RobotsTxtView.as_view(), name="robots_txt"),
+    path("one-time/<str:one_time_passcode>/", views.OneTimeLoginView.as_view(), name="one_time_login"),
 ]
 
 # START_FEATURE debug_toolbar
