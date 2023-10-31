@@ -24,6 +24,7 @@ class ScrabbleGame(TimestampedModel):
         default=get_initial_board,
         size=15
     )
+    next_turn_index = models.IntegerField(default=0)
 
 
 class GamePlayer(TimestampedModel):
@@ -41,5 +42,6 @@ class GameTurn(TimestampedModel):
     game_player = models.ForeignKey(User, related_name="turns", on_delete=models.CASCADE)
     turn_count = models.IntegerField()
     turn_action = models.CharField(choices=TurnAction.choices, max_length=32)
+    turn_words = ArrayField(models.CharField(max_length=15), null=True)
     score = models.IntegerField()
     rack_before_turn = ArrayField(models.CharField(max_length=1), size=7)
