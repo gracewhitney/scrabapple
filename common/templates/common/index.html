@@ -10,7 +10,7 @@
 
 {% block body %}
   <div class="container">
-    <p>Welcome to {{ APP_DISPLAY_NAME }}. Please log in to continue.</p>
+    <p>Welcome to {{ APP_DISPLAY_NAME }}. {% if not user.is_authenticated %}Please log in to continue.{% endif %}</p>
     
     {# START_FEATURE sass_bootstrap #}
     {# TODO: delete me; this is just a reference example #}

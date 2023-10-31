@@ -6,6 +6,7 @@ from django.views import View
 from django.views.generic import FormView, TemplateView
 
 from common.models import User
+from scrabble.constants import TILE_SCORES
 from scrabble.forms import CreateGameForm
 from scrabble.helpers import send_invitation_email
 from scrabble.models import ScrabbleGame, GamePlayer
@@ -55,4 +56,6 @@ class ScrabbleView(GamePermissionMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         game_player = GamePlayer.objects.get(game=self.scrabble_game, user=self.request.user)
         # TODO add react data
+        context["game"] = self.scrabble_game
+        context["rack"] = [{"letter": letter, "points": TILE_SCORES[letter]} for letter in game_player.rack]
         return context

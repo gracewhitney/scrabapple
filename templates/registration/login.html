@@ -1,0 +1,12 @@
+{% extends "base_templates/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block body %}
+  <form method="post">
+    {% csrf_token %}
+    {{ form.username|as_crispy_field }}
+    {{ form.password|as_crispy_field }}
+    <button class="btn btn-primary">Log In</button>
+  </form>
+{% endblock body %}

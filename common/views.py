@@ -1,13 +1,14 @@
 from django.contrib import messages
 from django.contrib.auth import logout, login
 from django.conf import settings
-from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.contrib.auth.forms import PasswordResetForm
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.views.generic import FormView
 from django.views.generic.base import TemplateView, View
 from django.http.response import HttpResponse
 
+from common.forms import SetPasswordForm
 from common.models import User
 
 
@@ -47,18 +48,24 @@ class DjangoReactView(TemplateView):
 
 
 class OneTimeLoginView(FormView):
-    form = SetPasswordForm
+    form_class = SetPasswordForm
     template_name = "common/set_password.html"
 
     def get(self, request, *args, **kwargs):
         messages.info(request, "Please set a new password for your account.")
         return super().get(request, *args, **kwargs)
 
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        self.user = get_object_or_404(User, one_time_passcode=self.kwargs["one_time_passcode"])
+        form_kwargs["user"] = self.user
+        return form_kwargs
+
     def form_valid(self, form):
-        user = get_object_or_404(User, one_time_passcode=self.kwargs["one_time_passcode"])
-        login(self.request, user)
+        user = self.user
+        login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
         user.one_time_passcode = ""
-        user.set_password(form.cleaned_data["password"])
+        user.set_password(form.cleaned_data["new_password1"])
         user.save()
         messages.success(self.request, "You have successfully reset your password.")
         return redirect(self.request.GET.get("next", reverse("index")))
