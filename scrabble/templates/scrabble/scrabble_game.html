@@ -1,0 +1,25 @@
+{% extends "base_templates/base.html" %}
+
+{% load static %}
+
+{% block body %}
+
+  <ul id="rack">
+    {% for tile in rack %}
+      <li>{{ tile.letter }} <sub>{{ tile.points }}</sub></li>
+    {% endfor %}
+  </ul>
+
+{% endblock body %}
+
+{% block javascript %}
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+  <script>
+    let rack = document.getElementById('rack')
+    new Sortable(rack, {
+      swap: true,
+      swapClass: 'highlight',
+      animation: 150
+    })
+  </script>
+{% endblock javascript %}
