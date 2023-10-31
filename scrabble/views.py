@@ -1,14 +1,17 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import render, get_object_or_404, redirect
+from django.core.exceptions import ValidationError
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect
 from django.utils.crypto import get_random_string
-from django.views import View
 from django.views.generic import FormView, TemplateView
 
 from common.models import User
 from scrabble.constants import TILE_SCORES
 from scrabble.forms import CreateGameForm
-from scrabble.helpers import send_invitation_email
+from scrabble.helpers import send_invitation_email, validate_turn
 from scrabble.models import ScrabbleGame, GamePlayer
 
 
@@ -59,3 +62,13 @@ class ScrabbleView(GamePermissionMixin, TemplateView):
         context["game"] = self.scrabble_game
         context["rack"] = [{"letter": letter, "points": TILE_SCORES[letter]} for letter in game_player.rack]
         return context
+
+
+class ScrabbleTurnView(GamePermissionMixin, TemplateView):
+    def post(self, request, *args, **kwargs):
+        turn_data = json.loads(request.body.decode())
+        try:
+            turn = validate_turn(turn_data, self.scrabble_game, self.request.user)
+        except ValidationError as e:
+            return JsonResponse(status=400, data={"error": e.message})
+
