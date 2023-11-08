@@ -3,16 +3,18 @@ import json
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.crypto import get_random_string
 from django.views.generic import FormView, TemplateView
 
 from common.models import User
-from scrabble.constants import TILE_SCORES
+from scrabble.constants import TILE_SCORES, TurnAction
 from scrabble.forms import CreateGameForm
-from scrabble.helpers import send_invitation_email, validate_turn
-from scrabble.models import ScrabbleGame, GamePlayer
+from scrabble.helpers import send_invitation_email
+from scrabble.gameplay import validate_turn, calculate_points, do_turn
+from scrabble.models import ScrabbleGame, GamePlayer, GameTurn
 
 
 # Create your views here.
@@ -67,8 +69,13 @@ class ScrabbleView(GamePermissionMixin, TemplateView):
 class ScrabbleTurnView(GamePermissionMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         turn_data = json.loads(request.body.decode())
+        game_player = GamePlayer.objects.get(game=self.scrabble_game, user=self.request.user)
         try:
-            turn = validate_turn(turn_data, self.scrabble_game, self.request.user)
+            cleaned_turn_data = validate_turn(turn_data, self.scrabble_game, game_player)
         except ValidationError as e:
             return JsonResponse(status=400, data={"error": e.message})
-
+        turn_score, updated_rack, updated_letter_bag = do_turn(cleaned_turn_data, self.scrabble_game, game_player)
+        with transaction.atomic():
+            GameTurn.objects.create(
+                game_player
+            )

@@ -1,3 +1,5 @@
+from random import randint
+
 from django.contrib.admin.utils import flatten
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -25,6 +27,19 @@ class ScrabbleGame(TimestampedModel):
         size=15
     )
     next_turn_index = models.IntegerField(default=0)
+    over = models.BooleanField(default=False)
+
+    def draw_tiles(self, num_tiles, commit=False):
+        """Returns num_tiles tiles & new letter bag. If commit=True, also saves letter bag."""
+        tiles = []
+        for _ in range(num_tiles):
+            if len(self.letter_bag) == 0:
+                break
+            tile = self.letter_bag.pop(randint(0, len(self.letter_bag) - 1))
+            tiles.append(tile)
+        if commit:
+            self.save()
+        return tiles, self.letter_bag
 
 
 class GamePlayer(TimestampedModel):
@@ -33,13 +48,14 @@ class GamePlayer(TimestampedModel):
     rack = ArrayField(models.CharField(max_length=1), size=7)
     score = models.IntegerField(default=0)
     turn_index = models.IntegerField()
+    forfeited = models.BooleanField(default=False)
 
     class Meta:
         unique_together = [('game', 'turn_index')]
 
 
 class GameTurn(TimestampedModel):
-    game_player = models.ForeignKey(User, related_name="turns", on_delete=models.CASCADE)
+    game_player = models.ForeignKey(GamePlayer, related_name="turns", on_delete=models.CASCADE)
     turn_count = models.IntegerField()
     turn_action = models.CharField(choices=TurnAction.choices, max_length=32)
     turn_words = ArrayField(models.CharField(max_length=15), null=True)
