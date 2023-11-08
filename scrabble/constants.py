@@ -27,7 +27,7 @@ TILE_FREQUENCIES = {
     'X': 1,
     'Y': 2,
     'Z': 2,
-    '': 2,  # BLANK
+    '-': 2,  # BLANK
 }
 
 TILE_SCORES = {
@@ -57,8 +57,34 @@ TILE_SCORES = {
     'X': 8,
     'Y': 4,
     'Z': 10,
-    '': 0,  # BLANK
+    '-': 0,  # BLANK
 }
+
+
+class Multipliers(TextChoices):
+    dl = 'dl', "Double Letter Score"
+    tl = 'tl', "Triple Letter Score"
+    dw = 'dw', "Double Word Score"
+    tw = 'tw', "Triple Word Score"
+
+
+BOARD_CONFIG = [
+    [Multipliers.tw, None, None, Multipliers.dl, None, None, None, Multipliers.tw, None, None, None, Multipliers.dl, None, None, Multipliers.tw],
+    [None, Multipliers.dw, None, None, None, Multipliers.tl, None, None, None, Multipliers.tl, None, None, None, Multipliers.dw, None],
+    [None, None, Multipliers.dw, None, None, None, Multipliers.dl, None, Multipliers.dl, None, None, None, Multipliers.dw, None, None],
+    [Multipliers.dl, None, None, Multipliers.dw, None, None, None, Multipliers.dl, None, None, None, Multipliers.dw, None, None, Multipliers.dl],
+    [None, None, None, None, Multipliers.dw, None, None, None, None, None, Multipliers.dw, None, None, None, None],
+    [None, Multipliers.tl, None, None, None, Multipliers.tl, None, None, None, Multipliers.tl, None, None, None, Multipliers.tl, None],
+    [None, None, Multipliers.dl, None, None, None, Multipliers.dl, None, Multipliers.dl, None, None, None, Multipliers.dl, None, None],
+    [Multipliers.tw, None, None, Multipliers.dl, None, None, None, None, None, None, None, Multipliers.dl, None, None, Multipliers.tw],
+    [None, None, Multipliers.dl, None, None, None, Multipliers.dl, None, Multipliers.dl, None, None, None, Multipliers.dl, None, None],
+    [None, Multipliers.tl, None, None, None, Multipliers.tl, None, None, None, Multipliers.tl, None, None, None, Multipliers.tl, None],
+    [None, None, None, None, Multipliers.dw, None, None, None, None, None, Multipliers.dw, None, None, None, None],
+    [Multipliers.dl, None, None, Multipliers.dw, None, None, None, Multipliers.dl, None, None, None, Multipliers.dw, None, None, Multipliers.dl],
+    [None, None, Multipliers.dw, None, None, None, Multipliers.dl, None, Multipliers.dl, None, None, None, Multipliers.dw, None, None],
+    [None, Multipliers.dw, None, None, None, Multipliers.tl, None, None, None, Multipliers.tl, None, None, None, Multipliers.dw, None],
+    [Multipliers.tw, None, None, Multipliers.dl, None, None, None, Multipliers.tw, None, None, None, Multipliers.dl, None, None, Multipliers.tw],
+]
 
 
 class TurnAction(TextChoices):
