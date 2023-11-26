@@ -10,9 +10,9 @@ from scrabble.models import GameTurn, ScrabbleGame, GamePlayer
 from scrabble.serializers import GameTurnSerializer
 
 
-def create_new_game(form, user):
+def create_new_game(form, user, request=None):
     game = ScrabbleGame.objects.create()
-    GamePlayer.objects.create(user=user, game=game, turn_index=0)
+    GamePlayer.objects.create(user=user, game=game, turn_index=0, rack=game.draw_tiles(7, commit=True))
     turn_index = 1
     for email in [
         form.cleaned_data["player_2_email"],
@@ -24,10 +24,11 @@ def create_new_game(form, user):
         user, created = User.objects.get_or_create(
             email=email, defaults={"one_time_passcode": get_random_string(32)}
         )
-        GamePlayer.objects.create(user=user, game=game, turn_index=turn_index)
-        send_invitation_email(user, game.id, new_user=created)
+        GamePlayer.objects.create(user=user, game=game, turn_index=turn_index, rack=game.draw_tiles(7, commit=True))
+        send_invitation_email(user, game.id, new_user=created, request=request)
         turn_index += 1
     return game
+
 
 def validate_turn(turn_data, game, game_player):
     # Check that turn is allowed
@@ -36,7 +37,7 @@ def validate_turn(turn_data, game, game_player):
     # deserialize turn data
     serializer = GameTurnSerializer(data=turn_data)
     serializer.is_valid()
-    turn_action = serializer.validated_data["turn_action"]
+    turn_action = serializer.validated_data["action"]
     if turn_action in [TurnAction.pass_turn, TurnAction.forfeit]:
         return serializer.validated_data
     if turn_action == TurnAction.exchange:
@@ -108,10 +109,10 @@ def do_turn(turn_data, game, game_player):
     elif turn_action == TurnAction.play:
         played_tiles = turn_data["played_tiles"]
         points, words = calculate_points(played_tiles, game)
-        played_tiles = [tile.tile for tile in played_tiles]
-        new_tiles = game.draw_tiles(len(played_tiles))
-        for tile in played_tiles:
-            rack_index = game_player.rack.find(tile[0])
+        played_letters = [tile['tile'] for tile in played_tiles]
+        new_tiles = game.draw_tiles(len(played_letters))
+        for tile in played_letters:
+            rack_index = game_player.rack.index(tile[0])
             game_player.rack.pop(rack_index)
         game_player.rack.extend(new_tiles)
         ScrabbleBoard(game.board).update_board(played_tiles)
@@ -124,7 +125,7 @@ def do_turn(turn_data, game, game_player):
     game_player.save()
     GameTurn.objects.create(
         game_player=game_player,
-        turn_count=game.racks.aggregate(current_count=Max("turns__turn_count")) + 1,
+        turn_count=game.racks.aggregate(current_count=Max("turns__turn_count"))['current_count'] + 1,
         turn_action=turn_action,
         score=points,
         rack_before_turn=starting_rack,
@@ -149,8 +150,6 @@ def calculate_points(played_tiles, game):
         points += word_points
         if word:
             words.append(word)
-    if board.is_first_play():
-        points *= 2
     return points, words
 
 
@@ -177,7 +176,7 @@ def calculate_word_points(played_tiles, board):
                 letter_points *= 2
             if multiplier == Multiplier.tl:
                 letter_points *= 3
-            if multiplier == Multiplier.dw:
+            if multiplier in [Multiplier.dw, Multiplier.start]:
                 word_multiplier *= 2
             if multiplier == Multiplier.tw:
                 word_multiplier *= 2

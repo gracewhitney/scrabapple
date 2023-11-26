@@ -1,0 +1,14 @@
+{% extends "base_templates/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+  Settings
+{% endblock %}
+
+{% block body %}
+  <h1>User Settings</h1>
+
+  <div class="col-lg-6">
+    {% crispy form %}
+  </div>
+{% endblock %}

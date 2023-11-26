@@ -1,0 +1,79 @@
+@import "../_variables.scss";
+
+$bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstrap-icons.woff2')) format('woff2'), url(django-static('bootstrap-icons/font/fonts/bootstrap-icons.woff')) format('woff');
+@import 'bootstrap-icons/font/bootstrap-icons.scss';
+
+#scrabble-board {
+  border: 2px black solid;
+  align-self: center;
+}
+
+
+.scrabble-board-row {
+  display: flex;
+  margin: 0;
+}
+
+.scrabble-board-square {
+  width: 36px;
+  height: 38px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px black solid;
+  position: relative;
+
+  &.dl {
+    background-color: $double-letter;
+    color: shade-color($double-letter, 40%);
+  }
+  &.tl {
+    background-color: $triple-letter;
+    color: shade-color($triple-letter, 40%);
+  }
+  &.dw {
+    background-color: $double-word;
+    color: shade-color($double-word, 40%);
+  }
+  &.tw {
+    background-color: $triple-word;
+    color: shade-color($triple-word, 40%);
+  }
+  &.start {
+    background-color: $double-word;
+    @extend .bi.bi-star-fill
+  }
+
+  .scrabble-tile {
+    font-weight: bold;
+    font-size: 24px;
+    background-color: $tile-background;
+    height: 90%;
+    width: 90%;
+    border: shade-color($tile-background, 30%) 1px solid;
+    border-radius: 2px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    z-index: 10;
+    position: absolute;
+
+    &.blank {
+      color: red;
+    }
+
+    .tile-score {
+      font-size: 12px;
+      font-weight: normal;
+      line-height: 28px;
+      bottom: -8px;
+      position: relative;
+    }
+  }
+}
+
+#rack {
+  align-self: center;
+  border-bottom: 3px solid black;
+}

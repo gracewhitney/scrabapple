@@ -1,14 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth import logout, login
 from django.conf import settings
-from django.contrib.auth.forms import PasswordResetForm
 from django.shortcuts import redirect, render, get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import FormView
 from django.views.generic.base import TemplateView, View
 from django.http.response import HttpResponse
 
-from common.forms import SetPasswordForm
+from common.forms import SetPasswordForm, UserSettingsForm
 from common.models import User
 
 
@@ -33,8 +32,6 @@ class RobotsTxtView(View):
         return HttpResponse("\n".join(lines), content_type="text/plain")
 
 
-
-# START_FEATURE django_react
 class DjangoReactView(TemplateView):
     # TODO: delete me; this is just a reference example
     template_name = 'common/sample_django_react.html'
@@ -44,7 +41,6 @@ class DjangoReactView(TemplateView):
         context['hello_msg'] = 'Component'
         context['sample_props'] = {'msg': 'sample props'}
         return context
-# END_FEATURE django_react
 
 
 class OneTimeLoginView(FormView):
@@ -71,8 +67,24 @@ class OneTimeLoginView(FormView):
         return redirect(self.request.GET.get("next", reverse("index")))
 
 
+class UserSettingsView(FormView):
+    form_class = UserSettingsForm
+    success_url = reverse_lazy("user_settings")
+    template_name = "common/user_settings.html"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_invalid(form)
+
+
 def error_404(request, exception):
     return render(request, "errors/404.html", status=404)
+
 
 def error_500(request):
     return render(request, "errors/500.html", status=500)

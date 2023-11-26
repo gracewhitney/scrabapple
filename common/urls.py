@@ -5,6 +5,7 @@ from common import views
 
 urlpatterns = [
     path("", views.IndexView.as_view(), name="index"),
+    path("settings/", views.UserSettingsView.as_view(), name="user_settings"),
     # START_FEATURE django_react
     # TODO: delete me; this is just a reference example
     path("django-react/", views.DjangoReactView.as_view(), name='django_react_demo'),

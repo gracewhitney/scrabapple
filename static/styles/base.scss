@@ -3,3 +3,6 @@
  */
 @import '_variables.scss';
 @import 'bootstrap/scss/bootstrap.scss';
+
+$bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstrap-icons.woff2')) format('woff2'), url(django-static('bootstrap-icons/font/fonts/bootstrap-icons.woff')) format('woff');
+@import 'bootstrap-icons/font/bootstrap-icons.scss';

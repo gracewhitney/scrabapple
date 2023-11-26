@@ -4,6 +4,8 @@ from django.contrib.auth.forms import SetPasswordForm as AuthSetPasswordForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
+from common.models import User
+
 
 class CrispyFormMixin(object):
     submit_label = "Save"
@@ -19,3 +21,9 @@ class CrispyFormMixin(object):
 
 class SetPasswordForm(CrispyFormMixin, AuthSetPasswordForm):
     pass
+
+
+class UserSettingsForm(CrispyFormMixin, forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
