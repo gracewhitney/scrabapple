@@ -39,13 +39,13 @@ class ScrabbleGame(TimestampedModel):
             tiles.append(tile)
         if commit:
             self.save()
-        return tiles, self.letter_bag
+        return tiles
 
 
 class GamePlayer(TimestampedModel):
     user = models.ForeignKey(User, related_name="game_racks", on_delete=models.PROTECT)
     game = models.ForeignKey(ScrabbleGame, related_name="racks", on_delete=models.CASCADE)
-    rack = ArrayField(models.CharField(max_length=1), size=7)
+    rack = ArrayField(models.CharField(max_length=1), size=7, default=list)
     score = models.IntegerField(default=0)
     turn_index = models.IntegerField()
     forfeited = models.BooleanField(default=False)

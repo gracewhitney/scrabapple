@@ -66,6 +66,7 @@ class Multiplier(TextChoices):
     tl = 'tl', "Triple Letter Score"
     dw = 'dw', "Double Word Score"
     tw = 'tw', "Triple Word Score"
+    start = 'start', "Starting Square"
 
 
 BOARD_CONFIG = [
@@ -76,7 +77,7 @@ BOARD_CONFIG = [
     [None, None, None, None, Multiplier.dw, None, None, None, None, None, Multiplier.dw, None, None, None, None],
     [None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None],
     [None, None, Multiplier.dl, None, None, None, Multiplier.dl, None, Multiplier.dl, None, None, None, Multiplier.dl, None, None],
-    [Multiplier.tw, None, None, Multiplier.dl, None, None, None, None, None, None, None, Multiplier.dl, None, None, Multiplier.tw],
+    [Multiplier.tw, None, None, Multiplier.dl, None, None, None, Multiplier.start, None, None, None, Multiplier.dl, None, None, Multiplier.tw],
     [None, None, Multiplier.dl, None, None, None, Multiplier.dl, None, Multiplier.dl, None, None, None, Multiplier.dl, None, None],
     [None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None],
     [None, None, None, None, Multiplier.dw, None, None, None, None, None, Multiplier.dw, None, None, None, None],

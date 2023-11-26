@@ -3,26 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/plugin-transform-react-jsx": "~7.16.7",
     "bootstrap": "^5.1.1",
+    "bootstrap-icons": "^1.11.2",
     "django-react-loader": "^0.1.7",
     "nwb": "^0.24.7",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "webpack-bundle-tracker": "^0.4.3",
-    "@babel/plugin-transform-react-jsx": "~7.16.7"
+    "webpack-bundle-tracker": "^0.4.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "node_modules/nwb/lib/bin/nwb.js serve",
+    "build": "node_modules/nwb/lib/bin/nwb.js build --no-vendor"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
     ]
-  },"browserslist": {
+  },
+  "browserslist": {
     "production": [
       ">0.2%",
       "not dead",

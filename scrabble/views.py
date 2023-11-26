@@ -6,16 +6,13 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
-from django.utils.crypto import get_random_string
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
-from common.models import User
-from scrabble.constants import TILE_SCORES, TurnAction
+from scrabble.constants import TILE_SCORES, BOARD_CONFIG, Multiplier
 from scrabble.forms import CreateGameForm
-from scrabble.helpers import send_invitation_email
-from scrabble.gameplay import validate_turn, calculate_points, do_turn, create_new_game
-from scrabble.models import ScrabbleGame, GamePlayer, GameTurn
+from scrabble.gameplay import validate_turn, do_turn, create_new_game
+from scrabble.models import ScrabbleGame, GamePlayer
 
 
 # Create your views here.
@@ -24,11 +21,11 @@ class CreateGameView(LoginRequiredMixin, FormView):
     form_class = CreateGameForm
 
     def form_valid(self, form):
-        game = create_new_game(form, self.request.user)
+        game = create_new_game(form, self.request.user, self.request)
         messages.success(
             self.request, f"New game created with {game.racks.count()} players. Invitation emails have been issued."
         )
-        return redirect("play_scrabble", game_id=game.id)
+        return redirect("scrabble:play_scrabble", game_id=game.id)
 
 
 class GamePermissionMixin(UserPassesTestMixin):
@@ -47,8 +44,13 @@ class ScrabbleView(GamePermissionMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         game_player = GamePlayer.objects.get(game=self.scrabble_game, user=self.request.user)
         # TODO add react data
-        context["game"] = self.scrabble_game
-        context["rack"] = [{"letter": letter, "points": TILE_SCORES[letter]} for letter in game_player.rack]
+        context.update({
+            "game": self.scrabble_game,
+            "rack": [{"letter": letter, "points": TILE_SCORES[letter]} for letter in game_player.rack],
+            "BOARD_CONFIG": BOARD_CONFIG,
+            "TILE_SCORES": TILE_SCORES,
+            "Multiplier": Multiplier
+        })
         return context
 
 

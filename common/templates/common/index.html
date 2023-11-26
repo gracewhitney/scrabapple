@@ -10,11 +10,24 @@
 
 {% block body %}
   <div class="container">
-    <p>Welcome to {{ APP_DISPLAY_NAME }}. {% if not user.is_authenticated %}Please log in to continue.{% endif %}</p>
-    
-    {# START_FEATURE sass_bootstrap #}
-    {# TODO: delete me; this is just a reference example #}
-    <button class="btn btn-primary does-nothing-button">This button does nothing</button>
-    {# END_FEATURE sass_bootstrap #}
+    <h1>Play Scrabble</h1>
+    {% if not user.is_authenticated %}
+      <p>Please log in to continue.</p>
+    {% else %}
+      <h2>Games In Progress</h2>
+      {% for game_rack in user.game_racks.all %}
+        <a href="{% url 'scrabble:play_scrabble' game_id=game_rack.game_id %}" class="btn btn-info">
+          {% for rack in game_rack.game.racks.all %}{{ rack.user.first_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+          {% if game_rack.turn_index == game_rack.game.next_turn_index %}
+            <span class="bi bi-exclamation-triangle text-warning" title="Your turn!"></span>
+          {% endif %}
+        </a>
+      {% empty %}
+        <p>You have no games currently in progress. Create a new one below.</p>
+      {% endfor %}
+      <hr>
+      <a href="{% url 'scrabble:create_game' %}" class="btn btn-primary">New Game</a>
+    {% endif %}
+
   </div>
 {% endblock %}

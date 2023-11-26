@@ -1,15 +1,46 @@
 {% extends "base_templates/base.html" %}
+{% load template_utils %}
+{% load sass_tags %}
 
 {% load static %}
 
+{% block head %}
+  <link href="{% sass_src 'styles/pages/scrabble_game.scss' %}" rel="stylesheet">
+{% endblock %}
+
 {% block body %}
-
-  <ul id="rack">
-    {% for tile in rack %}
-      <li>{{ tile.letter }} <sub>{{ tile.points }}</sub></li>
+<div class="row row-no-gutters">
+  <div class="d-flex flex-column bg-light col-3">
+    <h2>Title</h2>
+  </div>
+  <div class="d-flex flex-column mt-3 col-9">
+    <div id="scrabble-board">
+    {% for row in game.board %}
+      <div class="scrabble-board-row">
+      {% with row_index=forloop.counter0 %}
+        {% for col in row %}
+          {% with multiplier=BOARD_CONFIG|getitem:row_index|getitem:forloop.counter0 %}
+          <div class="scrabble-board-square {{ multiplier.value }}">
+            {% if col %}
+              <div class="scrabble-tile {% if col.0 == '-' %}blank{% endif %}">{{ col|cut:'-' }}<span class="tile-score">{{ TILE_SCORES|getitem:col.0|default:'' }}</span></div>
+            {% elif multiplier and multiplier != Multiplier.start %}
+              {{ multiplier.value|upper }}
+            {% endif %}
+          </div>
+          {% endwith %}
+        {% endfor %}
+      {% endwith %}
+      </div>
     {% endfor %}
-  </ul>
+    </div>
 
+    <ul id="rack" class="list-group list-group-horizontal mt-3">
+      {% for tile in rack %}
+        <li class="list-group-item">{{ tile.letter }} <sub>{{ tile.points }}</sub></li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
 {% endblock body %}
 
 {% block javascript %}
@@ -19,7 +50,8 @@
     new Sortable(rack, {
       swap: true,
       swapClass: 'highlight',
-      animation: 150
+      animation: 150,
+      direction: 'horizontal',
     })
   </script>
 {% endblock javascript %}

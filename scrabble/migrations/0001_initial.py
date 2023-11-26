@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('created_on', models.DateTimeField(auto_now_add=True)),
                 ('updated_on', models.DateTimeField(auto_now=True)),
-                ('rack', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=1), size=7)),
+                ('rack', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=1), default=list, size=7)),
                 ('score', models.IntegerField(default=0)),
                 ('turn_index', models.IntegerField()),
                 ('game', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='racks', to='scrabble.scrabblegame')),

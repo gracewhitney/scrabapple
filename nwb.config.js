@@ -1,8 +1,3 @@
-/*
- * START_FEATURE django_react
- */
-
-
 const path = require('path')
 const BundleTracker = require('webpack-bundle-tracker')
 
@@ -19,12 +14,7 @@ const ENTRIES = {
   Hello: './src/Components/Hello.js'
 }
 
-const SHARED_ENTRIES = [
-  // we have not included react-app-polyfill in this sample application because it is not technically required for
-  // projects which do not require polyfill. However, we do recommend installing and uncommenting this line of code
-  // for projects which will need to have guaranteed functionality on older browsers.
-  // './node_modules/react-app-polyfill/ie11.js',
-]
+const SHARED_ENTRIES = []
 
 /**
  * nwb config
@@ -68,7 +58,3 @@ module.exports = function({command}) {
   }
   return config
 }
-
-/*
- * END_FEATURE django_react
- */
