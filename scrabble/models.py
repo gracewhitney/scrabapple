@@ -15,14 +15,14 @@ def get_initial_letter_bag():
 
 def get_initial_board():
     # Return 15 * 15 array of empty strings
-    return ["" for _ in range(15) for _ in range(15)]
+    return [["" for _ in range(15)] for _ in range(15)]
 
 
 # Create your models here.
 class ScrabbleGame(TimestampedModel):
     letter_bag = ArrayField(models.CharField(max_length=1), default=get_initial_letter_bag)
     board = ArrayField(
-        ArrayField(models.CharField(max_length=1, default=""), size=15),
+        ArrayField(models.CharField(max_length=2, default=""), size=15),
         default=get_initial_board,
         size=15
     )
@@ -51,7 +51,7 @@ class GamePlayer(TimestampedModel):
     forfeited = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = [('game', 'turn_index')]
+        unique_together = [('game', 'turn_index'), ('game', 'user')]
 
 
 class GameTurn(TimestampedModel):

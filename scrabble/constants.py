@@ -61,7 +61,7 @@ TILE_SCORES = {
 }
 
 
-class Multipliers(TextChoices):
+class Multiplier(TextChoices):
     dl = 'dl', "Double Letter Score"
     tl = 'tl', "Triple Letter Score"
     dw = 'dw', "Double Word Score"
@@ -69,21 +69,21 @@ class Multipliers(TextChoices):
 
 
 BOARD_CONFIG = [
-    [Multipliers.tw, None, None, Multipliers.dl, None, None, None, Multipliers.tw, None, None, None, Multipliers.dl, None, None, Multipliers.tw],
-    [None, Multipliers.dw, None, None, None, Multipliers.tl, None, None, None, Multipliers.tl, None, None, None, Multipliers.dw, None],
-    [None, None, Multipliers.dw, None, None, None, Multipliers.dl, None, Multipliers.dl, None, None, None, Multipliers.dw, None, None],
-    [Multipliers.dl, None, None, Multipliers.dw, None, None, None, Multipliers.dl, None, None, None, Multipliers.dw, None, None, Multipliers.dl],
-    [None, None, None, None, Multipliers.dw, None, None, None, None, None, Multipliers.dw, None, None, None, None],
-    [None, Multipliers.tl, None, None, None, Multipliers.tl, None, None, None, Multipliers.tl, None, None, None, Multipliers.tl, None],
-    [None, None, Multipliers.dl, None, None, None, Multipliers.dl, None, Multipliers.dl, None, None, None, Multipliers.dl, None, None],
-    [Multipliers.tw, None, None, Multipliers.dl, None, None, None, None, None, None, None, Multipliers.dl, None, None, Multipliers.tw],
-    [None, None, Multipliers.dl, None, None, None, Multipliers.dl, None, Multipliers.dl, None, None, None, Multipliers.dl, None, None],
-    [None, Multipliers.tl, None, None, None, Multipliers.tl, None, None, None, Multipliers.tl, None, None, None, Multipliers.tl, None],
-    [None, None, None, None, Multipliers.dw, None, None, None, None, None, Multipliers.dw, None, None, None, None],
-    [Multipliers.dl, None, None, Multipliers.dw, None, None, None, Multipliers.dl, None, None, None, Multipliers.dw, None, None, Multipliers.dl],
-    [None, None, Multipliers.dw, None, None, None, Multipliers.dl, None, Multipliers.dl, None, None, None, Multipliers.dw, None, None],
-    [None, Multipliers.dw, None, None, None, Multipliers.tl, None, None, None, Multipliers.tl, None, None, None, Multipliers.dw, None],
-    [Multipliers.tw, None, None, Multipliers.dl, None, None, None, Multipliers.tw, None, None, None, Multipliers.dl, None, None, Multipliers.tw],
+    [Multiplier.tw, None, None, Multiplier.dl, None, None, None, Multiplier.tw, None, None, None, Multiplier.dl, None, None, Multiplier.tw],
+    [None, Multiplier.dw, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.dw, None],
+    [None, None, Multiplier.dw, None, None, None, Multiplier.dl, None, Multiplier.dl, None, None, None, Multiplier.dw, None, None],
+    [Multiplier.dl, None, None, Multiplier.dw, None, None, None, Multiplier.dl, None, None, None, Multiplier.dw, None, None, Multiplier.dl],
+    [None, None, None, None, Multiplier.dw, None, None, None, None, None, Multiplier.dw, None, None, None, None],
+    [None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None],
+    [None, None, Multiplier.dl, None, None, None, Multiplier.dl, None, Multiplier.dl, None, None, None, Multiplier.dl, None, None],
+    [Multiplier.tw, None, None, Multiplier.dl, None, None, None, None, None, None, None, Multiplier.dl, None, None, Multiplier.tw],
+    [None, None, Multiplier.dl, None, None, None, Multiplier.dl, None, Multiplier.dl, None, None, None, Multiplier.dl, None, None],
+    [None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None],
+    [None, None, None, None, Multiplier.dw, None, None, None, None, None, Multiplier.dw, None, None, None, None],
+    [Multiplier.dl, None, None, Multiplier.dw, None, None, None, Multiplier.dl, None, None, None, Multiplier.dw, None, None, Multiplier.dl],
+    [None, None, Multiplier.dw, None, None, None, Multiplier.dl, None, Multiplier.dl, None, None, None, Multiplier.dw, None, None],
+    [None, Multiplier.dw, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.dw, None],
+    [Multiplier.tw, None, None, Multiplier.dl, None, None, None, Multiplier.tw, None, None, None, Multiplier.dl, None, None, Multiplier.tw],
 ]
 
 
