@@ -45,12 +45,13 @@ class ScrabbleView(GamePermissionMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         game_player = GamePlayer.objects.get(game=self.scrabble_game, user=self.request.user)
+        in_turn = game_player.turn_index == self.scrabble_game.next_turn_index
         # TODO add react data
         context.update({
             "game": self.scrabble_game,
             "game_player": game_player,
-            "in_turn": game_player.turn_index == self.scrabble_game.next_turn_index,
-            "rack": [{"letter": letter, "points": TILE_SCORES[letter]} for letter in game_player.rack],
+            "in_turn": in_turn,
+            "rack": [{"letter": letter} for letter in game_player.rack],
             "BOARD_CONFIG": BOARD_CONFIG,
             "TILE_SCORES": TILE_SCORES,
             "Multiplier": Multiplier,

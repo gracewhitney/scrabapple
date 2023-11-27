@@ -13,6 +13,7 @@ const ENTRIES = {
   Home: './src/Pages/Home.js',
   Hello: './src/Components/Hello.js',
   TileRack: './src/Components/TileRack.js',
+  ScrabbleGame: './src/Pages/ScrabbleGame.js',
 }
 
 const SHARED_ENTRIES = []

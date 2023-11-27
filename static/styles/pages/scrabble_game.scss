@@ -3,11 +3,16 @@
 $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstrap-icons.woff2')) format('woff2'), url(django-static('bootstrap-icons/font/fonts/bootstrap-icons.woff')) format('woff');
 @import 'bootstrap-icons/font/bootstrap-icons.scss';
 
+#scrabble-board-container {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+}
+
 #scrabble-board {
   border: 2px black solid;
   align-self: center;
 }
-
 
 .scrabble-board-row {
   display: flex;

@@ -1,16 +1,18 @@
 import React from 'react';
 import {useDrag} from "react-dnd";
+import {TILE_SCORES} from "../constants";
 
 const Tile = (props) => {
   const {
     letter,
-    points,
     id,
     className,
   } = props;
 
   const blank = letter[0] === '-'
   const displayLetter = blank ? (letter.length > 1 ? letter[1] : '') : letter
+
+  const points = TILE_SCORES[letter[0]]
 
   const [{isDragging}, drag] = useDrag(() => ({
     type: 'tile',
