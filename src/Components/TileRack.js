@@ -11,6 +11,10 @@ function TileRack(props) {
 
   const idTiles = tiles.map((tile, i) => {return {...tile, id: i}})
 
+  for (let i = idTiles.length; i < 8; i++) {
+    idTiles.push({id: i})  // Add empty slots
+  }
+
   const [rackPositions, setRackPositions] = useState([...idTiles]);
 
   const moveTile = (id, endingIndex) => {
