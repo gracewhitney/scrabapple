@@ -123,9 +123,10 @@ def do_turn(turn_data, game, game_player):
     game_player.score += points
     game.save()
     game_player.save()
+    turn_count = game.racks.aggregate(current_count=Max("turns__turn_count"))['current_count'] or 0
     GameTurn.objects.create(
         game_player=game_player,
-        turn_count=game.racks.aggregate(current_count=Max("turns__turn_count"))['current_count'] + 1,
+        turn_count=turn_count + 1,
         turn_action=turn_action,
         score=points,
         rack_before_turn=starting_rack,

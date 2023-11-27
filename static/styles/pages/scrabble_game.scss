@@ -47,28 +47,28 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
 
   .scrabble-tile {
     font-weight: bold;
-    font-size: 24px;
+    font-size: 19px;
     background-color: $tile-background;
-    height: 90%;
-    width: 90%;
+    height: 92%;
+    width: 92%;
     border: shade-color($tile-background, 30%) 1px solid;
     border-radius: 2px;
-    align-items: center;
     justify-content: center;
     display: flex;
     z-index: 10;
     position: absolute;
+    color: black;
 
     &.blank {
       color: red;
     }
 
     .tile-score {
-      font-size: 12px;
+      font-size: 10px;
       font-weight: normal;
-      line-height: 28px;
-      bottom: -8px;
-      position: relative;
+      bottom: -2px;
+      right: 1px;
+      position: absolute;
     }
   }
 }
@@ -76,4 +76,26 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
 #rack {
   align-self: center;
   border-bottom: 3px solid black;
+
+  .scrabble-tile {
+    width: 42px;
+    height: 45px;
+    font-size: 28px;
+    margin: .25rem;
+    border-radius: 2px;
+    background-color: $tile-background;
+    border: shade-color($tile-background, 30%) 1px solid;
+    justify-content: center;
+    display: inline-flex;
+    padding: 0;
+
+    .tile-score {
+      font-size: 12px;
+      font-weight: normal;
+      line-height: 28px;
+      bottom: -8px;
+      right: 2px;
+      position: absolute;
+    }
+  }
 }

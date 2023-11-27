@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
-from scrabble.constants import TILE_SCORES, BOARD_CONFIG, Multiplier
+from scrabble.constants import TILE_SCORES, BOARD_CONFIG, Multiplier, TurnAction
 from scrabble.forms import CreateGameForm
 from scrabble.gameplay import validate_turn, do_turn, create_new_game
 from scrabble.models import ScrabbleGame, GamePlayer
@@ -30,8 +30,10 @@ class CreateGameView(LoginRequiredMixin, FormView):
 
 class GamePermissionMixin(UserPassesTestMixin):
     def test_func(self):
+        if self.request.user.is_anonymous:
+            return False
         self.scrabble_game = get_object_or_404(ScrabbleGame, id=self.get_game_id())
-        return GamePlayer.objects.filter(game_id=self.scrabble_game.id, user=self.request.user).exists()
+        return GamePlayer.objects.filter(game_id=self.scrabble_game.id, user_id=self.request.user.id).exists()
 
     def get_game_id(self):
         return self.kwargs.get("game_id")
@@ -46,10 +48,12 @@ class ScrabbleView(GamePermissionMixin, TemplateView):
         # TODO add react data
         context.update({
             "game": self.scrabble_game,
+            "game_player": game_player,
             "rack": [{"letter": letter, "points": TILE_SCORES[letter]} for letter in game_player.rack],
             "BOARD_CONFIG": BOARD_CONFIG,
             "TILE_SCORES": TILE_SCORES,
-            "Multiplier": Multiplier
+            "Multiplier": Multiplier,
+            "TurnAction": TurnAction,
         })
         return context
 

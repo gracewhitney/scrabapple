@@ -41,6 +41,14 @@ class ScrabbleGame(TimestampedModel):
             self.save()
         return tiles
 
+    def all_turns(self):
+        return GameTurn.objects.filter(
+            game_player__game_id=self.id
+        ).order_by('turn_count').select_related("game_player__user")
+
+    def next_player(self):
+        return self.racks.get(turn_index=self.next_turn_index)
+
 
 class GamePlayer(TimestampedModel):
     user = models.ForeignKey(User, related_name="game_racks", on_delete=models.PROTECT)
