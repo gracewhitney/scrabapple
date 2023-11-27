@@ -37,8 +37,8 @@
               </li>
             {% else %}
               <li class="nav-item d-grid">
-                <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-primary navbar-btn">Log in with Google</a>
-                <a href="{% url 'login' %}" class="btn btn-secondary navbar-btn">Log in by email</a>
+                <a href="{% url 'social:begin' 'google-oauth2' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" class="btn btn-primary navbar-btn">Log in with Google</a>
+                <a href="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" class="btn btn-secondary navbar-btn">Log in by email</a>
               </li>
             {% endif %}
           </div>

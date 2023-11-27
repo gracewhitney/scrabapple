@@ -9,6 +9,8 @@
     "django-react-loader": "^0.1.7",
     "nwb": "^0.24.7",
     "react": "^16.13.1",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^16.13.1",
     "webpack-bundle-tracker": "^0.4.3"
   },

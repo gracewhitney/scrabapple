@@ -75,14 +75,23 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
 
 #rack {
   align-self: center;
-  border-bottom: 3px solid black;
+
+  .list-group {
+    border-bottom: 3px solid black;
+  }
+
+  .gap {
+    width: 42px;
+    margin: .25rem;
+    background-color: tint-color($tile-background, 80%);
+  }
 
   .scrabble-tile {
     width: 42px;
     height: 45px;
     font-size: 28px;
-    margin: .25rem;
     border-radius: 2px;
+    margin: .25rem;
     background-color: $tile-background;
     border: shade-color($tile-background, 30%) 1px solid;
     justify-content: center;
@@ -97,5 +106,11 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
       right: 2px;
       position: absolute;
     }
+  }
+}
+
+.scrabble-tile {
+  &.dragging {
+    opacity: 0;
   }
 }

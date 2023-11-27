@@ -49,6 +49,7 @@ class ScrabbleView(GamePermissionMixin, TemplateView):
         context.update({
             "game": self.scrabble_game,
             "game_player": game_player,
+            "in_turn": game_player.turn_index == self.scrabble_game.next_turn_index,
             "rack": [{"letter": letter, "points": TILE_SCORES[letter]} for letter in game_player.rack],
             "BOARD_CONFIG": BOARD_CONFIG,
             "TILE_SCORES": TILE_SCORES,

@@ -1,4 +1,6 @@
 {% extends "base_templates/base.html" %}
+{% load webpack_loader %}
+{% load django_react_components %}
 {% load template_utils %}
 {% load sass_tags %}
 
@@ -13,9 +15,10 @@
 {% endblock %}
 
 {% block body %}
+{% render_bundle 'runtime' %}
 <div class="row row-no-gutters">
   <div class="d-flex flex-column bg-light col-3">
-    <p class="text-info-emphasis">It's currently {% if game_player.turn_index == game.next_turn_index %}your{% else %}{{ game.next_player.user.first_name }}'s{% endif %} turn.</p>
+    <p class="text-info-emphasis">It's currently {% if in_turn %}your{% else %}{{ game.next_player.user.first_name }}'s{% endif %} turn.</p>
     <h3 class="h4">Scores</h3>
     {% for rack in game.racks.all %}
       <div class="d-flex justify-content-between">
@@ -40,6 +43,9 @@
     </div>
   </div>
   <div class="d-flex flex-column mt-2 col-9">
+  {% if in_turn %}
+
+  {% else %}
     <div id="scrabble-board">
     {% for row in game.board %}
       <div class="scrabble-board-row">
@@ -60,26 +66,10 @@
     {% endfor %}
     </div>
 
-    <ul id="rack" class="list-group list-group-horizontal mt-1">
-      {% for tile in rack %}
-        <li class="list-group-item scrabble-tile">
-          {% if tile.letter.isalpha %}<span>{{ tile.letter }}<span class="tile-score">{{ tile.points }}</span></span>{% endif %}
-        </li>
-      {% endfor %}
-    </ul>
+    {% render_bundle "TileRack" %}
+    {% react_component "TileRack" tiles=rack id="rack" %}
+  {% endif %}
   </div>
 </div>
 {% endblock body %}
 
-{% block javascript %}
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-  <script>
-    let rack = document.getElementById('rack')
-    new Sortable(rack, {
-      swap: true,
-      swapClass: 'highlight',
-      animation: 150,
-      direction: 'horizontal',
-    })
-  </script>
-{% endblock javascript %}
