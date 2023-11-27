@@ -44,26 +44,29 @@
   </div>
   <div class="d-flex flex-column mt-2 col-9">
   {% if in_turn %}
-
+    {% render_bundle "ScrabbleGame" %}
+    {% react_component "ScrabbleGame" board=game.board rack=rack boardConfig=BOARD_CONFIG id="scrabble-board-container" %}
   {% else %}
-    <div id="scrabble-board">
-    {% for row in game.board %}
-      <div class="scrabble-board-row">
-      {% with row_index=forloop.counter0 %}
-        {% for col in row %}
-          {% with multiplier=BOARD_CONFIG|getitem:row_index|getitem:forloop.counter0 %}
-          <div class="scrabble-board-square {{ multiplier.value }}">
-            {% if col %}
-              <div class="scrabble-tile {% if col.0 == '-' %}blank{% endif %}">{{ col|cut:'-' }}<span class="tile-score">{{ TILE_SCORES|getitem:col.0|default:'' }}</span></div>
-            {% elif multiplier and multiplier != Multiplier.start %}
-              {{ multiplier.value|upper }}
-            {% endif %}
-          </div>
-          {% endwith %}
-        {% endfor %}
-      {% endwith %}
+    <div id="scrabble-board-container">
+      <div id="scrabble-board">
+      {% for row in game.board %}
+        <div class="scrabble-board-row">
+        {% with row_index=forloop.counter0 %}
+          {% for col in row %}
+            {% with multiplier=BOARD_CONFIG|getitem:row_index|getitem:forloop.counter0 %}
+            <div class="scrabble-board-square {{ multiplier.value }}">
+              {% if col %}
+                <div class="scrabble-tile {% if col.0 == '-' %}blank{% endif %}">{{ col|cut:'-' }}<span class="tile-score">{{ TILE_SCORES|getitem:col.0|default:'' }}</span></div>
+              {% elif multiplier and multiplier != Multiplier.start %}
+                {{ multiplier.value|upper }}
+              {% endif %}
+            </div>
+            {% endwith %}
+          {% endfor %}
+        {% endwith %}
+        </div>
+      {% endfor %}
       </div>
-    {% endfor %}
     </div>
 
     {% render_bundle "TileRack" %}
