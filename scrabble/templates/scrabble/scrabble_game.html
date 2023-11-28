@@ -45,7 +45,7 @@
   <div class="d-flex flex-column mt-2 col-9">
   {% if in_turn %}
     {% render_bundle "ScrabbleGame" %}
-    {% react_component "ScrabbleGame" board=game.board rack=rack boardConfig=BOARD_CONFIG id="scrabble-board-container" %}
+    {% react_component "ScrabbleGame" id="scrabble-board-container" board=game.board rack=rack boardConfig=BOARD_CONFIG scoreUrl=score_url %}
   {% else %}
     <div id="scrabble-board-container">
       <div id="scrabble-board">
@@ -75,4 +75,10 @@
   </div>
 </div>
 {% endblock body %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    window.csrfmiddlewaretoken = '{{ csrf_token }}';
+  </script>
+{% endblock %}
 

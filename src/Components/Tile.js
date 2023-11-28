@@ -19,6 +19,7 @@ const Tile = (props) => {
     item: {
       ...props
     },
+    canDrag: () => id !== undefined,
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging()
     })
