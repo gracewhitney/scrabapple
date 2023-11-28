@@ -36,7 +36,8 @@ def validate_turn(turn_data, game, game_player):
         raise ValidationError("Wrong player.")
     # deserialize turn data
     serializer = GameTurnSerializer(data=turn_data)
-    serializer.is_valid()
+    if not serializer.is_valid():
+        raise ValidationError(f"Misformatted data: {serializer.errors}")
     turn_action = serializer.validated_data["action"]
     if turn_action in [TurnAction.pass_turn, TurnAction.forfeit]:
         return serializer.validated_data

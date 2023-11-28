@@ -10,7 +10,7 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
 }
 
 #scrabble-board {
-  border: 2px black solid;
+  border: 2px #5e330a solid;
   align-self: center;
 }
 
@@ -26,7 +26,7 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px black solid;
+  border: 1px #5e330a solid;
   position: relative;
 
   &.dl {
@@ -89,7 +89,6 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
     width: 42px;
     height: 45px;
     margin: .25rem;
-    background-color: tint-color($tile-background, 80%);
   }
 
   .scrabble-tile {

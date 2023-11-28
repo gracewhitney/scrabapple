@@ -36,3 +36,9 @@ export const MULTIPLIERS = {
   start: 'start',
 }
 
+export const TURN_ACTION = {
+    play:"play",
+    exchange: "exchange",
+    pass_turn: "pass",
+    forfeit: "forfeit",
+}

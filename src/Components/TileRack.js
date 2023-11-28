@@ -9,19 +9,22 @@ function TileRack(props) {
     tiles,
   } = props
 
-  const idTiles = tiles.map((tile, i) => {return {...tile, id: i}})
+  const removedTileIds = props.removedTileIds || []
+
+  const idTiles = tiles.map((tile, i) => {return {...tile, id: tile.id || i}})
 
   for (let i = idTiles.length; i < 8; i++) {
-    idTiles.push({id: i})  // Add empty slots
+    idTiles.push({id: i })  // Add empty slots
   }
 
   const [rackPositions, setRackPositions] = useState([...idTiles]);
-
   const moveTile = (id, endingIndex) => {
     const startingIndex = rackPositions.findIndex((tile) => tile.id === id)
     const tile = rackPositions[startingIndex]
     const newRackPositions = [...rackPositions]
-    newRackPositions.splice(startingIndex, 1)
+    if (startingIndex !== undefined) {
+      newRackPositions.splice(startingIndex, 1)
+    }
     newRackPositions.splice(endingIndex, 0, tile)
     setRackPositions(newRackPositions)
   }
@@ -29,7 +32,15 @@ function TileRack(props) {
   return (
       <ul className="list-group list-group-horizontal mt-1">
         <DndProvider backend={HTML5Backend}>
-        {rackPositions.map((tile, i) => <RackPosition tile={tile} index={i} key={tile.id} moveTile={moveTile}></RackPosition>)}
+        {
+          rackPositions.map((tile, i) =>
+            <RackPosition
+              tile={removedTileIds.indexOf(tile.id) < 0 ? tile : {id: tile.id}}
+              index={i} key={tile.id}
+              moveTile={moveTile}>
+            </RackPosition>
+          )
+        }
         </DndProvider>
       </ul>
   );
