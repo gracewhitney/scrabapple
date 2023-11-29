@@ -89,3 +89,8 @@ class ScrabbleCalculateScoreView(GamePermissionMixin, View):
             return JsonResponse(status=400, data={"error": "Invalid action"})
         points, _ = calculate_points(cleaned_turn_data["played_tiles"], self.scrabble_game)
         return JsonResponse(data={"points": points})
+
+
+class GameTurnIndexView(GamePermissionMixin, View):
+    def get(self, request, *args, **kwargs):
+        return JsonResponse(data={'turn_index': self.scrabble_game.next_turn_index})

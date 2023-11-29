@@ -165,7 +165,7 @@ def calculate_word_points(played_tiles, board):
     tile_index = 0
     word_multiplier = 1
     points = 0
-    for x in range(start_x, 14):
+    for x in range(start_x, 15):
         tile = board.get_tile(x, row)
         if tile:
             points += TILE_SCORES[tile[0]]
@@ -181,7 +181,7 @@ def calculate_word_points(played_tiles, board):
             if multiplier in [Multiplier.dw, Multiplier.start]:
                 word_multiplier *= 2
             if multiplier == Multiplier.tw:
-                word_multiplier *= 2
+                word_multiplier *= 3
             points += letter_points
             word += tile[-1]
             tile_index += 1
