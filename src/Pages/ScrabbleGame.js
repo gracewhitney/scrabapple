@@ -68,6 +68,15 @@ const ScrabbleGame = (props) => {
     setPlayedTiles(newPlayedTiles)
   }
 
+  const returnTileToRack = (id) => {
+    const existingPlayIndex = playedTiles.findIndex(tile => tile.tile.id === id)
+    if (existingPlayIndex >= 0) {
+      const newPlayedTiles = [...playedTiles]
+      newPlayedTiles.splice(existingPlayIndex, 1)
+      setPlayedTiles(newPlayedTiles)
+    }
+  }
+
   const renderBoardCol = (letter, xIndex, yIndex) => {
     const multiplier = boardConfig[yIndex][xIndex]
     const played_tile = playedTiles.find(tile => tile.x === xIndex && tile.y === yIndex)
@@ -108,7 +117,10 @@ const ScrabbleGame = (props) => {
           </button>
         </div>
         <div id="rack" className="d-flex">
-          <TileRack tiles={currentRack} removedTileIds={playedTiles.map(tile => tile.tile.id)}></TileRack>
+          <TileRack tiles={currentRack}
+                    removedTileIds={playedTiles.map(tile => tile.tile.id)}
+                    returnToRackHandler={returnTileToRack}>
+          </TileRack>
         </div>
       </div>
     </DndProvider>
