@@ -12,7 +12,8 @@ class TileMoveSerializer(serializers.Serializer):
     def validate_tile(self, tile):
         if len(tile) > 1 and tile[0] != '-':
             raise ValidationError("Invalid tile: multiple letters")
-        if not tile[-1].isalpha():
+        # TODO: remove first condition once blanks are set to a specific letter
+        if not (tile[-1] == '-' or tile[-1].isalpha()):
             raise ValidationError("Invalid tile: not letter")
         return tile.upper()
 
