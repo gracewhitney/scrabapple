@@ -7,6 +7,7 @@ import Tile from "./Tile";
 function TileRack(props) {
   const {
     tiles,
+    returnToRackHandler
   } = props
 
   const removedTileIds = props.removedTileIds || []
@@ -27,6 +28,9 @@ function TileRack(props) {
     }
     newRackPositions.splice(endingIndex, 0, tile)
     setRackPositions(newRackPositions)
+    if (returnToRackHandler) {
+      returnToRackHandler(id)
+    }
   }
 
   return (
