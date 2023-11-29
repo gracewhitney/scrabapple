@@ -1,3 +1,4 @@
+{% load static %}
 {# START_FEATURE sass_bootstrap #}
 {% load sass_tags %}
 {# END_FEATURE sass_bootstrap #}
@@ -8,13 +9,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>{{ APP_DISPLAY_NAME }} - {% block title %}{% endblock %}</title>
     <link href="{% sass_src 'styles/base.scss' %}" rel="stylesheet">
-    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="icon" type="image/png" href="/static/logo.jpg">
     {% block head %}{% endblock %}
   </head>
   <body>
     <nav class="navbar navbar-expand-sm navbar-light bg-light">
       <div class="container-fluid">
         <a class="navbar-brand" href="/">
+          <img src="{% static 'logo.jpg' %}" height="40">
           {{ APP_DISPLAY_NAME }}
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-items" aria-controls="navbar-items" aria-expanded="false" aria-label="Toggle navigation">
