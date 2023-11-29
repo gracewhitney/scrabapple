@@ -12,6 +12,7 @@ const ScrabbleGame = (props) => {
     rack,
     boardConfig,
     scoreUrl,
+    turnUrl,
   } = props
 
   const idTiles = rack.map((tile, i) => {return {...tile, id: i}})
@@ -43,6 +44,20 @@ const ScrabbleGame = (props) => {
     getScore()
   }, [playedTiles, scoreUrl, setPoints, setValidationError]);
 
+  const doPlay = async () => {
+    const resp = await fetch(turnUrl, {
+      method: 'post',
+      headers: {'X-CSRFToken': window.csrfmiddlewaretoken},
+      body: JSON.stringify({'action': TURN_ACTION.play, 'played_tiles': serializePlayedTiles(playedTiles)})
+    })
+    if (resp.ok) {
+      window.location = resp.url
+    } else {
+      const data = await resp.json()
+      setValidationError(data.error)
+    }
+  }
+
   const playTile = (letter, id, x, y) => {
     const newPlayedTiles = [...playedTiles]
     const existingPlayIndex = newPlayedTiles.findIndex(tile => tile.tile.id === id)
@@ -63,7 +78,7 @@ const ScrabbleGame = (props) => {
 
   const renderBoardRow = (row, index) => {
     return (
-      <div className="scrabble-board-row">
+      <div className="scrabble-board-row" key={index}>
         {row.map((col, colIndex) => {return renderBoardCol(col, colIndex, index)})}
       </div>
     )
@@ -71,16 +86,30 @@ const ScrabbleGame = (props) => {
 
   return (
     <DndProvider backend={HTML5Backend}>
+      <div className="row">
+
+      </div>
       <div id="scrabble-board">
         {board.map(renderBoardRow)}
       </div>
-      {
-        validationError
-          ? <div className="text-danger">{validationError}</div>
-          : <div className="text-success">{points} points</div>
-      }
-      <div id="rack" className="d-flex">
-        <TileRack tiles={currentRack} removedTileIds={playedTiles.map(tile => tile.tile.id)}></TileRack>
+      <div className="d-flex justify-content-between">
+        <div className="d-flex flex-column justify-content-around">
+          {
+            validationError
+              ? <div className="badge rounded-pill bg-danger">{validationError}</div>
+              : <div className="badge rounded-pill bg-success">{points} points</div>
+          }
+          <button
+            className="btn btn-primary btn-sm align-self-start"
+            disabled={validationError || playedTiles.length < 1}
+            onClick={doPlay}
+          >
+            Play
+          </button>
+        </div>
+        <div id="rack" className="d-flex">
+          <TileRack tiles={currentRack} removedTileIds={playedTiles.map(tile => tile.tile.id)}></TileRack>
+        </div>
       </div>
     </DndProvider>
   )
@@ -104,7 +133,7 @@ const BoardSquare = (props) => {
   )
 
   return (
-    <div className={`scrabble-board-square ${ multiplier || '' } ${isOver ? 'shadow bg-light': ''}`} ref={drop}>
+    <div className={`scrabble-board-square ${ multiplier || '' } ${isOver ? 'shadow border-success-subtle border-2': ''}`} ref={drop}>
       {tile ? <Tile {...tile}/> : null}
       { multiplier && multiplier !== MULTIPLIERS.start ? multiplier.toUpperCase(): null}
     </div>

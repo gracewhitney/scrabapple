@@ -54,6 +54,7 @@ class ScrabbleView(GamePermissionMixin, TemplateView):
             "game_player": game_player,
             "in_turn": in_turn,
             "score_url": reverse("scrabble:score_play", kwargs={"game_id": self.scrabble_game.id}),
+            "turn_url": reverse("scrabble:post_scrabble_play", kwargs={"game_id": self.scrabble_game.id}),
             "rack": [{"letter": letter} for letter in game_player.rack],
             "BOARD_CONFIG": BOARD_CONFIG,
             "TILE_SCORES": TILE_SCORES,

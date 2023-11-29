@@ -30,10 +30,18 @@
     <div id="allTurns" class="card mt-1 collapse">
       <div class="card-body">
         {% for turn in game.all_turns %}
-          <div>
+          <div class="turn-item">
+          <span class="bi bi-play"></span>
           {{ turn.game_player.user.first_name }}
           {% if turn.turn_action == TurnAction.play %}
-            played {{ turn.turn_words|join:", "|upper }} for {{ turn.score }} point{{ turn.score|pluralize }}
+            played {{ turn.turn_words|join:", "|upper }}<br>
+            <div class="badge bg-success-subtle text-dark rounded-pill">{{ turn.score }} point{{ turn.score|pluralize }}</div>
+          {% elif turn.turn_action == TurnAction.pass %}
+            passed
+          {% elif turn.turn_action == TurnAction.exchange %}
+            exchanged tiles
+          {% elif turn.turn_action == TurnAction.forfeit %}
+            forfeited
           {% endif %}
           </div>
         {% empty %}
@@ -45,7 +53,7 @@
   <div class="d-flex flex-column mt-2 col-9">
   {% if in_turn %}
     {% render_bundle "ScrabbleGame" %}
-    {% react_component "ScrabbleGame" id="scrabble-board-container" board=game.board rack=rack boardConfig=BOARD_CONFIG scoreUrl=score_url %}
+    {% react_component "ScrabbleGame" id="scrabble-board-container" board=game.board rack=rack boardConfig=BOARD_CONFIG scoreUrl=score_url turnUrl=turn_url %}
   {% else %}
     <div id="scrabble-board-container">
       <div id="scrabble-board">
