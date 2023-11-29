@@ -152,6 +152,8 @@ def calculate_points(played_tiles, game):
         points += word_points
         if word:
             words.append(word)
+    if len(played_tiles) == 7:
+        points += 50
     return points, words
 
 

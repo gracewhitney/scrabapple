@@ -93,11 +93,15 @@
     <script type="text/javascript">
       const turnIndex = {{ game.next_turn_index }};
       const checkTurnIndex = async () => {
-        const currentTurnIndexResp = await (await fetch("{% url 'scrabble:get_game_turn' game_id=game.id %}")).json()
-        if (currentTurnIndexResp.turn_index !== turnIndex) {
+        try {
+          const currentTurnIndexResp = await (await fetch("{% url 'scrabble:get_game_turn' game_id=game.id %}")).json()
+          if (currentTurnIndexResp.turn_index !== turnIndex) {
+            location.reload()
+          } else {
+            setTimeout(checkTurnIndex, 5000)
+          }
+        } catch {
           location.reload()
-        } else {
-          setTimeout(checkTurnIndex, 5000)
         }
       }
       setTimeout(checkTurnIndex, 5000)
