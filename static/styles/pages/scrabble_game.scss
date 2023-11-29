@@ -112,10 +112,27 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
       position: absolute;
     }
   }
+
+  &.rack-small {
+    .scrabble-tile {
+      width: 36px;
+      height: 38px;
+      font-size: 19px;
+      margin: .12rem;
+    }
+    .gap {
+      width: 36px;
+      height: 38px;
+    }
+  }
 }
 
 .scrabble-tile {
   &.dragging {
     opacity: 0;
   }
+}
+
+.turn-item {
+  font-size: 14px;
 }
