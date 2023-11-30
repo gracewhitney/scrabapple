@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {DndProvider, useDrop} from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
@@ -16,10 +16,10 @@ const ScrabbleGame = (props) => {
   } = props
 
   const idTiles = rack.map((tile, i) => {return {...tile, id: i}})
-  const [currentRack, setCurrentRack] = useState(idTiles)
   const [playedTiles, setPlayedTiles] = useState([])
   const [points, setPoints] = useState(0)
   const [validationError, setValidationError] = useState()
+  const [exchangedTiles, setExchangedTiles] = useState([])
 
   useEffect(() => {
     const getScore = async () => {
@@ -44,11 +44,18 @@ const ScrabbleGame = (props) => {
     getScore()
   }, [playedTiles, scoreUrl, setPoints, setValidationError]);
 
-  const doPlay = async () => {
+  const doPlay = async (action) => {
+    const postData = {'action': action}
+    if (action === TURN_ACTION.play) {
+      postData["played_tiles"] = serializePlayedTiles(playedTiles)
+    }
+    if (action === TURN_ACTION.exchange) {
+      postData["exchanged_tiles"] = exchangedTiles.map(tile => tile.letter)
+    }
     const resp = await fetch(turnUrl, {
       method: 'post',
       headers: {'X-CSRFToken': window.csrfmiddlewaretoken},
-      body: JSON.stringify({'action': TURN_ACTION.play, 'played_tiles': serializePlayedTiles(playedTiles)})
+      body: JSON.stringify(postData)
     })
     if (resp.ok) {
       window.location = resp.url
@@ -59,6 +66,9 @@ const ScrabbleGame = (props) => {
   }
 
   const playTile = (letter, id, x, y) => {
+    if (exchangedTiles.findIndex(tile => tile.id === id) >= 0) {
+      return
+    }
     const newPlayedTiles = [...playedTiles]
     const existingPlayIndex = newPlayedTiles.findIndex(tile => tile.tile.id === id)
     if (existingPlayIndex >= 0) {
@@ -74,6 +84,12 @@ const ScrabbleGame = (props) => {
       const newPlayedTiles = [...playedTiles]
       newPlayedTiles.splice(existingPlayIndex, 1)
       setPlayedTiles(newPlayedTiles)
+    }
+    const existingExchangeIndex = exchangedTiles.findIndex(tile => tile.id === id)
+    if (existingExchangeIndex >= 0) {
+      const newExchangedTiles = [...exchangedTiles]
+      newExchangedTiles.splice(existingExchangeIndex, 1)
+      setExchangedTiles(newExchangedTiles)
     }
   }
 
@@ -95,32 +111,50 @@ const ScrabbleGame = (props) => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="row">
-
-      </div>
-      <div id="scrabble-board">
-        {board.map(renderBoardRow)}
-      </div>
-      <div className="d-flex justify-content-between">
-        <div className="d-flex flex-column justify-content-around">
+      <div className="row w-100">
+        <div className="col d-flex flex-column flex-grow-0">
+          <div id="scrabble-board">
+            {board.map(renderBoardRow)}
+          </div>
+          <div id="rack" className="d-flex align-self-stretch justify-content-between">
+            <button className="btn btn-secondary align-self-stretch my-2 me-2" onClick={() => {setPlayedTiles([])}}>
+              <span className="bi bi-arrow-down-right-square-fill"></span>
+            </button>
+            <TileRack tiles={idTiles}
+                      removedTileIds={playedTiles.map(tile => tile.tile.id) + exchangedTiles.map(tile => tile.id)}
+                      returnToRackHandler={returnTileToRack}>
+            </TileRack>
+          </div>
+        </div>
+        <div className="col d-flex flex-column" style={{maxWidth: '300px'}}>
           {
             validationError
               ? <div className="badge rounded-pill bg-danger">{validationError}</div>
               : <div className="badge rounded-pill bg-success">{points} points</div>
           }
           <button
-            className="btn btn-primary btn-sm align-self-start"
+            className="btn btn-primary btn-sm mt-2"
             disabled={validationError || playedTiles.length < 1}
-            onClick={doPlay}
+            onClick={async () => {await doPlay(TURN_ACTION.play)}}
           >
-            Play
+            <span className="bi bi-person-arms-up"></span> <span>Play</span>
           </button>
-        </div>
-        <div id="rack" className="d-flex">
-          <TileRack tiles={currentRack}
-                    removedTileIds={playedTiles.map(tile => tile.tile.id)}
-                    returnToRackHandler={returnTileToRack}>
-          </TileRack>
+          <ExchangeBox exchangedTiles={exchangedTiles} setExchangedTiles={setExchangedTiles} doTurn={doPlay}>
+          </ExchangeBox>
+          <button
+            className="btn btn-secondary btn-sm mt-2"
+            onClick={async () => {await doPlay(TURN_ACTION.pass_turn)}}
+          >
+            Pass
+          </button>
+          <hr></hr>
+          <button
+            className="btn btn-danger btn-sm"
+            disabled
+            onClick={async () => {}}
+          >
+            <span className="bi bi-exclamation-triangle-fill"></span> Forfeit
+          </button>
         </div>
       </div>
     </DndProvider>
@@ -150,6 +184,77 @@ const BoardSquare = (props) => {
       { multiplier && multiplier !== MULTIPLIERS.start ? multiplier.toUpperCase(): null}
     </div>
   )
+}
+
+const ExchangeBox = (props) => {
+  const {
+    exchangedTiles,
+    setExchangedTiles,
+    doTurn
+  } = props
+
+  const [exchanging, setExchanging] = useState(false)
+
+  const renderNotExchanging = () => {
+    return (
+      <button
+        className="btn btn-secondary btn-sm mt-2"
+        onClick={() => {
+          setExchanging(true)
+        }}
+      >
+        <span>Exchange Tiles</span>
+      </button>
+    )
+  }
+
+  const acceptTile = (letter, id) => {
+    setExchangedTiles((currentExchangedTiles) => {
+      const existingIndex = currentExchangedTiles.findIndex(tile => tile.id === id)
+      if (existingIndex >= 0) {
+        return currentExchangedTiles
+      }
+      return [...currentExchangedTiles, {id: id, letter: letter}]
+    })
+  }
+
+  const [, drop] = useDrop(
+    () => ({
+      accept: 'tile',
+      drop: (item) => acceptTile(item.letter, item.id),
+    })
+  )
+
+  const renderExchanging = () => {
+    return (
+      <>
+        <div id="tile-exchange" className="card mt-2" ref={drop}>
+          <div className="card-header">Drag tiles here to exchange</div>
+          <div className="card-body">
+            <div className="row">
+              {exchangedTiles.map((tile) => <div className="col" key={tile.id}><Tile {...tile}></Tile></div>)}
+            </div>
+          </div>
+        </div>
+        <div className="d-flex justify-content-between">
+          <button
+            className="btn btn-outline-secondary btn-sm mt-2"
+            onClick={() => {setExchanging(false); setExchangedTiles([])}}
+          >
+            Cancel
+          </button>
+          <button
+            className="btn btn-outline-primary btn-sm mt-2"
+            onClick={() => {doTurn(TURN_ACTION.exchange)}}
+          >
+            Submit
+          </button>
+        </div>
+      </>
+    )
+  }
+
+  return (exchanging ? renderExchanging() : renderNotExchanging())
 }
 
 const serializePlayedTiles = (playedTiles) => {

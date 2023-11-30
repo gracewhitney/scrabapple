@@ -80,7 +80,7 @@ def validate_turn(turn_data, game, game_player):
         play_indices = set(tile['x'] for tile in played_tiles)
         row = played_tiles[0]['y']
         for x in range(min(play_indices), max(play_indices)):
-            if x not in play_indices and board.get_tile(x, row) is None:
+            if x not in play_indices and board.get_tile(x, row) == "":
                 raise ValidationError("Play not contiguous")
         return serializer.validated_data
     else:
@@ -88,7 +88,7 @@ def validate_turn(turn_data, game, game_player):
 
 
 def do_turn(turn_data, game, game_player):
-    """Returns turn score and mutates rack & letter bag in place"""
+    """Saves and returns turn object and mutates associated data"""
     turn_action = turn_data["action"]
     points = 0
     starting_rack = list(game_player.rack)
@@ -99,7 +99,7 @@ def do_turn(turn_data, game, game_player):
         exchanged_tiles = turn_data["exchanged_tiles"]
         new_tiles = game.draw_tiles(len(exchanged_tiles))
         for tile in exchanged_tiles:
-            rack_index = game_player.rack.find(tile)
+            rack_index = game_player.rack.index(tile)
             game_player.rack.pop(rack_index)
             game.letter_bag.append(tile)
         game_player.rack.extend(new_tiles)
@@ -125,7 +125,7 @@ def do_turn(turn_data, game, game_player):
     game.save()
     game_player.save()
     turn_count = game.racks.aggregate(current_count=Max("turns__turn_count"))['current_count'] or 0
-    GameTurn.objects.create(
+    turn = GameTurn.objects.create(
         game_player=game_player,
         turn_count=turn_count + 1,
         turn_action=turn_action,
@@ -135,7 +135,7 @@ def do_turn(turn_data, game, game_player):
     )
     if len(game_player.rack) == 0:
         go_out(game_player)
-
+    return turn
 
 def calculate_points(played_tiles, game):
     board = ScrabbleBoard(game.board)

@@ -73,7 +73,12 @@ class ScrabbleTurnView(GamePermissionMixin, View):
                 cleaned_turn_data = validate_turn(turn_data, self.scrabble_game, game_player)
             except ValidationError as e:
                 return JsonResponse(status=400, data={"error": e.message})
-            do_turn(cleaned_turn_data, self.scrabble_game, game_player)
+            turn = do_turn(cleaned_turn_data, self.scrabble_game, game_player)
+            if turn.turn_action == TurnAction.play:
+                success_message = f"You played {', '.join(turn.turn_words)} for {turn.score} points."
+            else:
+                success_message = "Your turn is complete."
+            messages.success(request, success_message)
         return redirect('scrabble:play_scrabble', game_id=self.scrabble_game.id)
 
 
