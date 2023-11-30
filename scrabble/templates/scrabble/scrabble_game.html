@@ -17,9 +17,9 @@
 {% block body %}
 {% render_bundle 'runtime' %}
 <div class="row row-no-gutters">
-  <div class="sidebar col-3 pt-4">
+  <div class="sidebar col-3 pt-4 full-height">
     {% if in_turn %}
-      <p class="text-primary-emphasis">It's your turn! Please make your play.</p>
+      <p class="text-info-emphasis"><span class="bi bi-person-arms-up"></span> It's your turn!</p>
     {% else %}
     <p class="text-info-emphasis">It's currently {{ game.next_player.user.first_name }}'s turn.</p>
     {% endif %}
@@ -32,27 +32,31 @@
         <span>{{ rack.score }}</span>
       </div>
     {% endfor %}
-    <button class="btn btn-outline-primary" type="button" data-bs-target="#allTurns" data-bs-toggle="collapse" aria-expanded="false"><span class="bi bi-chevron-down"></span> View all turns</button>
-    <div id="allTurns" class="card mt-1 collapse">
-      <div class="card-body">
-        {% for turn in game.all_turns %}
-          <div class="turn-item">
-          <span class="bi bi-play"></span>
-          {{ turn.game_player.user.first_name }}
-          {% if turn.turn_action == TurnAction.play %}
-            played {{ turn.turn_words|join:", "|upper }}<br>
-            <div class="badge bg-success-subtle text-dark rounded-pill">{{ turn.score }} point{{ turn.score|pluralize }}</div>
-          {% elif turn.turn_action == TurnAction.pass %}
-            passed
-          {% elif turn.turn_action == TurnAction.exchange %}
-            exchanged tiles
-          {% elif turn.turn_action == TurnAction.forfeit %}
-            forfeited
-          {% endif %}
+    <div class="accordion">
+      <div class="accordion-item">
+        <button class="accordion-button collapsed bg-primary-subtle" type="button" data-bs-target="#allTurns" data-bs-toggle="collapse" aria-expanded="false">View all turns</button>
+        <div id="allTurns" class="accordion-collapse collapse">
+          <div class="card-body">
+            {% for turn in game.all_turns %}
+              <div class="turn-item">
+              <span class="bi bi-play"></span>
+              {{ turn.game_player.user.first_name }}
+              {% if turn.turn_action == TurnAction.play %}
+                played {{ turn.turn_words|join:", "|upper }}<br>
+                <div class="badge bg-success-subtle text-dark rounded-pill">{{ turn.score }} point{{ turn.score|pluralize }}</div>
+              {% elif turn.turn_action == TurnAction.pass %}
+                passed
+              {% elif turn.turn_action == TurnAction.exchange %}
+                exchanged tiles
+              {% elif turn.turn_action == TurnAction.forfeit %}
+                forfeited
+              {% endif %}
+              </div>
+            {% empty %}
+              No turns yet.
+            {% endfor %}
           </div>
-        {% empty %}
-          No turns yet.
-        {% endfor %}
+        </div>
       </div>
     </div>
   </div>
