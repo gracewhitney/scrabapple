@@ -4,7 +4,7 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
 @import 'bootstrap-icons/font/bootstrap-icons.scss';
 
 #scrabble-board-container {
-  align-self: center;
+  align-self: stretch;
   display: flex;
   flex-direction: column;
 }
@@ -72,9 +72,10 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
     .tile-score {
       font-size: 10px;
       font-weight: normal;
-      bottom: -2px;
+      bottom: -1px;
       right: 1px;
       position: absolute;
+      line-height: normal;
     }
   }
 }
@@ -96,6 +97,7 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
     width: 42px;
     height: 45px;
     font-size: 28px;
+    font-weight: 500;
     border-radius: 2px;
     margin: .25rem;
     background-color: $tile-background;
@@ -129,8 +131,35 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
 }
 
 .scrabble-tile {
+  width: 35px;
+  height: 37px;
+  font-size: 19px;
+  font-weight: bold;
+  border-radius: 2px;
+  margin: .25rem;
+  background-color: $tile-background;
+  border: shade-color($tile-background, 30%) 1px solid;
+  justify-content: center;
+  display: inline-flex;
+  position: relative;
+  padding: 0;
+
+  .tile-score {
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 28px;
+    bottom: -8px;
+    right: 2px;
+    position: absolute;
+  }
   &.dragging {
     opacity: 0;
+  }
+}
+
+#tile-exchange {
+  .card-body {
+    min-height: 77px;
   }
 }
 
