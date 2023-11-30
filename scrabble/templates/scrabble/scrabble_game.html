@@ -17,8 +17,14 @@
 {% block body %}
 {% render_bundle 'runtime' %}
 <div class="row row-no-gutters">
-  <div class="d-flex flex-column bg-light col-3">
-    <p class="text-info-emphasis">It's currently {% if in_turn %}your{% else %}{{ game.next_player.user.first_name }}'s{% endif %} turn.</p>
+  <div class="d-flex flex-column bg-light col-3 pt-4">
+    {% if in_turn %}
+      <p class="text-primary-emphasis">It's your turn! Please make your play.</p>
+    {% else %}
+    <p class="text-info-emphasis">It's currently {{ game.next_player.user.first_name }}'s turn.</p>
+    {% endif %}
+    <hr>
+    <p>There are {{ game.letter_bag|length }} tile{{ game.letter_bag|length|pluralize }} left in the letter bag.</p>
     <h3 class="h4">Scores</h3>
     {% for rack in game.racks.all %}
       <div class="d-flex justify-content-between">
