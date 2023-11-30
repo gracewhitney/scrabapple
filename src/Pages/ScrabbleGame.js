@@ -116,7 +116,7 @@ const ScrabbleGame = (props) => {
           <div id="scrabble-board">
             {board.map(renderBoardRow)}
           </div>
-          <div id="rack" className="d-flex align-self-stretch justify-content-between">
+          <div id="rack" className="d-flex align-self-stretch justify-content-center mb-3">
             <button className="btn btn-secondary align-self-stretch my-2 me-2" onClick={() => {setPlayedTiles([])}}>
               <span className="bi bi-arrow-down-right-square-fill"></span>
             </button>
@@ -203,7 +203,7 @@ const ExchangeBox = (props) => {
           setExchanging(true)
         }}
       >
-        <span>Exchange Tiles</span>
+        <span>Exchange</span>
       </button>
     )
   }

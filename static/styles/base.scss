@@ -6,3 +6,8 @@
 
 $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstrap-icons.woff2')) format('woff2'), url(django-static('bootstrap-icons/font/fonts/bootstrap-icons.woff')) format('woff');
 @import 'bootstrap-icons/font/bootstrap-icons.scss';
+
+// Utility class for full height minus navbar height
+.full-height {
+  min-height: calc(100vh - 50px - #{$navbar-brand-padding-y * 2} - #{$navbar-padding-y * 2})
+}
