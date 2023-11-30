@@ -166,3 +166,15 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
 .turn-item {
   font-size: 14px;
 }
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: $light;
+  align-self: stretch;
+
+  #allTurns {
+    max-height: 350px;
+    overflow-y: scroll;
+  }
+}
