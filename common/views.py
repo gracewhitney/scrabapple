@@ -14,6 +14,15 @@ from common.models import User
 class IndexView(TemplateView):
     template_name = "common/index.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context.update({
+                "in_progress_games": self.request.user.game_racks.filter(game__over=False),
+                "past_games": self.request.user.game_racks.filter(game__over=True).order_by("-created_on"),
+            })
+        return context
+
 
 class LogoutView(View):
     def post(self, request):
@@ -30,17 +39,6 @@ class RobotsTxtView(View):
             # Block all
             lines = ["User-agent: *", "Disallow: /"]
         return HttpResponse("\n".join(lines), content_type="text/plain")
-
-
-class DjangoReactView(TemplateView):
-    # TODO: delete me; this is just a reference example
-    template_name = 'common/sample_django_react.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['hello_msg'] = 'Component'
-        context['sample_props'] = {'msg': 'sample props'}
-        return context
 
 
 class OneTimeLoginView(FormView):

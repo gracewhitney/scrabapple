@@ -69,6 +69,11 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
       color: red;
     }
 
+    &.played {
+      border: 1px $success solid;
+      box-shadow: 0 0 0.25rem $success;
+    }
+
     .tile-score {
       font-size: 10px;
       font-weight: normal;

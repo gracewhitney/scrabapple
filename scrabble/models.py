@@ -49,6 +49,19 @@ class ScrabbleGame(TimestampedModel):
     def next_player(self):
         return self.racks.get(turn_index=self.next_turn_index)
 
+    def winners(self):
+        if not self.over:
+            return []
+        players = self.racks.order_by('-score')
+        max_score = players[0].score
+        winners = []
+        for player in players:
+            if player.score == max_score:
+                winners.append(player)
+            else:
+                break
+        return winners
+
 
 class GamePlayer(TimestampedModel):
     user = models.ForeignKey(User, related_name="game_racks", on_delete=models.PROTECT)
