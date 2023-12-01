@@ -74,7 +74,7 @@ const ScrabbleGame = (props) => {
     if (existingPlayIndex >= 0) {
       newPlayedTiles.splice(existingPlayIndex, 1)
     }
-    newPlayedTiles.push({tile: {'letter': letter, 'id': id}, x: x, y: y})
+    newPlayedTiles.push({tile: {'letter': letter, 'id': id, 'className': "played"}, x: x, y: y})
     setPlayedTiles(newPlayedTiles)
   }
 
@@ -117,7 +117,9 @@ const ScrabbleGame = (props) => {
             {board.map(renderBoardRow)}
           </div>
           <div id="rack" className="d-flex align-self-stretch justify-content-center mb-3">
-            <button className="btn btn-secondary align-self-stretch my-2 me-2" onClick={() => {setPlayedTiles([])}}>
+            <button className="btn btn-secondary align-self-stretch my-2 me-2"
+                    onClick={() => {setPlayedTiles([]); setExchangedTiles([])}}
+            >
               <span className="bi bi-arrow-down-right-square-fill"></span>
             </button>
             <TileRack tiles={idTiles}

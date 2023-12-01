@@ -1,4 +1,5 @@
 {% extends "base_templates/base.html" %}
+{% load static %}
 
 {% load sass_tags %}
 
@@ -10,12 +11,15 @@
 
 {% block body %}
   <div class="container">
-    <h1>Play Scrabble</h1>
+    <h1>
+      <img src="{% static 'logo.jpg' %}" height="100" class="align-self-center">
+      Play Scrabble
+    </h1>
     {% if not user.is_authenticated %}
       <p>Please log in to continue.</p>
     {% else %}
       <h2>Games In Progress</h2>
-      {% for game_rack in user.game_racks.all %}
+      {% for game_rack in in_progress_games %}
         <a href="{% url 'scrabble:play_scrabble' game_id=game_rack.game_id %}" class="btn btn-info">
           {% for rack in game_rack.game.racks.all %}{{ rack.user.first_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
           {% if game_rack.turn_index == game_rack.game.next_turn_index %}
@@ -25,8 +29,18 @@
       {% empty %}
         <p>You have no games currently in progress. Create a new one below.</p>
       {% endfor %}
+      <div class="row mt-3">
+        <div class="col-12">
+          <a href="{% url 'scrabble:create_game' %}" class="btn btn-primary align-self-start">New Game</a>
+        </div>
+      </div>
       <hr>
-      <a href="{% url 'scrabble:create_game' %}" class="btn btn-primary">New Game</a>
+      <h2>Past Games</h2>
+      {% for game_rack in past_games %}
+        <a href="{% url 'scrabble:play_scrabble' game_id=game_rack.game_id %}" class="btn btn-secondary">
+          {% for rack in game_rack.game.racks.all %}{{ rack.user.first_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        </a>
+      {% endfor %}
     {% endif %}
 
   </div>
