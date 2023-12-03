@@ -1,6 +1,8 @@
 from django.conf import settings
+from django.contrib import messages
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from sentry_sdk import capture_exception
 
 
 def send_invitation_email(user, game_id, new_user, request):
@@ -9,11 +11,15 @@ def send_invitation_email(user, game_id, new_user, request):
         "user": user,
         "game_id": game_id
     }, request=request)
-    send_mail(
-        "Play scrabble!",
-        message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[user.email],
-    )
+    try:
+        send_mail(
+            "Play scrabble!",
+            message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+        )
+    except Exception as e:
+        capture_exception(e)
+        messages.error(request, "The invitation email could not be sent. Please invite your opponents via another channel.")
 
 
