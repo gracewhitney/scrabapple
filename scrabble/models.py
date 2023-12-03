@@ -52,7 +52,7 @@ class ScrabbleGame(TimestampedModel):
     def winners(self):
         if not self.over:
             return []
-        players = self.racks.order_by('-score')
+        players = self.racks.exclude(forfeited=True).order_by('-score')
         max_score = players[0].score
         winners = []
         for player in players:
@@ -82,3 +82,4 @@ class GameTurn(TimestampedModel):
     turn_words = ArrayField(models.CharField(max_length=15), null=True)
     score = models.IntegerField()
     rack_before_turn = ArrayField(models.CharField(max_length=1), size=7)
+    turn_data = models.JSONField(null=True)

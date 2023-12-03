@@ -132,10 +132,12 @@ def do_turn(turn_data, game, game_player):
         score=points,
         rack_before_turn=starting_rack,
         turn_words=words,
+        turn_data=turn_data,
     )
     if len(game_player.rack) == 0:
         go_out(game_player)
     return turn
+
 
 def calculate_points(played_tiles, game):
     board = ScrabbleBoard(game.board)
