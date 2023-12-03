@@ -22,7 +22,7 @@
       {% if in_turn %}
         <p class="text-info-emphasis"><span class="bi bi-person-arms-up"></span> It's your turn!</p>
       {% else %}
-      <p class="text-info-emphasis">It's currently {{ game.next_player.user.first_name }}'s turn.</p>
+      <p class="text-info-emphasis">It's currently {{ game.next_player.user.get_short_name }}'s turn.</p>
       {% endif %}
       <hr>
       <p>There are {{ game.letter_bag|length|default:"no" }} tile{{ game.letter_bag|length|pluralize }} in the letter bag.</p>
@@ -30,12 +30,12 @@
       <h3 class="h4">Game Over</h3>
       {% with winners=game.winners %}
         {% if winners|length == 1 %}
-          <p><span class="bi bi-award-fill"></span> {{ winners.0.user.first_name }} won with {{ winners.0.score }} points!</p>
+          <p><span class="bi bi-award-fill"></span> {{ winners.0.user.get_short_name }} won with {{ winners.0.score }} points!</p>
         {% else %}
           <p>
           <span class="bi bi-balloon-fill"></span>
           {% for player in winners %}
-            {% if winners|length > 2 and not forloop.first %}, {% endif %}{% if forloop.last %} and {% endif %}{{ winner.user.first_name }}
+            {% if winners|length > 2 and not forloop.first %}, {% endif %}{% if forloop.last %} and {% endif %}{{ winner.user.get_short_name }}
           {% endfor %}
           tied with {{ winners.0.score }} points!
           </p>
@@ -45,7 +45,7 @@
     <h3 class="h4">{% if game.over %}Final {% endif %}Scores</h3>
     {% for rack in game.racks.all %}
       <div class="d-flex justify-content-between">
-        <span>{{ rack.user.first_name }}:</span>
+        <span>{{ rack.user.get_short_name }}:</span>
         <span>{{ rack.score }}</span>
       </div>
     {% endfor %}
@@ -57,7 +57,7 @@
             {% for turn in game.all_turns %}
               <div class="turn-item">
               <span class="bi bi-play"></span>
-              {{ turn.game_player.user.first_name }}
+              {{ turn.game_player.user.get_short_name }}
               {% if turn.turn_action == TurnAction.play %}
                 played {{ turn.turn_words|join:", "|upper }}<br>
                 <div class="badge bg-success-subtle text-dark rounded-pill">{{ turn.score }} point{{ turn.score|pluralize }}</div>
