@@ -33,11 +33,11 @@
           <p><span class="bi bi-award-fill"></span> {{ winners.0.user.first_name }} won with {{ winners.0.score }} points!</p>
         {% else %}
           <p>
-          <span class="bi bi-award-fill"></span>
+          <span class="bi bi-balloon-fill"></span>
           {% for player in winners %}
             {% if winners|length > 2 and not forloop.first %}, {% endif %}{% if forloop.last %} and {% endif %}{{ winner.user.first_name }}
           {% endfor %}
-          won with {{ winners.0.score }} points!
+          tied with {{ winners.0.score }} points!
           </p>
         {% endif %}
       {% endwith %}

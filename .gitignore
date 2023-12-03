@@ -56,11 +56,14 @@ node_modules/
 # Compiled Files
 staticfiles/
 staticfiles/*
-# START_FEATURE sass_bootstrap
 /static/styles/**/*.css
 /static/styles/**/*.map
-# END_FEATURE sass_bootstrap
-# START_FEATURE django_react
 static/webpack_bundles/
 webpack-stats.json
-# END_FEATURE django_react
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+/server.crt
+/server.key
