@@ -36,3 +36,6 @@ class User(AbstractUser, TimestampedModel):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+    def get_short_name(self):
+        return self.first_name or self.email
