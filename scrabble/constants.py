@@ -26,7 +26,7 @@ TILE_FREQUENCIES = {
     'W': 2,
     'X': 1,
     'Y': 2,
-    'Z': 2,
+    'Z': 1,
     '-': 2,  # BLANK
 }
 
