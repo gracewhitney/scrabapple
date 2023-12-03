@@ -1,5 +1,11 @@
 from django.db.models import TextChoices
 
+
+class WordGame(TextChoices):
+    scrabble = 'scrabble'
+    upwords = 'upwords'
+
+
 TILE_FREQUENCIES = {
     'A': 9,
     'B': 2,
