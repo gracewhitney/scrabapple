@@ -7,6 +7,7 @@ django-extensions>=3.2
 django-react-components
 django-rest-framework
 django-sass-processor
+django_ses
 django-storages
 django-webpack-loader==0.7.0
 libsass

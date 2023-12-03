@@ -1,4 +1,20 @@
+branch-defaults:
+  main:
+    environment: scrabapple-dev
+    group_suffix: null
+environment-defaults:
+  scrabapple-dev:
+    branch: null
+    repository: null
 global:
-  application_name: Sample Django App
+  application_name: Scrabapple
+  default_ec2_keyname: null
+  default_platform: Python 3.11 running on 64bit Amazon Linux 2023
   default_region: us-east-1
-  profile: zagaran-dev
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: gw-dev
+  sc: git
+  workspace_type: Application
