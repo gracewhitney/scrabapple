@@ -1,9 +1,9 @@
 {% extends "base_templates/email_base.html" %}
 
-{% block title %}Play scrabble!{% endblock %}
+{% block title %}Play {{ game_type }}!{% endblock %}
 
 {% block body %}
-  <h1>You have been added to an online scrabble game!</h1>
+  <h1>You have been added to an online {{ game_type }} game!</h1>
   <p>Click below to join the game.</p>
   <a class="btn btn-primary"
      href="{{ request.scheme }}://{{ request.get_host }}{% url 'scrabble:play_scrabble' game_id=game_id %}"

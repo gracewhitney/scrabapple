@@ -5,7 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 from common.models import TimestampedModel, User
-from scrabble.constants import TILE_FREQUENCIES, TurnAction
+from scrabble.constants import TILE_FREQUENCIES, TurnAction, WordGame
 
 
 def get_initial_letter_bag():
@@ -28,6 +28,7 @@ class ScrabbleGame(TimestampedModel):
     )
     next_turn_index = models.IntegerField(default=0)
     over = models.BooleanField(default=False)
+    game_type = models.CharField(choices=WordGame.choices, max_length=32)
 
     def draw_tiles(self, num_tiles, commit=False):
         """Returns num_tiles tiles & new letter bag. If commit=True, also saves letter bag."""
