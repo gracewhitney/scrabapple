@@ -22,7 +22,8 @@ def send_invitation_email(user, game, new_user, request):
     try:
         send_mail(
             f"Play {game.game_type.value}!",
-            message,
+            "Your email viewer does not support html. Please use a different viewer.",
+            html_message=message,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
         )
