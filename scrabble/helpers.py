@@ -12,8 +12,8 @@ from scrabble.gameplay.upwords_gameplay import UpwordsCalculator
 from scrabble.models import ScrabbleGame, GamePlayer
 
 
-def send_invitation_email(user, game, new_user, request):
-    template_name = "emails/new_user_invitation.html" if new_user else "emails/existing_user_invitation.html"
+def send_invitation_email(user, game, request):
+    template_name = "emails/new_user_invitation.html" if user.one_time_passcode else "emails/existing_user_invitation.html"
     message = render_to_string(template_name, context={
         "user": user,
         "game_id": game.id,
@@ -47,7 +47,7 @@ def create_new_game(form, user, request=None):
             email=email, defaults={"one_time_passcode": get_random_string(32)}
         )
         GamePlayer.objects.create(user=user, game=game, turn_index=turn_index, rack=game.draw_tiles(7, commit=True))
-        send_invitation_email(user, game, new_user=created, request=request)
+        send_invitation_email(user, game, request=request)
         turn_index += 1
     return game
 
