@@ -21,11 +21,11 @@ def create_new_game(form, user, request=None):
     ]:
         if not email:
             break
-        user, created = User.objects.get_or_create(
+        user, _ = User.objects.get_or_create(
             email=email, defaults={"one_time_passcode": get_random_string(32)}
         )
         GamePlayer.objects.create(user=user, game=game, turn_index=turn_index, rack=game.draw_tiles(7, commit=True))
-        send_invitation_email(user, game.id, new_user=created, request=request)
+        send_invitation_email(user, game.id, request=request)
         turn_index += 1
     return game
 

@@ -5,8 +5,8 @@ from django.template.loader import render_to_string
 from sentry_sdk import capture_exception
 
 
-def send_invitation_email(user, game_id, new_user, request):
-    template_name = "emails/new_user_invitation.html" if new_user else "emails/existing_user_invitation.html"
+def send_invitation_email(user, game_id, request):
+    template_name = "emails/new_user_invitation.html" if user.one_time_passcode else "emails/existing_user_invitation.html"
     message = render_to_string(template_name, context={
         "user": user,
         "game_id": game_id
