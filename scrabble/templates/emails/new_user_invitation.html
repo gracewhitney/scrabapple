@@ -6,6 +6,6 @@
   <h1>You have been added to an online {{ game_type }} game!</h1>
   <p>Click below to create an account & join the game.</p>
   <a class="btn btn-primary"
-     href="{{ request.scheme }}://{{ request.get_host }}{% url 'one_time_login' user.one_time_passcode %}?next={% url 'scrabble:play_scrabble' game_id=game_id %}"
+     href="{{ request.scheme }}://{{ request.get_host }}{% url 'one_time_login' user.one_time_passcode %}?next={% url 'scrabble:play_game' game_id=game_id %}"
   ></a>
 {% endblock %}

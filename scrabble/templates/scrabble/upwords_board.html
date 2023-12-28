@@ -1,0 +1,39 @@
+{% load template_utils %}
+{% load django_react_components %}
+{% load webpack_loader %}
+
+{% if in_turn %}
+  {% render_bundle "UpwordsGame" %}
+  {% react_component "UpwordsGame" id="upwords-board-container" board=game.board rack=rack scoreUrl=score_url turnUrl=turn_url %}
+{% else %}
+  <div id="upwords-board-container">
+    <div id="upwords-board">
+    {% for row in game.board %}
+      <div class="upwords-board-row">
+      {% with row_index=forloop.counter0 %}
+        {% for col in row %}
+          <div class="upwords-board-square pos-{{ row_index }}{{ forloop.counter0 }}">
+            {% if col %}
+              <div class="tile height-{{ col|length }} {{ col.0 }}">
+                <div class="height-container">
+                  {% for l in col %}
+                    <div class="height-marker"></div>
+                  {% endfor %}
+                </div>
+                {{ col.0 }}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% endwith %}
+      </div>
+    {% endfor %}
+    </div>
+  </div>
+  {% if not game.over %}
+    <div class="upwords-rack-container">
+      {% render_bundle "TileRack" %}
+      {% react_component "TileRack" tiles=rack id="rack" %}
+    </div>
+  {% endif %}
+{% endif %}

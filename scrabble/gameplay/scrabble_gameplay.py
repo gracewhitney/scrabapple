@@ -1,18 +1,50 @@
 from django.core.exceptions import ValidationError
-from django.db import transaction
 
-from scrabble.constants import TILE_SCORES, BOARD_CONFIG, Multiplier, WordGame
+from scrabble.constants import Multiplier, WordGame
 from scrabble.gameplay.base_calculator import BaseGameCalculator
+
+SCRABBLE_TILE_FREQUENCIES = {
+    'A': 9,
+    'B': 2,
+    'C': 2,
+    'D': 4,
+    'E': 12,
+    'F': 2,
+    'G': 3,
+    'H': 2,
+    'I': 9,
+    'J': 1,
+    'K': 1,
+    'L': 4,
+    'M': 2,
+    'N': 6,
+    'O': 8,
+    'P': 2,
+    'Q': 1,
+    'R': 6,
+    'S': 4,
+    'T': 6,
+    'U': 4,
+    'V': 2,
+    'W': 2,
+    'X': 1,
+    'Y': 2,
+    'Z': 1,
+    '-': 2,  # BLANK
+}
 
 
 class ScrabbleCalculator(BaseGameCalculator):
     game_type = WordGame.scrabble
+    board_size = 15
+    tile_frequencies = SCRABBLE_TILE_FREQUENCIES
 
     def validate_play(self, played_tiles, board, game_player):
         super().validate_play(played_tiles, board, game_player)
         # Play must not overlap an existing tile
         if any([not board.is_free_square(tile['x'], tile['y']) for tile in played_tiles]):
             raise ValidationError("Play includes non-empty square")
+        return played_tiles
 
     def validate_first_play(self, played_tiles):
         # First play must include center tile
@@ -56,14 +88,54 @@ class ScrabbleCalculator(BaseGameCalculator):
             return points, word
         return 0, None
 
-    def go_out(self, game_player):
-        with transaction.atomic():
-            for opponent in game_player.game.racks.exclude(user_id=game_player.id):
-                for tile in opponent.rack:
-                    tile_score = TILE_SCORES[tile]
-                    game_player.score += tile_score
-                    opponent.score -= tile_score
-                opponent.save()
-            game_player.save()
-            game_player.game.over = True
-            game_player.game.save()
+    def get_unplayed_tile_points(self, tile):
+        return TILE_SCORES[tile]
+
+
+BOARD_CONFIG = [
+    [Multiplier.tw, None, None, Multiplier.dl, None, None, None, Multiplier.tw, None, None, None, Multiplier.dl, None, None, Multiplier.tw],
+    [None, Multiplier.dw, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.dw, None],
+    [None, None, Multiplier.dw, None, None, None, Multiplier.dl, None, Multiplier.dl, None, None, None, Multiplier.dw, None, None],
+    [Multiplier.dl, None, None, Multiplier.dw, None, None, None, Multiplier.dl, None, None, None, Multiplier.dw, None, None, Multiplier.dl],
+    [None, None, None, None, Multiplier.dw, None, None, None, None, None, Multiplier.dw, None, None, None, None],
+    [None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None],
+    [None, None, Multiplier.dl, None, None, None, Multiplier.dl, None, Multiplier.dl, None, None, None, Multiplier.dl, None, None],
+    [Multiplier.tw, None, None, Multiplier.dl, None, None, None, Multiplier.start, None, None, None, Multiplier.dl, None, None, Multiplier.tw],
+    [None, None, Multiplier.dl, None, None, None, Multiplier.dl, None, Multiplier.dl, None, None, None, Multiplier.dl, None, None],
+    [None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None],
+    [None, None, None, None, Multiplier.dw, None, None, None, None, None, Multiplier.dw, None, None, None, None],
+    [Multiplier.dl, None, None, Multiplier.dw, None, None, None, Multiplier.dl, None, None, None, Multiplier.dw, None, None, Multiplier.dl],
+    [None, None, Multiplier.dw, None, None, None, Multiplier.dl, None, Multiplier.dl, None, None, None, Multiplier.dw, None, None],
+    [None, Multiplier.dw, None, None, None, Multiplier.tl, None, None, None, Multiplier.tl, None, None, None, Multiplier.dw, None],
+    [Multiplier.tw, None, None, Multiplier.dl, None, None, None, Multiplier.tw, None, None, None, Multiplier.dl, None, None, Multiplier.tw],
+]
+
+TILE_SCORES = {
+    'A': 1,
+    'B': 3,
+    'C': 3,
+    'D': 2,
+    'E': 1,
+    'F': 4,
+    'G': 2,
+    'H': 4,
+    'I': 1,
+    'J': 8,
+    'K': 5,
+    'L': 1,
+    'M': 3,
+    'N': 1,
+    'O': 1,
+    'P': 3,
+    'Q': 10,
+    'R': 1,
+    'S': 1,
+    'T': 1,
+    'U': 1,
+    'V': 4,
+    'W': 4,
+    'X': 8,
+    'Y': 4,
+    'Z': 10,
+    '-': 0,  # BLANK
+}

@@ -1,4 +1,5 @@
 import json
+from collections import Counter
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -10,7 +11,8 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
-from scrabble.constants import TILE_SCORES, BOARD_CONFIG, Multiplier, TurnAction
+from scrabble.constants import Multiplier, TurnAction, WordGame
+from scrabble.gameplay.scrabble_gameplay import BOARD_CONFIG, TILE_SCORES
 from scrabble.forms import CreateGameForm
 from scrabble.helpers import create_new_game, get_calculator
 from scrabble.models import ScrabbleGame, GamePlayer
@@ -26,7 +28,7 @@ class CreateGameView(LoginRequiredMixin, FormView):
         messages.success(
             self.request, f"New game created with {game.racks.count()} players. Invitation emails have been issued."
         )
-        return redirect("scrabble:play_scrabble", game_id=game.id)
+        return redirect("scrabble:play_game", game_id=game.id)
 
 
 class GamePermissionMixin(UserPassesTestMixin):
@@ -40,8 +42,8 @@ class GamePermissionMixin(UserPassesTestMixin):
         return self.kwargs.get("game_id")
 
 
-class ScrabbleView(GamePermissionMixin, TemplateView):
-    template_name = "scrabble/scrabble_game.html"
+class GameView(GamePermissionMixin, TemplateView):
+    template_name = "scrabble/word_game.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -52,13 +54,18 @@ class ScrabbleView(GamePermissionMixin, TemplateView):
             "game_player": game_player,
             "in_turn": in_turn,
             "score_url": reverse("scrabble:score_play", kwargs={"game_id": self.game.id}),
-            "turn_url": reverse("scrabble:post_scrabble_play", kwargs={"game_id": self.game.id}),
+            "turn_url": reverse("scrabble:post_play", kwargs={"game_id": self.game.id}),
             "rack": [{"letter": letter} for letter in game_player.rack],
-            "BOARD_CONFIG": BOARD_CONFIG,
-            "TILE_SCORES": TILE_SCORES,
-            "Multiplier": Multiplier,
+            "letter_counts": Counter(self.game.letter_bag).items(),
             "TurnAction": TurnAction,
+            "WordGame": WordGame,
         })
+        if self.game.game_type == WordGame.scrabble:
+            context.update({
+                "BOARD_CONFIG": BOARD_CONFIG,
+                "TILE_SCORES": TILE_SCORES,
+                "Multiplier": Multiplier,
+            })
         return context
 
 
@@ -78,7 +85,7 @@ class GameTurnView(GamePermissionMixin, View):
             else:
                 success_message = "Your turn is complete."
             messages.success(request, success_message)
-        return redirect('scrabble:play_scrabble', game_id=self.game.id)
+        return redirect('scrabble:play_game', game_id=self.game.id)
 
 
 class CalculateScoreView(GamePermissionMixin, View):

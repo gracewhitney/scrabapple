@@ -33,6 +33,7 @@ function TileRack(props) {
     }
   }
 
+
   return (
       <ul className="list-group list-group-horizontal mt-1">
         <DndProvider backend={HTML5Backend}>
@@ -40,7 +41,8 @@ function TileRack(props) {
           rackPositions.map((tile, i) =>
             <RackPosition
               tile={removedTileIds.indexOf(tile.id) < 0 ? tile : {id: tile.id}}
-              index={i} key={tile.id}
+              index={i}
+              key={tile.id}
               moveTile={moveTile}>
             </RackPosition>
           )
@@ -68,7 +70,7 @@ const RackPosition = (props) => {
         }
       },
     }),
-    [moveTile]
+    [moveTile, tile.id, index]
   )
 
   return (

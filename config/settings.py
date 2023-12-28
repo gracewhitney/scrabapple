@@ -305,7 +305,7 @@ if LOCALHOST is False and SENTRY_DSN:
     sentry_sdk.init(
         dsn=env("SENTRY_DSN"),
         integrations=[DjangoIntegration()],
-        traces_sample_rate=1.0,
+        traces_sample_rate=0.1,
     )
     # Silence "invalid HTTP_HOST" errors
     ignore_logger("django.security.DisallowedHost")
