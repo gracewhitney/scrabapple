@@ -23,8 +23,8 @@ class Migration(migrations.Migration):
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('created_on', models.DateTimeField(auto_now_add=True)),
                 ('updated_on', models.DateTimeField(auto_now=True)),
-                ('letter_bag', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=1), default=scrabble.models.get_initial_letter_bag, size=None)),
-                ('board', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.CharField(default='', max_length=1), size=15), default=scrabble.models.get_initial_board, size=15)),
+                ('letter_bag', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=1), size=None)),
+                ('board', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.CharField(default='', max_length=1), size=15), size=15)),
             ],
             options={
                 'abstract': False,

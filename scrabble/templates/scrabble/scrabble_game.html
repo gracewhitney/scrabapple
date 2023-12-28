@@ -1,13 +1,12 @@
 {% extends "base_templates/base.html" %}
 {% load webpack_loader %}
-{% load django_react_components %}
 {% load template_utils %}
 {% load sass_tags %}
 
 {% load static %}
 
 {% block head %}
-  <link href="{% sass_src 'styles/pages/scrabble_game.scss' %}" rel="stylesheet">
+  <link href="{% sass_src 'styles/pages/word_game.scss' %}" rel="stylesheet">
 {% endblock %}
 
 {% block title %}
@@ -24,8 +23,21 @@
       {% else %}
       <p class="text-info-emphasis">It's currently {{ game.next_player.user.get_short_name }}'s turn.</p>
       {% endif %}
+      <div class="accordion">
+        <div class="accordion-item">
+          <button class="accordion-button collapsed bg-primary-subtle" type="button" data-bs-target="#tileCounts" data-bs-toggle="collapse" aria-expanded="false">
+            There are {{ game.letter_bag|length|default:"no" }} tile{{ game.letter_bag|length|pluralize }} in the letter bag.
+          </button>
+          <div id="tileCounts" class="accordion-collapse collapse">
+            <ul class="list-group">
+              {% for letter, count in letter_counts %}
+                <li class="list-group-item">{{ letter }} x {{ count }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
       <hr>
-      <p>There are {{ game.letter_bag|length|default:"no" }} tile{{ game.letter_bag|length|pluralize }} in the letter bag.</p>
     {% else %}
       <h3 class="h4">Game Over</h3>
       {% with winners=game.winners %}
@@ -78,37 +90,11 @@
     </div>
   </div>
   <div class="d-flex flex-column mt-2 col-9">
-  {% if in_turn %}
-    {% render_bundle "ScrabbleGame" %}
-    {% react_component "ScrabbleGame" id="scrabble-board-container" board=game.board rack=rack boardConfig=BOARD_CONFIG scoreUrl=score_url turnUrl=turn_url %}
-  {% else %}
-    <div id="scrabble-board-container">
-      <div id="scrabble-board">
-      {% for row in game.board %}
-        <div class="scrabble-board-row">
-        {% with row_index=forloop.counter0 %}
-          {% for col in row %}
-            {% with multiplier=BOARD_CONFIG|getitem:row_index|getitem:forloop.counter0 %}
-            <div class="scrabble-board-square {{ multiplier.value }}">
-              {% if col %}
-                <div class="scrabble-tile {% if col.0 == '-' %}blank{% endif %}">{{ col|cut:'-' }}<span class="tile-score">{{ TILE_SCORES|getitem:col.0|default:'' }}</span></div>
-              {% elif multiplier and multiplier != Multiplier.start %}
-                {{ multiplier.value|upper }}
-              {% endif %}
-            </div>
-            {% endwith %}
-          {% endfor %}
-        {% endwith %}
-        </div>
-      {% endfor %}
-      </div>
-    </div>
-
-    {% if not game.over %}
-      {% render_bundle "TileRack" %}
-      {% react_component "TileRack" tiles=rack id="rack" %}
+    {% if game.game_type == WordGame.scrabble %}
+      {% include "scrabble/scrabble_board.html" %}
+    {% elif game.game_type == WordGame.upwords %}
+      {% include "scrabble/upwords_board.html" %}
     {% endif %}
-  {% endif %}
   </div>
 </div>
 {% endblock body %}

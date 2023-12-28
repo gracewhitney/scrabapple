@@ -1,29 +1,17 @@
 from random import randint
 
-from django.contrib.admin.utils import flatten
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 from common.models import TimestampedModel, User
-from scrabble.constants import TILE_FREQUENCIES, TurnAction, WordGame
-
-
-def get_initial_letter_bag():
-    # Returns full letter bag, ordered
-    return flatten([letter for (letter, count) in TILE_FREQUENCIES.items() for _ in range(count)])
-
-
-def get_initial_board():
-    # Return 15 * 15 array of empty strings
-    return [["" for _ in range(15)] for _ in range(15)]
+from scrabble.constants import TurnAction, WordGame
 
 
 # Create your models here.
 class ScrabbleGame(TimestampedModel):
-    letter_bag = ArrayField(models.CharField(max_length=1), default=get_initial_letter_bag)
+    letter_bag = ArrayField(models.CharField(max_length=1))
     board = ArrayField(
-        ArrayField(models.CharField(max_length=2, default=""), size=15),
-        default=get_initial_board,
+        ArrayField(models.CharField(max_length=5, default=""), size=15),
         size=15
     )
     next_turn_index = models.IntegerField(default=0)

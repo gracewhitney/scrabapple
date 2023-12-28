@@ -1,0 +1,34 @@
+{% load template_utils %}
+{% load django_react_components %}
+{% load webpack_loader %}
+{% if in_turn %}
+  {% render_bundle "ScrabbleGame" %}
+  {% react_component "ScrabbleGame" id="scrabble-board-container" board=game.board rack=rack boardConfig=BOARD_CONFIG scoreUrl=score_url turnUrl=turn_url %}
+{% else %}
+  <div id="scrabble-board-container">
+    <div id="scrabble-board">
+    {% for row in game.board %}
+      <div class="scrabble-board-row">
+      {% with row_index=forloop.counter0 %}
+        {% for col in row %}
+          {% with multiplier=BOARD_CONFIG|getitem:row_index|getitem:forloop.counter0 %}
+          <div class="scrabble-board-square {{ multiplier.value }}">
+            {% if col %}
+              <div class="tile {% if col.0 == '-' %}blank{% endif %}">{{ col|cut:'-' }}<span class="tile-score">{{ TILE_SCORES|getitem:col.0|default:'' }}</span></div>
+            {% elif multiplier and multiplier != Multiplier.start %}
+              {{ multiplier.value|upper }}
+            {% endif %}
+          </div>
+          {% endwith %}
+        {% endfor %}
+      {% endwith %}
+      </div>
+    {% endfor %}
+    </div>
+  </div>
+
+  {% if not game.over %}
+    {% render_bundle "TileRack" %}
+    {% react_component "TileRack" tiles=rack id="rack" %}
+  {% endif %}
+{% endif %}

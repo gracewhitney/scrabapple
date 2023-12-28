@@ -10,7 +10,7 @@ const Tile = (props) => {
   } = props;
 
   const blank = letter[0] === '-'
-  const displayLetter = blank ? (letter.length > 1 ? letter[1] : '') : letter
+  const displayLetter = blank ? (letter.length > 1 ? letter[1] : '') : letter[0]
 
   const points = TILE_SCORES[letter[0]]
 
@@ -19,19 +19,31 @@ const Tile = (props) => {
     item: {
       ...props
     },
-    canDrag: () => id !== undefined,
+    canDrag: () => {return id !== undefined},
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging()
     })
-  }))
+  }), [id, letter])
+
+  const underTile = (
+    blank || letter.length <= 1
+      ? null
+      : <div className={`tile height-${letter.length - 1}`}>{ letter[1] }</div>
+  )
 
   return (
-    <li className={`${className} scrabble-tile${blank ? ' blank' : ''}${isDragging ? ' dragging': ''}`} ref={drag}>
+    <>
+    {underTile}
+    <li className={`${className || ''} ${letter[0]} height-${letter.length} tile${blank ? ' blank' : ''}${isDragging ? ' dragging': ''}`} ref={drag}>
+      <div className="height-container">
+        {[...Array(letter.length).keys()].map(i => <div className="height-marker" key={i}></div>)}
+      </div>
       { displayLetter
         ? <span>{ displayLetter }<span className="tile-score">{ points || '' }</span></span>
         : null
       }
     </li>
+    </>
   )
 }
 

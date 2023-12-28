@@ -8,10 +8,9 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
   display: flex;
   flex-direction: column;
 }
-
 #scrabble-board {
   border: 2px #5e330a solid;
-  align-self: center;
+  align-self: start;
 }
 
 .scrabble-board-row {
@@ -34,24 +33,28 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
     background-color: $double-letter;
     color: shade-color($double-letter, 40%);
   }
+
   &.tl {
     background-color: $triple-letter;
     color: shade-color($triple-letter, 40%);
   }
+
   &.dw {
     background-color: $double-word;
     color: shade-color($double-word, 40%);
   }
+
   &.tw {
     background-color: $triple-word;
     color: shade-color($triple-word, 40%);
   }
+
   &.start {
     background-color: $double-word;
     @extend .bi.bi-star-fill
   }
 
-  .scrabble-tile {
+  .tile {
     font-weight: bold;
     font-size: 19px;
     background-color: $tile-background;
@@ -82,7 +85,7 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
 }
 
 #rack {
-  align-self: center;
+  align-self: start;
 
   .list-group {
     border-bottom: 3px solid black;
@@ -94,7 +97,7 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
     margin: .25rem;
   }
 
-  .scrabble-tile {
+  .tile {
     width: 42px;
     height: 45px;
     font-size: 28px;
@@ -116,12 +119,13 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
   }
 
   &.rack-small {
-    .scrabble-tile {
+    .tile {
       width: 36px;
       height: 38px;
       font-size: 19px;
       margin: .12rem;
     }
+
     .gap {
       width: 36px;
       height: 38px;
@@ -129,7 +133,7 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
   }
 }
 
-.scrabble-tile {
+.tile {
   width: 35px;
   height: 37px;
   font-size: 19px;
@@ -143,11 +147,11 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
   position: relative;
   padding: 0;
 
-    &.blank {
-      color: red;
-      background-image: url(django-static("logo-transparent.png"));
-      background-size: contain;
-    }
+  &.blank {
+    color: red;
+    background-image: url(django-static("logo-transparent.png"));
+    background-size: contain;
+  }
 
   .tile-score {
     font-size: 12px;
@@ -157,10 +161,12 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
     right: 2px;
     position: absolute;
   }
+
   &.dragging {
     opacity: 0;
   }
 }
+
 
 #tile-exchange {
   .card-body {
@@ -181,5 +187,141 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
   #allTurns {
     max-height: 350px;
     overflow-y: scroll;
+  }
+}
+
+.upwords-tile {
+  font-weight: bold;
+  font-size: 19px;
+  background-color: $gray-100;
+  border: $gray-300 1px solid;
+  box-shadow: 0 0 1px 3px $gray-300;
+  border-radius: 2px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  color: black;
+
+  &.Q::after {
+    content: "u";
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    font-size: 14px;
+  }
+
+  .tile-score {
+    display: none;
+  }
+}
+
+#upwords-board-container {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+
+  #upwords-board {
+    border: 6px shade-color($double-letter, 50%) solid;
+    border-radius: 6px;
+    align-self: start;
+  }
+
+  .upwords-board-row {
+    display: flex;
+  }
+
+  .upwords-board-square {
+    width: 42px;
+    height: 42px;
+    font-size: 12px;
+    background-color: shade-color($double-letter, 30%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 4px 4px shade-color($double-letter, 50%);
+    margin: 2px;
+    border-radius: 2px;
+    position: relative;
+
+    &.pos-44, &.pos-45, &.pos-54, &.pos-55 {
+      background-color: $double-letter;
+    }
+
+    .tile {
+      @extend .upwords-tile;
+      z-index: 10;
+      position: absolute;
+      height: 92%;
+      width: 92%;
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+
+      &.height-2 {
+        z-index: 12;
+        &::before {
+          box-shadow: 0 0 1px 3px $gray-300, 2px 2px 5px 5px $gray-700;
+          z-index: 11;
+        }
+      }
+      &.height-3 {
+        z-index: 14;
+        &::before {
+          box-shadow: 0 0 1px 3px $gray-300, 2px 2px 8px 8px $gray-700;
+          z-index: 13;
+        }
+      }
+      &.height-4 {
+        z-index: 16;
+        &::before {
+          box-shadow: 0 0 1px 3px $gray-300, 4px 4px 10px 8px $gray-700;
+          z-index: 15;
+        }
+      }
+      &.height-5 {
+        z-index: 18;
+        &::before {
+          box-shadow: 0 0 1px 3px $gray-300, 4px 4px 12px 8px $gray-700;
+          z-index: 17;
+        }
+      }
+
+      &.played {
+        &::before {
+          box-shadow: unset;
+        }
+        box-shadow: 0 0 2px 4px tint-color($success, 40%);
+      }
+
+      .height-container {
+        position: absolute;
+        bottom: 1px;
+        left: 0;
+        display: flex;
+
+        .height-marker {
+          width: 5px;
+          height: 5px;
+          border-radius: 3px;
+          background-color: $primary;
+          margin-right: 3px;
+          flex-grow: 0;
+        }
+      }
+    }
+  }
+}
+
+.upwords-rack-container {
+  align-self: start;
+  .tile {
+    @extend .upwords-tile;
+
   }
 }

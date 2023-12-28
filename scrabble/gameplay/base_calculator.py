@@ -1,4 +1,6 @@
+from django.contrib.admin.utils import flatten
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.db.models import Max
 
 from scrabble.constants import TurnAction
@@ -9,13 +11,27 @@ from scrabble.serializers import GameTurnSerializer
 class BaseGameCalculator:
     game_type = None
     bingo_points = 50
+    board_size = None
+    tile_frequencies = None
+    winner_takes_unplayed_points = True
 
     def __init__(self, game):
         if not self.game_type:
             raise NotImplementedError("Must specify game type")
         if game.game_type != self.game_type:
             raise ValueError("Wrong game type calculator instantiated")
+        if not self.board_size:
+            raise NotImplementedError("Must specify board size")
+        if not self.tile_frequencies:
+            raise NotImplementedError("Must specify tile frequencies")
         self.game = game
+
+    def get_initial_board(self):
+        return [["" for _ in range(self.board_size)] for _ in range(self.board_size)]
+
+    def get_initial_letter_bag(self):
+        # Returns full letter bag, ordered
+        return flatten([letter for (letter, count) in self.tile_frequencies.items() for _ in range(count)])
 
     def validate_turn(self, turn_data, game_player):
         # Check that turn is allowed
@@ -70,6 +86,7 @@ class BaseGameCalculator:
         for x in range(min(play_indices), max(play_indices)):
             if x not in play_indices and board.get_tile(x, row) == "":
                 raise ValidationError("Play not contiguous")
+        return played_tiles
 
     def validate_first_play(self, played_tiles):
         raise NotImplementedError()
@@ -147,6 +164,19 @@ class BaseGameCalculator:
         raise NotImplementedError()
 
     def go_out(self, game_player):
+        with transaction.atomic():
+            for opponent in game_player.game.racks.exclude(user_id=game_player.id):
+                for tile in opponent.rack:
+                    tile_score = self.get_unplayed_tile_points(tile)
+                    if self.winner_takes_unplayed_points:
+                        game_player.score += tile_score
+                    opponent.score -= tile_score
+                opponent.save()
+            game_player.save()
+            game_player.game.over = True
+            game_player.game.save()
+
+    def get_unplayed_tile_points(self, tile):
         raise NotImplementedError()
 
 
@@ -154,8 +184,14 @@ class GameBoard:
     def __init__(self, board):
         self.board = board
 
-    def get_tile(self, x, y):
-        return self.board[y][x]
+    def get_tile(self, x, y, most_recent=False):
+        tile = self.board[y][x]
+        if tile and most_recent:
+            return tile[0]
+        return tile
+
+    def set_tile(self, tile, x, y):
+        self.board[y][x] = tile + self.get_tile(x, y)
 
     def is_first_play(self):
         """Returns True if no plays have been made yet on this board"""
@@ -180,10 +216,11 @@ class GameBoard:
 
     def update_board(self, play):
         for played_tile in play:
-            self.board[played_tile['y']][played_tile['x']] = played_tile['tile']
+            self.set_tile(played_tile['tile'], played_tile['x'], played_tile['y'])
 
     def transpose_board(self):
         self.board = [
-            [self.board[y][x] for y in range(15)]
-            for x in range(15)
+            [self.board[y][x] for y in range(len(self.board))]
+            for x in range(len(self.board[0]))
         ]
+
