@@ -183,6 +183,8 @@ class BaseGameCalculator:
 class GameBoard:
     def __init__(self, board):
         self.board = board
+        self.board_height = len(self.board)
+        self.board_width = len(self.board[0])
 
     def get_tile(self, x, y, most_recent=False):
         tile = self.board[y][x]
@@ -206,11 +208,11 @@ class GameBoard:
         adjacent_squares = []
         if x > 0:
             adjacent_squares.append((x - 1, y))
-        if x < 14:
+        if x < self.board_width - 1:
             adjacent_squares.append((x + 1, y))
         if y > 0:
             adjacent_squares.append((x, y - 1))
-        if y < 14:
+        if y < self.board_height - 1:
             adjacent_squares.append((x, y + 1))
         return any(not self.is_free_square(adj_x, adj_y) for (adj_x, adj_y) in adjacent_squares)
 
@@ -220,7 +222,7 @@ class GameBoard:
 
     def transpose_board(self):
         self.board = [
-            [self.board[y][x] for y in range(len(self.board))]
-            for x in range(len(self.board[0]))
+            [self.board[y][x] for y in range(self.board_height)]
+            for x in range(self.board_width)
         ]
 
