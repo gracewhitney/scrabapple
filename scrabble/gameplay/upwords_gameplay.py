@@ -55,15 +55,12 @@ class UpwordsCalculator(BaseGameCalculator):
         # Can't cover a whole word
         min_x = min(tile["x"] for tile in played_tiles)
         max_x = max(tile["x"] for tile in played_tiles)
-        print(min_x, max_x)
-        print(max_x - min_x, len(played_tiles))
-        print(board.get_tile(min_x - 1, played_tiles[0]["y"]))
         y = played_tiles[0]['y']
         if (
             max_x - min_x + 1 == len(played_tiles)
-            and (min_x == 0 or board.get_tile(min_x - 1, played_tiles[0]["y"]) == "")
-            and (max_x == self.board_size or board.get_tile(max_x + 1, played_tiles[0]["y"]) == "")
-            and any((board.get_tile(i, y) and board.get_tile(i + 1, y)) for i in range(min_x, max_x - 1))
+            and (min_x == 0 or board.get_tile(min_x - 1, y) == "")
+            and (max_x == self.board_size or board.get_tile(max_x + 1, y) == "")
+            and any((board.get_tile(i, y) and board.get_tile(i + 1, y)) for i in range(min_x, max_x))
         ):
             raise ValidationError("Play covers entire word")
         return played_tiles
