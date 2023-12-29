@@ -104,7 +104,7 @@ const GameBoard = (props) => {
     }
     const playTileOnSquare = (letter, id) => {playTile(letter[0], id, xIndex, yIndex)}
     return <BoardSquare tile={tile} multiplier={multiplier} key={xIndex} gameId={gameId}
-                        playTile={playTileOnSquare} stackHeight={stackHeight} extraClass={`${xIndex}${yIndex}`}></BoardSquare>
+                        playTile={playTileOnSquare} stackHeight={stackHeight} extraClass={`pos-${xIndex}${yIndex}`}></BoardSquare>
   }
 
   const renderBoardRow = (row, index) => {
@@ -176,6 +176,7 @@ const BoardSquare = (props) => {
     playTile,
     gameId,
     stackHeight,
+    extraClass,
   } = props
 
   const [{isOver}, drop] = useDrop(
@@ -189,7 +190,7 @@ const BoardSquare = (props) => {
   )
 
   return (
-    <div className={`${gameId}-board-square ${ multiplier || '' } ${isOver ? 'shadow border-success-subtle border-2': ''}`} ref={drop}>
+    <div className={`${gameId}-board-square ${extraClass} ${ multiplier || '' } ${isOver ? 'shadow border-success-subtle border-2': ''}`} ref={drop}>
       {tile ? <Tile {...tile}/> : null}
       { multiplier && multiplier !== MULTIPLIERS.start ? multiplier.toUpperCase(): null}
     </div>

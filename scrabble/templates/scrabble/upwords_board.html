@@ -12,7 +12,7 @@
       <div class="upwords-board-row">
       {% with row_index=forloop.counter0 %}
         {% for col in row %}
-          <div class="upwords-board-square pos-{{ row_index }}{{ forloop.counter0 }}">
+          <div class="upwords-board-square pos-{{ forloop.counter0 }}{{ row_index }}">
             {% if col %}
               <div class="tile height-{{ col|length }} {{ col.0 }}">
                 <div class="height-container">

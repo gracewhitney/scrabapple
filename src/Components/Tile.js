@@ -36,7 +36,7 @@ const Tile = (props) => {
     {underTile}
     <li className={`${className || ''} ${letter[0]} height-${letter.length} tile${blank ? ' blank' : ''}${isDragging ? ' dragging': ''}`} ref={drag}>
       <div className="height-container">
-        {[...Array(letter.length).keys()].map(i => <div className="height-marker" key={i}></div>)}
+        {[...Array(letter.length).keys()].map((n, i) => <div className="height-marker" key={i}></div>)}
       </div>
       { displayLetter
         ? <span>{ displayLetter }<span className="tile-score">{ points || '' }</span></span>
