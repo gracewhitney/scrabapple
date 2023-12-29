@@ -104,7 +104,7 @@ const GameBoard = (props) => {
     }
     const playTileOnSquare = (letter, id) => {playTile(letter[0], id, xIndex, yIndex)}
     return <BoardSquare tile={tile} multiplier={multiplier} key={xIndex} gameId={gameId}
-                        playTile={playTileOnSquare} stackHeight={stackHeight}></BoardSquare>
+                        playTile={playTileOnSquare} stackHeight={stackHeight} extraClass={`${xIndex}${yIndex}`}></BoardSquare>
   }
 
   const renderBoardRow = (row, index) => {

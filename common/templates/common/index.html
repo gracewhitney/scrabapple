@@ -13,22 +13,21 @@
   <div class="container">
     <h1>
       <img src="{% static 'logo.jpg' %}" height="100" class="align-self-center">
-      Play Scrabble
+      Play Scrabapple
     </h1>
     {% if not user.is_authenticated %}
       <p>Please log in to continue.</p>
     {% else %}
       <h2>Games In Progress</h2>
-      {% for game_rack in in_progress_games %}
-        <a href="{% url 'scrabble:play_game' game_id=game_rack.game_id %}" class="btn btn-info">
-          {% for rack in game_rack.game.racks.all %}{{ rack.user.get_short_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
-          {% if game_rack.turn_index == game_rack.game.next_turn_index %}
-            <span class="bi bi-exclamation-triangle text-warning" title="Your turn!"></span>
-          {% endif %}
-        </a>
-      {% empty %}
-        <p>You have no games currently in progress. Create a new one below.</p>
-      {% endfor %}
+      <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+        {% for game_rack in in_progress_games %}
+          <div class="col mb-2">
+            {% include "scrabble/components/game_card.html" with game=game_rack.game %}
+          </div>
+        {% empty %}
+          <p>You have no games currently in progress. Create a new one below.</p>
+        {% endfor %}
+      </div>
       <div class="row mt-3">
         <div class="col-12">
           <a href="{% url 'scrabble:create_game' %}" class="btn btn-primary align-self-start">New Game</a>
