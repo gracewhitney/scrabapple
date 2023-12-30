@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import _ from 'lodash';
+import React, {useCallback, useEffect, useState} from 'react';
 import {DndProvider, useDrop} from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import Tile from "./Tile";
@@ -7,7 +8,8 @@ import Tile from "./Tile";
 function TileRack(props) {
   const {
     tiles,
-    returnToRackHandler
+    returnToRackHandler,
+    updateRackUrl,
   } = props
 
   const removedTileIds = props.removedTileIds || []
@@ -33,6 +35,18 @@ function TileRack(props) {
     }
   }
 
+  const updateRack = useCallback(
+    _.debounce(async (currentRackPositions) => {
+      await fetch(updateRackUrl, {
+        method: 'post',
+        headers: {'X-CSRFToken': window.csrfmiddlewaretoken},
+        body: JSON.stringify(currentRackPositions.filter(pos => pos.letter).map(pos => pos.letter))
+      })
+    }, 3000),
+    [],
+  );
+
+  useEffect(() => {updateRack(rackPositions)}, [rackPositions]);
 
   return (
       <ul className="list-group list-group-horizontal mt-1">

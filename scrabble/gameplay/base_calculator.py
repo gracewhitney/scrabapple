@@ -33,9 +33,9 @@ class BaseGameCalculator:
         # Returns full letter bag, ordered
         return flatten([letter for (letter, count) in self.tile_frequencies.items() for _ in range(count)])
 
-    def validate_turn(self, turn_data, game_player):
+    def validate_turn(self, turn_data, game_player, check_player=True):
         # Check that turn is allowed
-        if game_player.turn_index != self.game.next_turn_index:
+        if check_player and game_player.turn_index != self.game.next_turn_index:
             raise ValidationError("Wrong player.")
         # deserialize turn data
         serializer = GameTurnSerializer(data=turn_data)

@@ -1,9 +1,12 @@
 {% load template_utils %}
 {% load django_react_components %}
 {% load webpack_loader %}
-{% if in_turn %}
+{% if not game.over %}
+  {% url 'scrabble:post_play' game.id as turn_url %}
+  {% url 'scrabble:score_play' game.id as score_url %}
+  {% url 'scrabble:update_rack' game.id as update_rack_url %}
   {% render_bundle "ScrabbleGame" %}
-  {% react_component "ScrabbleGame" id="scrabble-board-container" board=game.board rack=rack boardConfig=BOARD_CONFIG scoreUrl=score_url turnUrl=turn_url %}
+  {% react_component "ScrabbleGame" id="scrabble-board-container" board=game.board rack=rack boardConfig=BOARD_CONFIG scoreUrl=score_url turnUrl=turn_url updateRackUrl=update_rack_url inTurn=in_turn %}
 {% else %}
   <div id="scrabble-board-container">
     <div id="scrabble-board">
@@ -26,9 +29,4 @@
     {% endfor %}
     </div>
   </div>
-
-  {% if not game.over %}
-    {% render_bundle "TileRack" %}
-    {% react_component "TileRack" tiles=rack id="rack" %}
-  {% endif %}
 {% endif %}

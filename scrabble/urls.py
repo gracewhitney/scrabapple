@@ -9,5 +9,6 @@ urlpatterns = [
     path("play/<uuid:game_id>", views.GameView.as_view(), name="play_game"),
     path("play/<uuid:game_id>/post/", views.GameTurnView.as_view(), name="post_play"),
     path("play/<uuid:game_id>/score/", views.CalculateScoreView.as_view(), name="score_play"),
+    path("play/<uuid:game_id>/update_rack", views.UpdateRackView.as_view(), name="update_rack"),
     path("info/<uuid:game_id>/turn", views.GameTurnIndexView.as_view(), name="get_game_turn"),
 ]

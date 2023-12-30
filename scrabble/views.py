@@ -2,6 +2,7 @@ import json
 from collections import Counter
 
 from django.contrib import messages
+from django.contrib.admin.utils import flatten
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -49,14 +50,15 @@ class GameView(GamePermissionMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         game_player = GamePlayer.objects.get(game=self.game, user=self.request.user)
         in_turn = game_player.turn_index == self.game.next_turn_index and not self.game.over
+        remaining_letters = self.game.letter_bag + flatten(
+            self.game.racks.exclude(user=self.request.user).values_list('rack', flat=True)
+        )
         context.update({
             "game": self.game,
             "game_player": game_player,
             "in_turn": in_turn,
-            "score_url": reverse("scrabble:score_play", kwargs={"game_id": self.game.id}),
-            "turn_url": reverse("scrabble:post_play", kwargs={"game_id": self.game.id}),
             "rack": [{"letter": letter} for letter in game_player.rack],
-            "letter_counts": Counter(self.game.letter_bag).items(),
+            "letter_counts": Counter(remaining_letters).items(),
             "TurnAction": TurnAction,
             "WordGame": WordGame,
         })
@@ -94,7 +96,7 @@ class CalculateScoreView(GamePermissionMixin, View):
         game_player = GamePlayer.objects.get(game=self.game, user=self.request.user)
         calculator = get_calculator(self.game)
         try:
-            cleaned_turn_data = calculator.validate_turn(turn_data, game_player)
+            cleaned_turn_data = calculator.validate_turn(turn_data, game_player, check_player=False)
         except ValidationError as e:
             return JsonResponse(status=400, data={"error": e.message})
         if cleaned_turn_data["action"] != TurnAction.play:
@@ -106,3 +108,13 @@ class CalculateScoreView(GamePermissionMixin, View):
 class GameTurnIndexView(GamePermissionMixin, View):
     def get(self, request, *args, **kwargs):
         return JsonResponse(data={'turn_index': self.game.next_turn_index})
+
+
+class UpdateRackView(GamePermissionMixin, View):
+    def post(self, request, *args, **kwargs):
+        game_player = GamePlayer.objects.get(game=self.game, user=self.request.user)
+        rack = json.loads(request.body.decode())
+        if Counter(rack) != Counter(game_player.rack):
+            return JsonResponse(status=400, data={"error": "Rack does not match."})
+        game_player.update(rack=rack)
+        return JsonResponse(data={"message": "Rack successfully updated."})

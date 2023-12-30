@@ -13,7 +13,9 @@ const GameBoard = (props) => {
     boardConfig,
     scoreUrl,
     turnUrl,
+    updateRackUrl,
     gameId,
+    inTurn,
   } = props
 
   const stackHeight = props.stackHeight || 1
@@ -115,6 +117,34 @@ const GameBoard = (props) => {
     )
   }
 
+  const turnActions = (
+    <>
+      <button
+        className="btn btn-primary btn-sm mt-2"
+        disabled={validationError || playedTiles.length < 1}
+        onClick={async () => {await doPlay(TURN_ACTION.play)}}
+      >
+        <span className="bi bi-person-arms-up"></span> <span>Play</span>
+      </button>
+      <ExchangeBox exchangedTiles={exchangedTiles} setExchangedTiles={setExchangedTiles} doTurn={doPlay}>
+      </ExchangeBox>
+      <button
+        className="btn btn-secondary btn-sm mt-2"
+        onClick={async () => {await doPlay(TURN_ACTION.pass_turn)}}
+      >
+        Pass
+      </button>
+      <hr></hr>
+      <button
+        className="btn btn-danger btn-sm"
+        disabled
+        onClick={async () => {}}
+      >
+        <span className="bi bi-exclamation-triangle-fill"></span> Forfeit
+      </button>
+    </>
+  )
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="row w-100">
@@ -130,7 +160,7 @@ const GameBoard = (props) => {
             </button>
             <TileRack tiles={idTiles}
                       removedTileIds={playedTiles.map(tile => tile.tile.id) + exchangedTiles.map(tile => tile.id)}
-                      returnToRackHandler={returnTileToRack}>
+                      returnToRackHandler={returnTileToRack} updateRackUrl={updateRackUrl}>
             </TileRack>
           </div>
         </div>
@@ -140,29 +170,11 @@ const GameBoard = (props) => {
               ? <div className="badge rounded-pill bg-danger">{validationError}</div>
               : <div className="badge rounded-pill bg-success">{points} points</div>
           }
-          <button
-            className="btn btn-primary btn-sm mt-2"
-            disabled={validationError || playedTiles.length < 1}
-            onClick={async () => {await doPlay(TURN_ACTION.play)}}
-          >
-            <span className="bi bi-person-arms-up"></span> <span>Play</span>
-          </button>
-          <ExchangeBox exchangedTiles={exchangedTiles} setExchangedTiles={setExchangedTiles} doTurn={doPlay}>
-          </ExchangeBox>
-          <button
-            className="btn btn-secondary btn-sm mt-2"
-            onClick={async () => {await doPlay(TURN_ACTION.pass_turn)}}
-          >
-            Pass
-          </button>
-          <hr></hr>
-          <button
-            className="btn btn-danger btn-sm"
-            disabled
-            onClick={async () => {}}
-          >
-            <span className="bi bi-exclamation-triangle-fill"></span> Forfeit
-          </button>
+          {
+            inTurn
+            ? turnActions
+            : null
+          }
         </div>
       </div>
     </DndProvider>
