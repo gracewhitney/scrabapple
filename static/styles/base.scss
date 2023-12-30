@@ -11,3 +11,9 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
 .full-height {
   min-height: calc(100vh - 50px - #{$navbar-brand-padding-y * 2} - #{$navbar-padding-y * 2})
 }
+
+
+.text-small {
+  font-size: 0.75 * $font-size-base;
+  color: $gray-800;
+}

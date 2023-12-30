@@ -1,11 +1,19 @@
 <a href="{% url 'scrabble:play_game' game_id=game.id %}" class="btn card border-info h-100 p-0">
-  <div class="card-header d-flex justify-content-between">
-    <span>{{ game.get_game_type_display }}</span>
-    {% if game_rack.turn_index == game.next_turn_index %}
-      <span class="bi bi-exclamation-triangle text-warning" title="Your turn!"></span>
-    {% endif %}
+  <div class="card-header">
+    <div class="d-flex justify-content-between">
+      <span>{{ game.get_game_type_display }}</span>
+      {% if game_rack.turn_index == game.next_turn_index %}
+        <span class="bi bi-exclamation-triangle text-warning" title="Your turn!"></span>
+      {% endif %}
+    </div>
+    <div class="text-small d-flex">Last play: {{ game.all_turns.last.created_on|date }}</div>
   </div>
-  <ul class="list-group">
-    {% for rack in game.racks.all %}<li class="list-group-item d-flex">{{ rack.user.get_short_name }}</li>{% endfor %}
+  <ul class="list-group list-group-flush">
+    {% for rack in game.racks.all %}
+      <li class="list-group-item d-flex justify-content-between">
+        <span>{{ rack.user.get_short_name }}</span>
+        {% if rack.turn_index == game.next_turn_index %}<span class="bi bi-hourglass text-info-emphasis"></span>{% endif %}
+      </li>
+    {% endfor %}
   </ul>
 </a>

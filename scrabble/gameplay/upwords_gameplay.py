@@ -78,6 +78,7 @@ class UpwordsCalculator(BaseGameCalculator):
         while start_x > 0 and board.get_tile(start_x - 1, row):
             start_x -= 1
         word = ''
+        word_length = 0
         tile_index = 0
         points = 0
         max_height = 1
@@ -96,6 +97,7 @@ class UpwordsCalculator(BaseGameCalculator):
             if letter is None:
                 break
             word += letter
+            word_length += 1
             if letter == 'Q':
                 has_q = True
                 word += 'U'
@@ -104,7 +106,7 @@ class UpwordsCalculator(BaseGameCalculator):
             if has_q:
                 points += 1
             points *= 2
-        if len(word) > 1:
+        if word_length > 1:
             return points, word
         return 0, None
 
