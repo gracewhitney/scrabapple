@@ -59,7 +59,7 @@ class UpwordsCalculator(BaseGameCalculator):
         if (
             max_x - min_x + 1 == len(played_tiles)
             and (min_x == 0 or board.get_tile(min_x - 1, y) == "")
-            and (max_x == self.board_size or board.get_tile(max_x + 1, y) == "")
+            and (max_x == self.board_size - 1 or board.get_tile(max_x + 1, y) == "")
             and any((board.get_tile(i, y) and board.get_tile(i + 1, y)) for i in range(min_x, max_x))
         ):
             raise ValidationError("Play covers entire word")
