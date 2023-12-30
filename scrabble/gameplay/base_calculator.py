@@ -164,14 +164,25 @@ class BaseGameCalculator:
         raise NotImplementedError()
 
     def go_out(self, game_player):
+        first_turn_count = self.game.racks.aggregate(current_count=Max("turns__turn_count"))['current_count'] or 0
+        turn_count = first_turn_count + 1
         with transaction.atomic():
+            extra_points = 0
             for opponent in game_player.game.racks.exclude(user_id=game_player.id):
+                lost_points = 0
                 for tile in opponent.rack:
                     tile_score = self.get_unplayed_tile_points(tile)
                     if self.winner_takes_unplayed_points:
-                        game_player.score += tile_score
-                    opponent.score -= tile_score
+                        extra_points += tile_score
+                    lost_points += tile_score
+                GameTurn.objects.create(game_player=opponent, turn_action=TurnAction.end_game, turn_count=turn_count,
+                                        score=-lost_points, rack_before_turn=opponent.rack)
+                opponent.score -= lost_points
                 opponent.save()
+                turn_count += 1
+            GameTurn.objects.create(game_player=game_player, turn_action=TurnAction.end_game, turn_count=first_turn_count,
+                                    score=extra_points, rack_before_turn=game_player.rack)
+            game_player.score += extra_points
             game_player.save()
             game_player.game.over = True
             game_player.game.save()

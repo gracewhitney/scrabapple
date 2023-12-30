@@ -19,3 +19,4 @@ class TurnAction(TextChoices):
     exchange = "exchange"
     pass_turn = "pass"
     forfeit = "forfeit"
+    end_game = "end_game"

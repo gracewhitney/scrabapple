@@ -47,7 +47,7 @@
           <p>
           <span class="bi bi-balloon-fill"></span>
           {% for player in winners %}
-            {% if winners|length > 2 and not forloop.first %}, {% endif %}{% if forloop.last %} and {% endif %}{{ winner.user.get_short_name }}
+            {% if winners|length > 2 and not forloop.first %}, {% endif %}{% if forloop.last %} and {% endif %}{{ player.user.get_short_name }}
           {% endfor %}
           tied with {{ winners.0.score }} points!
           </p>
@@ -79,6 +79,16 @@
                 exchanged tiles
               {% elif turn.turn_action == TurnAction.forfeit %}
                 forfeited
+              {% elif turn.turn_action == TurnAction.end_game %}
+                {% if turn.score < 0 %}
+                  had unplayed tile{{ turn.rack_before_turn|pluralize }} {{ turn.rack_before_turn|join:"" }}<br>
+                  <div class="badge bg-danger-subtle text-dark rounded-pill">{{ turn.score }} point{{ turn.score|pluralize }}</div>
+                {% else %}
+                  went out!
+                  {% if turn.score > 0 %}
+                  <div class="badge bg-success-subtle text-dark rounded-pill">{{ turn.score }} point{{ turn.score|pluralize }}</div>
+                  {% endif %}
+                {% endif %}
               {% endif %}
               </div>
             {% empty %}
