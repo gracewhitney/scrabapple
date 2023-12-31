@@ -16,6 +16,8 @@ const GameBoard = (props) => {
     updateRackUrl,
     gameId,
     inTurn,
+    canUndo,
+    undoTurnUrl,
   } = props
 
   const stackHeight = props.stackHeight || 1
@@ -24,6 +26,8 @@ const GameBoard = (props) => {
   const [points, setPoints] = useState(0)
   const [validationError, setValidationError] = useState()
   const [exchangedTiles, setExchangedTiles] = useState([])
+
+  const csrfToken = window.csrfmiddlewaretoken
 
   useEffect(() => {
     const getScore = async () => {
@@ -34,7 +38,7 @@ const GameBoard = (props) => {
       }
       const resp = await fetch(scoreUrl, {
         method: 'post',
-        headers: {'X-CSRFToken': window.csrfmiddlewaretoken},
+        headers: {'X-CSRFToken': csrfToken},
         body: JSON.stringify({'action': TURN_ACTION.play, 'played_tiles': serializePlayedTiles(playedTiles)})
       })
       const data = await resp.json()
@@ -170,9 +174,13 @@ const GameBoard = (props) => {
               ? <div className="badge rounded-pill bg-danger">{validationError}</div>
               : <div className="badge rounded-pill bg-success">{points} points</div>
           }
+          { inTurn ? turnActions : null }
           {
-            inTurn
-            ? turnActions
+            canUndo
+            ? <form action={undoTurnUrl} method="post" className="d-flex flex-column">
+                <input type="hidden" value={csrfToken || ''} name="csrfmiddlewaretoken"/>
+                <button type="submit" className="btn btn-sm btn-secondary mt-2">Undo last turn</button>
+              </form>
             : null
           }
         </div>

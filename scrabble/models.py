@@ -32,7 +32,7 @@ class ScrabbleGame(TimestampedModel):
 
     def all_turns(self):
         return GameTurn.objects.filter(
-            game_player__game_id=self.id
+            game_player__game_id=self.id, deleted=False
         ).order_by('turn_count').select_related("game_player__user")
 
     def next_player(self):
@@ -72,3 +72,4 @@ class GameTurn(TimestampedModel):
     score = models.IntegerField()
     rack_before_turn = ArrayField(models.CharField(max_length=1), size=7)
     turn_data = models.JSONField(null=True)
+    deleted = models.BooleanField(default=False)

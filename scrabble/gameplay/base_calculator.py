@@ -1,3 +1,6 @@
+import json
+from collections import Counter
+
 from django.contrib.admin.utils import flatten
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -107,9 +110,10 @@ class BaseGameCalculator:
                 self.game.letter_bag.append(tile)
             game_player.rack.extend(new_tiles)
         elif turn_action == TurnAction.forfeit:
-            game_player.forfeited = True
-            if self.game.racks.count() == 2:
+            if self.game.racks.filter(forfeited=False).count() == 2:
                 self.game.over = True
+            # TODO fix turn order if player forfeits in multiplayer game, or always end game?
+            game_player.forfeited = True
         elif turn_action == TurnAction.play:
             played_tiles = turn_data["played_tiles"]
             points, words = self.calculate_points(played_tiles)
@@ -190,6 +194,33 @@ class BaseGameCalculator:
     def get_unplayed_tile_points(self, tile):
         raise NotImplementedError()
 
+    def undo_last_turn(self, game_player):
+        if self.game.over:
+            raise ValidationError("Game over")
+        turn = self.game.all_turns().last()
+        if turn.game_player != game_player:
+            raise ValidationError("Player doesn't match")
+        with transaction.atomic():
+            used_tiles = []
+            if turn.turn_action == TurnAction.play:
+                played_tiles = turn.turn_data["played_tiles"]
+                board = GameBoard(self.game.board)
+                for play in played_tiles:
+                    tile = board.get_tile(play['x'], play['y'])
+                    board.set_tile(tile[1:], play['x'], play['y'], replace=True)
+                    used_tiles.append(play['tile'][0])
+            elif turn.turn_action == TurnAction.exchange:
+                used_tiles = turn.turn_data["exchanged_tiles"]
+            new_tile_counts = Counter(game_player.rack) - (Counter(turn.rack_before_turn) - Counter(used_tiles))
+            for letter, count in new_tile_counts.items():
+                self.game.letter_bag.extend([letter for _ in range(count)])
+            game_player.rack = turn.rack_before_turn
+            game_player.score -= turn.score
+            game_player.save()
+            self.game.next_turn_index = (self.game.next_turn_index - 1) % self.game.racks.count()
+            self.game.save()
+            turn.update(deleted=True)
+
 
 class GameBoard:
     def __init__(self, board):
@@ -203,8 +234,9 @@ class GameBoard:
             return tile[0]
         return tile
 
-    def set_tile(self, tile, x, y):
-        self.board[y][x] = tile + self.get_tile(x, y)
+    def set_tile(self, tile, x, y, replace=False):
+        existing = self.get_tile(x, y) if not replace else ""
+        self.board[y][x] = tile + existing
 
     def is_first_play(self):
         """Returns True if no plays have been made yet on this board"""

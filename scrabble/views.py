@@ -50,6 +50,8 @@ class GameView(GamePermissionMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         game_player = GamePlayer.objects.get(game=self.game, user=self.request.user)
         in_turn = game_player.turn_index == self.game.next_turn_index and not self.game.over
+        last_turn = self.game.all_turns().last()
+        can_undo = last_turn.game_player == game_player if last_turn else False
         remaining_letters = self.game.letter_bag + flatten(
             self.game.racks.exclude(user=self.request.user).values_list('rack', flat=True)
         )
@@ -57,6 +59,7 @@ class GameView(GamePermissionMixin, TemplateView):
             "game": self.game,
             "game_player": game_player,
             "in_turn": in_turn,
+            "can_undo": can_undo,
             "rack": [{"letter": letter} for letter in game_player.rack],
             "letter_counts": Counter(remaining_letters).items(),
             "TurnAction": TurnAction,
@@ -118,3 +121,14 @@ class UpdateRackView(GamePermissionMixin, View):
             return JsonResponse(status=400, data={"error": "Rack does not match."})
         game_player.update(rack=rack)
         return JsonResponse(data={"message": "Rack successfully updated."})
+
+
+class UndoTurnView(GamePermissionMixin, View):
+    def post(self, request, *args, **kwargs):
+        game_player = GamePlayer.objects.get(game=self.game, user=self.request.user)
+        calc = get_calculator(self.game)
+        try:
+            calc.undo_last_turn(game_player)
+        except ValidationError as e:
+            messages.error(request, f"Can't undo turn: {e.message}")
+        return redirect("scrabble:play_game", game_id=self.game.id)

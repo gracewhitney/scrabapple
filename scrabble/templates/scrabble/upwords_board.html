@@ -6,8 +6,9 @@
   {% url 'scrabble:post_play' game.id as turn_url %}
   {% url 'scrabble:score_play' game.id as score_url %}
   {% url 'scrabble:update_rack' game.id as update_rack_url %}
+  {% url 'scrabble:undo_turn' game.id as undo_turn_url %}
   {% render_bundle "UpwordsGame" %}
-  {% react_component "UpwordsGame" id="upwords-board-container" board=game.board rack=rack scoreUrl=score_url turnUrl=turn_url inTurn=in_turn updateRackUrl=update_rack_url %}
+  {% react_component "UpwordsGame" id="upwords-board-container" board=game.board rack=rack scoreUrl=score_url turnUrl=turn_url inTurn=in_turn updateRackUrl=update_rack_url canUndo=can_undo undoTurnUrl=undo_turn_url %}
 {% else %}
   <div id="upwords-board-container">
     <div id="upwords-board">
