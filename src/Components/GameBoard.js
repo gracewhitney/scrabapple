@@ -18,6 +18,7 @@ const GameBoard = (props) => {
     inTurn,
     canUndo,
     undoTurnUrl,
+    csrfToken,
   } = props
 
   const stackHeight = props.stackHeight || 1
@@ -26,8 +27,6 @@ const GameBoard = (props) => {
   const [points, setPoints] = useState(0)
   const [validationError, setValidationError] = useState()
   const [exchangedTiles, setExchangedTiles] = useState([])
-
-  const csrfToken = window.csrfmiddlewaretoken
 
   useEffect(() => {
     const getScore = async () => {

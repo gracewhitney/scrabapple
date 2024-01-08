@@ -7,7 +7,7 @@
   {% url 'scrabble:update_rack' game.id as update_rack_url %}
   {% url 'scrabble:undo_turn' game.id as undo_turn_url %}
   {% render_bundle "ScrabbleGame" %}
-  {% react_component "ScrabbleGame" id="scrabble-board-container" board=game.board rack=rack boardConfig=BOARD_CONFIG scoreUrl=score_url turnUrl=turn_url updateRackUrl=update_rack_url inTurn=in_turn canUndo=can_undo undoTurnUrl=undo_turn_url %}
+  {% react_component "ScrabbleGame" id="scrabble-board-container" board=game.board rack=rack boardConfig=BOARD_CONFIG scoreUrl=score_url turnUrl=turn_url updateRackUrl=update_rack_url inTurn=in_turn canUndo=can_undo undoTurnUrl=undo_turn_url csrfToken=csrf_token|stringformat:"s" %}
 {% else %}
   <div id="scrabble-board-container">
     <div id="scrabble-board">
