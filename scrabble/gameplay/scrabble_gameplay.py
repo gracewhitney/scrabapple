@@ -40,7 +40,7 @@ class ScrabbleCalculator(BaseGameCalculator):
     tile_frequencies = SCRABBLE_TILE_FREQUENCIES
 
     def validate_play(self, played_tiles, board, game_player):
-        super().validate_play(played_tiles, board, game_player)
+        played_tiles = super().validate_play(played_tiles, board, game_player)
         # Play must not overlap an existing tile
         if any([not board.is_free_square(tile['x'], tile['y']) for tile in played_tiles]):
             raise ValidationError("Play includes non-empty square")
