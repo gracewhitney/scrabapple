@@ -153,7 +153,8 @@ class BaseGameCalculator:
             played_tiles = [{**tile, "x": tile["y"], "y": tile["x"]} for tile in played_tiles]
             board.transpose_board()
         points, word = self.calculate_word_points(played_tiles, board)
-        words.append(word)
+        if word:
+            words.append(word)
         board.transpose_board()
         for tile in played_tiles:
             word_points, word = self.calculate_word_points([{**tile, "x": tile["y"], "y": tile["x"]}], board)
