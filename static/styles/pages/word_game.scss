@@ -7,6 +7,7 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
   align-self: stretch;
   display: flex;
   flex-direction: column;
+  overflow-x: scroll;
 }
 #scrabble-board {
   border: 2px #5e330a solid;
@@ -51,7 +52,7 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
 
   &.start {
     background-color: $double-word;
-    @extend .bi.bi-star-fill
+    @extend .bi, .bi-star-fill
   }
 
   .tile {
@@ -86,6 +87,10 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
 
 #rack {
   align-self: start;
+
+  @include media-breakpoint-up(sm) {
+    align-self: stretch;
+  }
 
   .list-group {
     border-bottom: 3px solid black;
@@ -130,6 +135,14 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
       width: 36px;
       height: 38px;
     }
+  }
+}
+
+.actions-col {
+  padding-bottom:40px;
+
+  @include media-breakpoint-up(sm) {
+    max-width: 300px;
   }
 }
 
@@ -316,6 +329,10 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
       }
     }
   }
+}
+
+.scrabble-rack-container {
+
 }
 
 .upwords-rack-container {

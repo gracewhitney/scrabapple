@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {DndProvider, useDrop} from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import {useDrop} from 'react-dnd'
+import {DndProvider} from 'react-dnd-multi-backend'
+import { HTML5toTouch } from 'rdndmb-html5-to-touch'
 
 import Tile from "../Components/Tile";
 import TileRack from "../Components/TileRack";
@@ -149,14 +150,14 @@ const GameBoard = (props) => {
   )
 
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndProvider options={HTML5toTouch}>
       <div className="row w-100">
         <div className="col d-flex flex-column flex-grow-0">
           <div id={`${gameId}-board`}>
             {board.map(renderBoardRow)}
           </div>
-          <div id="rack" className={`d-flex align-self-stretch justify-content-center mb-3 ${gameId}-rack-container`}>
-            <button className="btn btn-secondary align-self-stretch my-2 me-2"
+          <div id="rack" className={`d-flex justify-content-center mb-3 ${gameId}-rack-container`}>
+            <button className="btn btn-secondary my-2 me-2"
                     onClick={() => {setPlayedTiles([]); setExchangedTiles([])}}
             >
               <span className="bi bi-arrow-down-right-square-fill"></span>
@@ -167,7 +168,7 @@ const GameBoard = (props) => {
             </TileRack>
           </div>
         </div>
-        <div className="col d-flex flex-column" style={{maxWidth: '300px'}}>
+        <div className="col d-flex flex-column actions-col">
           {
             validationError
               ? <div className="badge rounded-pill bg-danger">{validationError}</div>
