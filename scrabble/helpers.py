@@ -62,3 +62,23 @@ def get_calculator(game):
         WordGame.upwords: UpwordsCalculator,
     }
     return calculator_mapping[game.game_type](game=game)
+
+
+def send_turn_notification(game, request):
+    player = game.next_player()
+    if player.send_turn_notifications:
+        message = render_to_string(
+            "emails/turn_notification.html",
+            context={
+                "game": game,
+                "player": player,
+            },
+            request=request
+        )
+        send_mail(
+            f"It's your turn!",
+            "Your email viewer does not support html. Please use a different viewer.",
+            html_message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[player.user.email],
+        )

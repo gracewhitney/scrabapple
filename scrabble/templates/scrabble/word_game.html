@@ -19,10 +19,18 @@
   <div class="sidebar col-12 col-sm-3 pt-4 full-height">
     {% if not game.over %}
       {% if in_turn %}
-        <p class="text-info-emphasis"><span class="bi bi-person-arms-up"></span> It's your turn!</p>
+        <div class="text-info-emphasis mb-2"><span class="bi bi-person-arms-up"></span> It's your turn!</div>
       {% else %}
       <p class="text-info-emphasis">It's currently {{ game.next_player.user.get_short_name }}'s turn.</p>
       {% endif %}
+      <form action="{% url 'scrabble:update_game_settings' game.id %}" method="post">
+        {% csrf_token %}
+        <div class="form-check form-switch mb-2">
+          <input onchange="this.form.submit()" class="form-check-input" type="checkbox" {% if game_player.send_turn_notifications %}checked{% endif %}>
+          <label class="form-check-label">
+            Email notifications {% if game_player.send_turn_notifications %}enabled{% else %}disabled{% endif %}
+        </div>
+      </form>
       <div class="accordion">
         <div class="accordion-item">
           <button class="accordion-button collapsed bg-primary-subtle" type="button" data-bs-target="#tileCounts" data-bs-toggle="collapse" aria-expanded="false">

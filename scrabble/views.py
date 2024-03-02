@@ -15,7 +15,7 @@ from django.views.generic import FormView, TemplateView
 from scrabble.constants import Multiplier, TurnAction, WordGame
 from scrabble.gameplay.scrabble_gameplay import BOARD_CONFIG, TILE_SCORES
 from scrabble.forms import CreateGameForm
-from scrabble.helpers import create_new_game, get_calculator
+from scrabble.helpers import create_new_game, get_calculator, send_turn_notification
 from scrabble.models import ScrabbleGame, GamePlayer
 
 
@@ -90,6 +90,7 @@ class GameTurnView(GamePermissionMixin, View):
             else:
                 success_message = "Your turn is complete."
             messages.success(request, success_message)
+        send_turn_notification(self.game, request)
         return redirect('scrabble:play_game', game_id=self.game.id)
 
 
@@ -131,4 +132,11 @@ class UndoTurnView(GamePermissionMixin, View):
             calc.undo_last_turn(game_player)
         except ValidationError as e:
             messages.error(request, f"Can't undo turn: {e.message}")
+        return redirect("scrabble:play_game", game_id=self.game.id)
+
+
+class ToggleNotificationsView(GamePermissionMixin, View):
+    def post(self, request, *args, **kwargs):
+        game_player = GamePlayer.objects.get(game=self.game, user=self.request.user)
+        game_player.update(send_turn_notifications=not game_player.send_turn_notifications)
         return redirect("scrabble:play_game", game_id=self.game.id)

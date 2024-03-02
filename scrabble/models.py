@@ -60,6 +60,8 @@ class GamePlayer(TimestampedModel):
     turn_index = models.IntegerField()
     forfeited = models.BooleanField(default=False)
 
+    send_turn_notifications = models.BooleanField(default=False)
+
     class Meta:
         unique_together = [('game', 'turn_index'), ('game', 'user')]
 

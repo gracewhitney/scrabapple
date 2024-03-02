@@ -26,4 +26,7 @@ class SetPasswordForm(CrispyFormMixin, AuthSetPasswordForm):
 class UserSettingsForm(CrispyFormMixin, forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'email']
+        labels = {
+            'first_name': "Display Name",
+        }
