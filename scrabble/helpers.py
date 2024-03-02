@@ -33,7 +33,11 @@ def send_invitation_email(user, game, request):
 
 
 def create_new_game(form, user, request=None):
-    game = ScrabbleGame.objects.create(game_type=form.cleaned_data["game_type"])
+    game = ScrabbleGame(game_type=form.cleaned_data["game_type"])
+    calculator = get_calculator(game)
+    game.board = calculator.get_initial_board()
+    game.letter_bag = calculator.get_initial_letter_bag()
+    game.save()
     GamePlayer.objects.create(user=user, game=game, turn_index=0, rack=game.draw_tiles(7, commit=True))
     turn_index = 1
     for email in [
