@@ -1,0 +1,26 @@
+{% extends "base_templates/base.html" %}
+
+
+{# START_FEATURE sass_bootstrap #}
+{% load sass_tags %}
+{# END_FEATURE sass_bootstrap #}
+
+{% block title %}Home{% endblock %}
+
+{% block head %}
+
+{# START_FEATURE sass_bootstrap #}
+  <link href="{% sass_src 'styles/pages/index.scss' %}" rel="stylesheet">
+{# END_FEATURE sass_bootstrap #}
+{% endblock %}
+
+{% block body %}
+  <div class="container">
+    <p>Welcome to [PROJECT]. Please log in to continue.</p>
+    
+    {# START_FEATURE sass_bootstrap #}
+    {# TODO: delete me; this is just a reference example #}
+    <button class="btn btn-primary does-nothing-button">This button does nothing</button>
+    {# END_FEATURE sass_bootstrap #}
+  </div>
+{% endblock %}
