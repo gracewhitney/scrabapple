@@ -16,7 +16,7 @@
 {% block body %}
 {% render_bundle 'runtime' %}
 <div class="row row-no-gutters">
-  <div class="sidebar col-3 pt-4 full-height">
+  <div class="sidebar col-12 col-sm-3 pt-4 full-height">
     {% if not game.over %}
       {% if in_turn %}
         <p class="text-info-emphasis"><span class="bi bi-person-arms-up"></span> It's your turn!</p>
@@ -99,7 +99,7 @@
       </div>
     </div>
   </div>
-  <div class="d-flex flex-column mt-2 col-9">
+  <div class="d-flex flex-column mt-2 col-12 col-sm-9">
     {% if game.game_type == WordGame.scrabble %}
       {% include "scrabble/scrabble_board.html" %}
     {% elif game.game_type == WordGame.upwords %}

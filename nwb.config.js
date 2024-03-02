@@ -48,6 +48,21 @@ module.exports = function({command}) {
             exclude: /node_modules/,
             loader: 'django-react-loader',
           },
+          {
+            test: /dnd/,
+            loader: 'babel-loader',
+            options: {
+              babelrc: false,
+              cacheDirectory: true,
+              plugins: [
+                "@babel/plugin-transform-nullish-coalescing-operator",
+                "@babel/plugin-transform-optional-chaining"
+              ],
+              presets: [
+                ['@babel/preset-env', { targets: "defaults" }]
+              ]
+            }
+          }
         ],
       },
       plugins: [
@@ -55,6 +70,9 @@ module.exports = function({command}) {
       ],
     },
     publicPath: '/static/webpack_bundles/',
+  }
+  config.babel = {
+    plugins: "@babel/plugin-transform-nullish-coalescing-operator",
   }
   return config
 }
