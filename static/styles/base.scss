@@ -19,3 +19,7 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
   font-size: 0.75 * $font-size-base;
   color: $gray-800;
 }
+
+[v-cloak] {
+  display: none !important;
+}

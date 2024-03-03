@@ -50,8 +50,12 @@ class UpwordsCalculator(BaseGameCalculator):
         if any(len(board.get_tile(tile['x'], tile['y'])) > 4 for tile in played_tiles):
             raise ValidationError("Stack is over 5 high")
         # Can't duplicate an existing tile in the same position
-        if any(board.get_tile(tile['x'], tile['y'], most_recent=True) == tile["tile"] for tile in played_tiles):
-            raise ValidationError("Duplicated tile")
+        if self.game.prevent_stack_duplicates:
+            if any((tile["tile"] in board.get_tile(tile['x'], tile['y'])) for tile in played_tiles):
+                raise ValidationError("Duplicated tile in stack")
+        else:
+            if any(board.get_tile(tile['x'], tile['y'], most_recent=True) == tile["tile"] for tile in played_tiles):
+                raise ValidationError("Duplicated tile")
         # Can't cover a whole word
         min_x = min(tile["x"] for tile in played_tiles)
         max_x = max(tile["x"] for tile in played_tiles)

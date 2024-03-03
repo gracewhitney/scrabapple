@@ -17,7 +17,8 @@ class ScrabbleGame(TimestampedModel):
     next_turn_index = models.IntegerField(default=0)
     over = models.BooleanField(default=False)
     game_type = models.CharField(choices=WordGame.choices, max_length=32)
-    use_old_upwords_rules = models.BooleanField(default=False)
+    use_old_upwords_rules = models.BooleanField(default=False, blank=True)
+    prevent_stack_duplicates = models.BooleanField(default=False, blank=True)
 
     def draw_tiles(self, num_tiles, commit=False):
         """Returns num_tiles tiles & new letter bag. If commit=True, also saves letter bag."""
