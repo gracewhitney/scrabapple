@@ -2,6 +2,7 @@ from random import randint
 
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import Sum
 
 from common.models import TimestampedModel, User
 from scrabble.constants import TurnAction, WordGame
@@ -63,6 +64,9 @@ class ScrabbleGame(TimestampedModel):
             else:
                 break
         return winners
+
+    def total_score(self):
+        return self.racks.aggregate(Sum("score"))["score__sum"]
 
 
 class GamePlayer(TimestampedModel):

@@ -35,11 +35,44 @@
       </div>
       <hr>
       <h2>Past Games</h2>
-      {% for game_rack in past_games %}
-        <a href="{% url 'scrabble:play_game' game_id=game_rack.game_id %}" class="btn btn-secondary">
-          {% for rack in game_rack.game.ordered_racks %}{{ rack.user.get_short_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
-        </a>
-      {% endfor %}
+      <table class="table table-responsive" id="past-games-table">
+        <thead>
+          <td></td>
+          <td>Game Type</td>
+          <td>Players</td>
+          <td>Winner(s)</td>
+          <td>Total Score</td>
+          <td>Completed On</td>
+        </thead>
+        <tbody>
+          {% for game_rack in past_games %}
+            <tr>
+              <td>
+                <a href="{% url 'scrabble:play_game' game_id=game_rack.game_id %}" class="btn btn-secondary">View</a>
+              </td>
+              <td>
+                {{ game_rack.game.get_game_type_display }}
+              </td>
+              <td>
+                {% for rack in game_rack.game.ordered_racks %}
+                  {{ rack.user.get_short_name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              </td>
+              <td>
+                {% for rack in game_rack.game.winners %}
+                  {{ rack.user.get_short_name }} ({{ rack.score }} points){% if not forloop.last %}<br>{% endif %}
+                {% endfor %}
+              </td>
+              <td>
+                {{ game_rack.game.total_score }}
+              </td>
+              <td>
+                {{ game_rack.game.all_turns.reverse.0.created_on|date }}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     {% endif %}
 
   </div>
