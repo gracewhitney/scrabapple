@@ -37,7 +37,7 @@
       <h2>Past Games</h2>
       {% for game_rack in past_games %}
         <a href="{% url 'scrabble:play_game' game_id=game_rack.game_id %}" class="btn btn-secondary">
-          {% for rack in game_rack.game.racks.all %}{{ rack.user.get_short_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+          {% for rack in game_rack.game.ordered_racks %}{{ rack.user.get_short_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
         </a>
       {% endfor %}
     {% endif %}

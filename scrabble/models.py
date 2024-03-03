@@ -47,6 +47,9 @@ class ScrabbleGame(TimestampedModel):
     def next_player(self):
         return self.racks.get(turn_index=self.next_turn_index)
 
+    def ordered_racks(self):
+        return self.racks.order_by("turn_index")
+
     def winners(self):
         if not self.over:
             return []

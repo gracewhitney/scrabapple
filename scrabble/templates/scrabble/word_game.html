@@ -63,7 +63,7 @@
       {% endwith %}
     {% endif %}
     <h3 class="h4">{% if game.over %}Final {% endif %}Scores</h3>
-    {% for rack in game.racks.all %}
+    {% for rack in game.ordered_racks %}
       <div class="d-flex justify-content-between">
         <span>{{ rack.user.get_short_name }}:</span>
         <span>{{ rack.score }}</span>
