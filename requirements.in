@@ -16,12 +16,7 @@ requests
 sentry-sdk
 social-auth-app-django
 
-
-####### OPTIONAL FEATURES #######
-# START_FEATURE elastic_beanstalk
 ec2_metadata
-# END_FEATURE elastic_beanstalk
-################################
 
 # Convenience
 ipython
