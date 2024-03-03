@@ -17,6 +17,7 @@ class ScrabbleGame(TimestampedModel):
     next_turn_index = models.IntegerField(default=0)
     over = models.BooleanField(default=False)
     game_type = models.CharField(choices=WordGame.choices, max_length=32)
+    use_old_upwords_rules = models.BooleanField(default=False)
 
     def draw_tiles(self, num_tiles, commit=False):
         """Returns num_tiles tiles & new letter bag. If commit=True, also saves letter bag."""
@@ -34,6 +35,14 @@ class ScrabbleGame(TimestampedModel):
         return GameTurn.objects.filter(
             game_player__game_id=self.id, deleted=False
         ).order_by('turn_count').select_related("game_player__user")
+
+    def update_turn_index(self, backwards=False):
+        if not self.racks.exclude(rack=[]).exists():
+            return
+        update = -1 if backwards else 1
+        self.next_turn_index = (self.next_turn_index + update) % self.racks.count()
+        if len(self.next_player().rack) == 0:
+            self.update_turn_index(backwards=backwards)
 
     def next_player(self):
         return self.racks.get(turn_index=self.next_turn_index)

@@ -33,7 +33,10 @@ def send_invitation_email(user, game, request):
 
 
 def create_new_game(form, user, request=None):
-    game = ScrabbleGame(game_type=form.cleaned_data["game_type"])
+    game = ScrabbleGame(
+        game_type=form.cleaned_data["game_type"],
+        use_old_upwords_rules=form.cleaned_data["use_old_upwords_rules"]
+    )
     calculator = get_calculator(game)
     game.board = calculator.get_initial_board()
     game.letter_bag = calculator.get_initial_letter_bag()

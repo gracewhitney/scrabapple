@@ -10,3 +10,16 @@
     {% crispy form %}
   </div>
 {% endblock %}
+
+{% block javascript %}
+  <script type="module">
+    import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+    createApp({
+      data: function () {
+        return {
+          'game_type': ""
+        }
+      }
+    }).mount('#app-content')
+  </script>
+{% endblock %}

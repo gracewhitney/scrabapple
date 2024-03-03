@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 
-from scrabble.constants import WordGame
+from scrabble.constants import WordGame, TurnAction
 from scrabble.gameplay.base_calculator import BaseGameCalculator
 
 
@@ -112,3 +112,14 @@ class UpwordsCalculator(BaseGameCalculator):
 
     def get_unplayed_tile_points(self, tile):
         return 5
+
+    def game_over(self, game_player):
+        if not self.game.use_old_upwords_rules:
+            return super().game_over(game_player)
+        return (
+            len(self.game.letter_bag) == 0
+            and all(
+                turn.turn_action == TurnAction.pass_turn for turn in
+                self.game.all_turns().order_by('-turn_count')[:self.game.racks.exclude(rack=[]).count()]
+            )
+        )

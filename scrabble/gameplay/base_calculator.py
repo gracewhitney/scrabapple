@@ -127,7 +127,7 @@ class BaseGameCalculator:
         else:
             raise NotImplementedError(f"No turn action defined for {turn_action}")
         # save game and create turn object
-        self.game.next_turn_index = (self.game.next_turn_index + 1) % self.game.racks.count()
+        self.game.update_turn_index()
         game_player.score += points
         self.game.save()
         game_player.save()
@@ -141,7 +141,7 @@ class BaseGameCalculator:
             turn_words=words,
             turn_data=turn_data,
         )
-        if len(game_player.rack) == 0:
+        if self.game_over(game_player):
             self.go_out(game_player)
         return turn
 
@@ -168,25 +168,32 @@ class BaseGameCalculator:
     def calculate_word_points(self, played_tiles, board):
         raise NotImplementedError()
 
+    def game_over(self, game_player):
+        return len(game_player.rack) == 0
+
     def go_out(self, game_player):
         first_turn_count = self.game.racks.aggregate(current_count=Max("turns__turn_count"))['current_count'] or 0
         turn_count = first_turn_count + 1
         with transaction.atomic():
             extra_points = 0
-            for opponent in game_player.game.racks.exclude(user_id=game_player.id):
+            for opponent in game_player.game.racks.exclude(id=game_player.id):
                 lost_points = 0
                 for tile in opponent.rack:
                     tile_score = self.get_unplayed_tile_points(tile)
                     if self.winner_takes_unplayed_points:
                         extra_points += tile_score
                     lost_points += tile_score
-                GameTurn.objects.create(game_player=opponent, turn_action=TurnAction.end_game, turn_count=turn_count,
-                                        score=-lost_points, rack_before_turn=opponent.rack)
-                opponent.score -= lost_points
-                opponent.save()
+                if lost_points:
+                    GameTurn.objects.create(game_player=opponent, turn_action=TurnAction.end_game,
+                                            turn_count=turn_count, score=-lost_points, rack_before_turn=opponent.rack)
+                    opponent.score -= lost_points
+                    opponent.save()
                 turn_count += 1
-            GameTurn.objects.create(game_player=game_player, turn_action=TurnAction.end_game, turn_count=first_turn_count,
-                                    score=extra_points, rack_before_turn=game_player.rack)
+            # Also deduct tile points from this player (only affects old-style upwords)
+            for tile in game_player.rack:
+                extra_points -= self.get_unplayed_tile_points(tile)
+            GameTurn.objects.create(game_player=game_player, turn_action=TurnAction.end_game,
+                                    turn_count=first_turn_count, score=extra_points, rack_before_turn=game_player.rack)
             game_player.score += extra_points
             game_player.save()
             game_player.game.over = True
@@ -218,7 +225,7 @@ class BaseGameCalculator:
             game_player.rack = turn.rack_before_turn
             game_player.score -= turn.score
             game_player.save()
-            self.game.next_turn_index = (self.game.next_turn_index - 1) % self.game.racks.count()
+            self.game.update_turn_index(backwards=True)
             self.game.save()
             turn.update(deleted=True)
 

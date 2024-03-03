@@ -81,7 +81,7 @@
               {% if turn.turn_action == TurnAction.play %}
                 played {{ turn.turn_words|join:", "|upper }}<br>
                 <div class="badge bg-success-subtle text-dark rounded-pill">{{ turn.score }} point{{ turn.score|pluralize }}</div>
-              {% elif turn.turn_action == TurnAction.pass %}
+              {% elif turn.turn_action == TurnAction.pass_turn %}
                 passed
               {% elif turn.turn_action == TurnAction.exchange %}
                 exchanged tiles
