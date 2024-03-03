@@ -10,6 +10,7 @@
   </head>
   <body>
     <div class="container">
+      <img src="{{ request.scheme }}://{{ request.get_host }}{% static 'logo.jpg' %}" height="40">
       {% block body %}{% endblock %}
     </div>
   </body>

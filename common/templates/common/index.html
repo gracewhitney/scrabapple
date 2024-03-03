@@ -19,7 +19,7 @@
       <p>Please log in to continue.</p>
     {% else %}
       <h2>Games In Progress</h2>
-      <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
+      <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
         {% for game_rack in in_progress_games %}
           <div class="col mb-2">
             {% include "scrabble/components/game_card.html" with game=game_rack.game %}

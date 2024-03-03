@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import SetPasswordForm as AuthSetPasswordForm
+from django.contrib.auth.forms import SetPasswordForm as AuthSetPasswordForm, PasswordChangeForm
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -22,6 +22,9 @@ class CrispyFormMixin(object):
 class SetPasswordForm(CrispyFormMixin, AuthSetPasswordForm):
     pass
 
+
+class UpdatePasswordForm(CrispyFormMixin, PasswordChangeForm):
+    pass
 
 class UserSettingsForm(CrispyFormMixin, forms.ModelForm):
     class Meta:

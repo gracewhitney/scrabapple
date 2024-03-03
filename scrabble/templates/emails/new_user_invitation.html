@@ -4,7 +4,6 @@
 {% block title %}Play {{ game_type }}!{% endblock %}
 
 {% block body %}
-  <img src="{{ request.scheme }}://{{ request.get_host }}{% static 'logo.jpg' %}" height="40">
   <h1>You have been added to an online {{ game_type }} game!</h1>
   <p>Click below to create an account & join the game.</p>
   <a class="btn btn-primary"

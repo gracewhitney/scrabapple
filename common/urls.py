@@ -6,6 +6,7 @@ from common import views
 urlpatterns = [
     path("", views.IndexView.as_view(), name="index"),
     path("settings/", views.UserSettingsView.as_view(), name="user_settings"),
+    path("password-change/", views.UpdatePasswordView.as_view(), name="update_password"),
     path("logout", views.LogoutView.as_view(), name="logout"),
     path("robots.txt", views.RobotsTxtView.as_view(), name="robots_txt"),
     path("one-time/<str:one_time_passcode>/", views.OneTimeLoginView.as_view(), name="one_time_login"),

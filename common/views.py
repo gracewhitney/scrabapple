@@ -1,13 +1,14 @@
 from django.contrib import messages
 from django.contrib.auth import logout, login
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic import FormView
 from django.views.generic.base import TemplateView, View
 from django.http.response import HttpResponse
 
-from common.forms import SetPasswordForm, UserSettingsForm
+from common.forms import SetPasswordForm, UserSettingsForm, UpdatePasswordForm
 from common.models import User
 
 
@@ -65,7 +66,7 @@ class OneTimeLoginView(FormView):
         return redirect(self.request.GET.get("next", reverse("index")))
 
 
-class UserSettingsView(FormView):
+class UserSettingsView(LoginRequiredMixin, FormView):
     form_class = UserSettingsForm
     success_url = reverse_lazy("user_settings")
     template_name = "common/user_settings.html"
@@ -77,7 +78,24 @@ class UserSettingsView(FormView):
 
     def form_valid(self, form):
         form.save()
-        return super().form_invalid(form)
+        return super().form_valid(form)
+
+
+class UpdatePasswordView(LoginRequiredMixin, FormView):
+    form_class = UpdatePasswordForm
+    success_url = reverse_lazy("login")
+    template_name = "common/change_password.html"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, "Your password has been updated. Please log in again.")
+        logout(self.request)
+        return super().form_valid(form)
 
 
 def error_404(request, exception):
