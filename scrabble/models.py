@@ -37,10 +37,10 @@ class ScrabbleGame(TimestampedModel):
         ).order_by('turn_count').select_related("game_player__user")
 
     def update_turn_index(self, backwards=False):
-        if not self.racks.exclude(rack=[]).exists():
-            return
         update = -1 if backwards else 1
         self.next_turn_index = (self.next_turn_index + update) % self.racks.count()
+        if not self.racks.exclude(rack=[]).exists():
+            return
         if len(self.next_player().rack) == 0:
             self.update_turn_index(backwards=backwards)
 
