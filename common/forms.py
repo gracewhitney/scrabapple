@@ -26,6 +26,7 @@ class SetPasswordForm(CrispyFormMixin, AuthSetPasswordForm):
 class UpdatePasswordForm(CrispyFormMixin, PasswordChangeForm):
     pass
 
+
 class UserSettingsForm(CrispyFormMixin, forms.ModelForm):
     class Meta:
         model = User
