@@ -98,6 +98,10 @@ class UpdatePasswordView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 
+class PrivacyPolicyView(TemplateView):
+    template_name = "common/privacy_policy.html"
+
+
 def error_404(request, exception):
     return render(request, "errors/404.html", status=404)
 
