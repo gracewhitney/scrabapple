@@ -32,6 +32,7 @@ const GameBoard = (props) => {
 
   useEffect(() => {
     const getScore = async () => {
+      setWordValidationError(null)
       if (playedTiles.length === 0) {
         setPoints(0)
         setValidationError(null)
@@ -59,16 +60,20 @@ const GameBoard = (props) => {
     await Promise.all(words.map(async (word) => {
       try {
         const dictionary_resp = await fetch(
-          `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`,
+          `https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`,
         )
-        if (dictionary_resp.status === 400) {
+        if (dictionary_resp.status === 404) {
           invalidWords.push(word)
         }
       } catch (e) {
-        setWordValidationError("")
+        console.log(e)
       }
     }))
-    setWordValidationError(invalidWords.join(", "))
+    if (invalidWords.length > 0) {
+      setWordValidationError("Invalid words: " + invalidWords.join(", "))
+    } else {
+      setWordValidationError(null)
+    }
   }
 
   const doPlay = async (action) => {
@@ -195,7 +200,7 @@ const GameBoard = (props) => {
           }
           {
             wordValidationError
-              ? <div className="badge rounded-pill bg-danger">{wordValidationError}</div>
+              ? <div className="badge rounded-pill bg-danger mt-2">{wordValidationError}</div>
               : null
           }
           { inTurn ? turnActions : null }
