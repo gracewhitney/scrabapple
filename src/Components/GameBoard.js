@@ -26,11 +26,13 @@ const GameBoard = (props) => {
   const idTiles = rack.map((tile, i) => {return {...tile, id: i}})
   const [playedTiles, setPlayedTiles] = useState([])
   const [points, setPoints] = useState(0)
-  const [validationError, setValidationError] = useState()
+  const [validationError, setValidationError] = useState("")
+  const [wordValidationError, setWordValidationError] = useState("")
   const [exchangedTiles, setExchangedTiles] = useState([])
 
   useEffect(() => {
     const getScore = async () => {
+      setWordValidationError(null)
       if (playedTiles.length === 0) {
         setPoints(0)
         setValidationError(null)
@@ -45,12 +47,34 @@ const GameBoard = (props) => {
       if (resp.ok) {
         setPoints(data.points)
         setValidationError(null)
+        await checkWords(data.words)
       } else {
         setValidationError(data.error)
       }
     }
     getScore()
   }, [playedTiles, scoreUrl, setPoints, setValidationError]);
+
+  const checkWords = async (words) => {
+    const invalidWords = []
+    await Promise.all(words.map(async (word) => {
+      try {
+        const dictionary_resp = await fetch(
+          `https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`,
+        )
+        if (dictionary_resp.status === 404) {
+          invalidWords.push(word)
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    }))
+    if (invalidWords.length > 0) {
+      setWordValidationError("Invalid words: " + invalidWords.join(", "))
+    } else {
+      setWordValidationError(null)
+    }
+  }
 
   const doPlay = async (action) => {
     const postData = {'action': action}
@@ -173,6 +197,11 @@ const GameBoard = (props) => {
             validationError
               ? <div className="badge rounded-pill bg-danger">{validationError}</div>
               : <div className="badge rounded-pill bg-success">{points} points</div>
+          }
+          {
+            wordValidationError
+              ? <div className="badge rounded-pill bg-danger mt-2">{wordValidationError}</div>
+              : null
           }
           { inTurn ? turnActions : null }
           {

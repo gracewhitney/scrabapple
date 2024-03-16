@@ -105,8 +105,8 @@ class CalculateScoreView(GamePermissionMixin, View):
             return JsonResponse(status=400, data={"error": e.message})
         if cleaned_turn_data["action"] != TurnAction.play:
             return JsonResponse(status=400, data={"error": "Invalid action"})
-        points, _ = calculator.calculate_points(cleaned_turn_data["played_tiles"])
-        return JsonResponse(data={"points": points})
+        points, words = calculator.calculate_points(cleaned_turn_data["played_tiles"])
+        return JsonResponse(data={"points": points, "words": words})
 
 
 class GameTurnIndexView(GamePermissionMixin, View):
