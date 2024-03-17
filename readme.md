@@ -1,9 +1,16 @@
-# Scrabble app
+# Scrabapple
 
-Scrabble game app, implemented in Django & React
+This repository contains the source code for [Scrabapple](https://scrabapple.com), an online word game application.
+
+The app is implemented with Django & React and supports both mobile and desktop use. Supported functionality includes:
+* 2-4 player Scrabble games
+* 2-4 player Upwords games
+* Email notifications
+* Word validation
+
 This project was created using https://github.com/zagaran/django-template
 
-# Local Project Setup
+## Local Project Setup
 
 Set up a Python virtual environment: https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment
 
@@ -61,7 +68,7 @@ To get a test coverage report:
 coverage run --source='.' manage.py test; coverage report
 ```
 
-# Requirements
+## Requirements
 
 The project uses [pip-tools](https://github.com/jazzband/pip-tools) to manage requirements.  In addition, it has two requirements files:
 
@@ -76,13 +83,16 @@ pip-compile requirements.in --upgrade  # Generate requirements.txt with updated 
 pip-compile requirements-dev.in --upgrade  # Generate requirements-dev.txt with updated dependencies
 ```
 
-# Settings
+## Settings
 
 This project uses [django-environ](https://django-environ.readthedocs.io/en/latest/)
 to read configuration from either `config/.env` (for local development)
 or from environment varables (for server deployments).  For a list of settings,
 see the `environ.Env(` object in [config/settings.py](config/settings.py).
-# Elastic Beanstalk
+
+## Elastic Beanstalk
+
+This project is currently deployed on AWS Elastic Beanstalk. 
 
 The following Python packages are useful tools for interacting with AWS and Elastic Beanstalk.
 Due to dependency conflicts, these should not be installed in your project's regular virtual environment,
@@ -95,20 +105,12 @@ pip install eb-create-environment  # For automating the creation of Elastic Bean
 pip install eb-ssm  # For Elastic Beanstalk SSH functionality without requiring shared private keys
 ```
 
-## Creating a new environment
-
-To do create a new Elastic Beanstalk environment, modify the contents of [.elasticbeanstalk/eb_create_environment.yml]([.elasticbeanstalk/eb_create_environment.yml]) and run `eb-create-environment -c .elasticbeanstalk/eb_create_environment.yml`.
-
-See the docs for [eb-create-environment](https://github.com/zagaran/eb-create-environment/) for more details.
-
-Following that, deploy your code to the environment (see below).
-
-## Deploying code
+### Deploying code
 
 To deploy new versions of your code to your environment, run `eb deploy <environment_name>` using the EB CLI to deploy your code to that environment.
 
 See the [eb-cli](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3.html) docs on general command line usage of Elastic Beanstalk.
 
-## SSH
+### SSH
 
 To SSH into an Elastic Beanstalk Environment, use [eb-ssm](https://github.com/zagaran/eb-ssm).
