@@ -12,7 +12,7 @@
     {% for rack in game.ordered_racks %}
       <li class="list-group-item d-flex justify-content-between">
         <span>{{ rack.user.get_short_name }}</span>
-        {% if rack.turn_index == game.next_turn_index %}<span class="bi bi-hourglass text-info-emphasis"></span>{% endif %}
+        {% if rack.turn_index == game.next_turn_index %}<span class="bi bi-hourglass-split text-info-emphasis"></span>{% endif %}
       </li>
     {% endfor %}
   </ul>

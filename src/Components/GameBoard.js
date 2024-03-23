@@ -192,7 +192,7 @@ const GameBoard = (props) => {
             </TileRack>
           </div>
         </div>
-        <div className="col d-flex flex-column actions-col">
+        <div className={`col d-flex flex-column actions-col ${gameId}-actions`}>
           {
             validationError
               ? <div className="badge rounded-pill bg-danger">{validationError}</div>

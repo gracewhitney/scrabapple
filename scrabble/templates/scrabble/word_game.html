@@ -16,19 +16,20 @@
 {% block body %}
 {% render_bundle 'runtime' %}
 <div class="row row-no-gutters">
-  <div class="sidebar col-12 col-sm-3 pt-4 full-height">
+  <div class="sidebar col-12 col-sm-3 pt-4 full-height-sm">
     {% if not game.over %}
       {% if in_turn %}
         <div class="text-info-emphasis mb-2"><span class="bi bi-person-arms-up"></span> It's your turn!</div>
       {% else %}
-      <p class="text-info-emphasis">It's currently {{ game.next_player.user.get_short_name }}'s turn.</p>
+      <p class="text-info-emphasis"><span class="bi bi-hourglass-split"></span> It's currently {{ game.next_player.user.get_short_name }}'s turn.</p>
       {% endif %}
       <form action="{% url 'scrabble:update_game_settings' game.id %}" method="post">
         {% csrf_token %}
         <div class="form-check form-switch mb-2">
-          <input onchange="this.form.submit()" class="form-check-input" type="checkbox" {% if game_player.send_turn_notifications %}checked{% endif %}>
-          <label class="form-check-label">
+          <input id="toggle-email" onchange="this.form.submit()" class="form-check-input" type="checkbox" {% if game_player.send_turn_notifications %}checked{% endif %}>
+          <label class="form-check-label" for="toggle-email">
             Email notifications {% if game_player.send_turn_notifications %}enabled{% else %}disabled{% endif %}
+          </label>
         </div>
       </form>
       <div class="accordion">
@@ -38,6 +39,7 @@
           </button>
           <div id="tileCounts" class="accordion-collapse collapse">
             <ul class="list-group">
+              <li class="list-group-item fst-italic">Counts include opponents' racks.</li>
               {% for letter, count in letter_counts %}
                 <li class="list-group-item">{{ letter }} x {{ count }}</li>
               {% endfor %}
@@ -107,7 +109,7 @@
       </div>
     </div>
   </div>
-  <div class="d-flex flex-column mt-2 col-12 col-sm-9">
+  <div class="d-flex flex-column mt-2 col-12 col-sm-9 overflow-x-scroll">
     {% if game.game_type == WordGame.scrabble %}
       {% include "scrabble/scrabble_board.html" %}
     {% elif game.game_type == WordGame.upwords %}

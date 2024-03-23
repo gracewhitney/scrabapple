@@ -61,7 +61,7 @@ class GameView(GamePermissionMixin, TemplateView):
             "in_turn": in_turn,
             "can_undo": can_undo,
             "rack": [{"letter": letter} for letter in game_player.rack],
-            "letter_counts": Counter(remaining_letters).items(),
+            "letter_counts": sorted(Counter(remaining_letters).items()),
             "TurnAction": TurnAction,
             "WordGame": WordGame,
         })

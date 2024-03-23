@@ -339,6 +339,11 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
   align-self: start;
   .tile {
     @extend .upwords-tile;
+  }
+}
 
+.upwords-actions {
+  .tile {
+    @extend .upwords-tile;
   }
 }
