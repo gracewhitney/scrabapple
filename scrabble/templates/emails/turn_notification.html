@@ -1,7 +1,23 @@
 {% extends 'base_templates/email_base.html' %}
 
+{% block title %}It's your turn!{% endblock %}
+
 {% block body %}
-  <h1>It's your turn!</h1>
-  <p>Hi, {{ player.user.get_short_name }}. It's now your turn in {{ game.game_type }}.</p>
+  <h3 class="mb-3">It's your turn!</h3>
+  <p>Hi, {{ player.user.get_short_name }}. It's now your turn in {{ game.get_game_type_display }}.</p>
+  {% with game.last_turn as last_turn %}
+    <p>
+      The last play was: {{ last_turn.game_player.user.get_short_name }}
+      {% if last_turn.turn_action == TurnAction.play %}
+        played {{ last_turn.turn_words|join:", "|upper }} for {{ last_turn.score }} point{{ last_turn.score|pluralize }}.
+      {% elif last_turn.turn_action == TurnAction.pass_turn %}
+        passed.
+      {% elif last_turn.turn_action == TurnAction.exchange %}
+        exchanged tiles.
+      {% elif last_turn.turn_action == TurnAction.forfeit %}
+        forfeited.
+      {% endif %}
+    </p>
+  {% endwith %}
   <a class="btn btn-primary" href="{{ request.scheme }}://{{ request.get_host }}{% url 'scrabble:play_game' game.id %}">Play!</a>
 {% endblock %}

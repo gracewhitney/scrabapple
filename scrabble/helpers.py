@@ -6,7 +6,7 @@ from django.utils.crypto import get_random_string
 from sentry_sdk import capture_exception
 
 from common.models import User
-from scrabble.constants import WordGame
+from scrabble.constants import WordGame, TurnAction
 from scrabble.gameplay.scrabble_gameplay import ScrabbleCalculator
 from scrabble.gameplay.upwords_gameplay import UpwordsCalculator
 from scrabble.models import ScrabbleGame, GamePlayer
@@ -72,6 +72,7 @@ def send_turn_notification(game, request):
             context={
                 "game": game,
                 "player": player,
+                "TurnAction": TurnAction,
             },
             request=request
         )

@@ -38,6 +38,11 @@ class ScrabbleGame(TimestampedModel):
             game_player__game_id=self.id, deleted=False
         ).order_by('turn_count').select_related("game_player__user")
 
+    def last_turn(self):
+        if not self.all_turns().exists():
+            return None
+        return self.all_turns().reverse()[0]
+
     def update_turn_index(self, backwards=False):
         update = -1 if backwards else 1
         self.next_turn_index = (self.next_turn_index + update) % self.racks.count()

@@ -1,3 +1,4 @@
+{% load sass_tags %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -5,13 +6,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{% endblock %}</title>
-    <link href="{{ request.scheme }}://{{ request.get_host }}{% static 'styles/base.scss' %}" rel="stylesheet" />
+    <link href="{{ request.scheme }}://{{ request.get_host }}{% sass_src 'styles/base.scss' %}" rel="stylesheet" />
     {% block css %}{% endblock %}
   </head>
   <body>
-    <div class="container">
-      <img src="{{ request.scheme }}://{{ request.get_host }}{% static 'logo.jpg' %}" height="40">
-      {% block body %}{% endblock %}
+    <div class="bg-primary-subtle p-5">
+      <div class="card">
+        <div class="card-body p-4">
+          <img src="{{ request.scheme }}://{{ request.get_host }}{% static 'logo.jpg' %}" height="40" class="mb-2">
+          {% block body %}{% endblock %}
+        </div>
+      </div>
     </div>
   </body>
 </html>
