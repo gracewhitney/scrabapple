@@ -75,35 +75,27 @@
       <div class="accordion-item">
         <button class="accordion-button collapsed bg-primary-subtle" type="button" data-bs-target="#allTurns" data-bs-toggle="collapse" aria-expanded="false">View all turns</button>
         <div id="allTurns" class="accordion-collapse collapse">
-          <div class="card-body">
-            {% for turn in game.all_turns %}
-              <div class="turn-item">
-              <span class="bi bi-play"></span>
-              {{ turn.game_player.user.get_short_name }}
-              {% if turn.turn_action == TurnAction.play %}
-                played {{ turn.turn_words|join:", "|upper }}<br>
-                <div class="badge bg-success-subtle text-dark rounded-pill">{{ turn.score }} point{{ turn.score|pluralize }}</div>
-              {% elif turn.turn_action == TurnAction.pass_turn %}
-                passed
-              {% elif turn.turn_action == TurnAction.exchange %}
-                exchanged tiles
-              {% elif turn.turn_action == TurnAction.forfeit %}
-                forfeited
-              {% elif turn.turn_action == TurnAction.end_game %}
-                {% if turn.score < 0 %}
-                  had unplayed tile{{ turn.rack_before_turn|pluralize }} {{ turn.rack_before_turn|join:"" }}<br>
-                  <div class="badge bg-danger-subtle text-dark rounded-pill">{{ turn.score }} point{{ turn.score|pluralize }}</div>
-                {% else %}
-                  went out!
-                  {% if turn.score > 0 %}
-                  <div class="badge bg-success-subtle text-dark rounded-pill">{{ turn.score }} point{{ turn.score|pluralize }}</div>
-                  {% endif %}
-                {% endif %}
-              {% endif %}
+          <div class="card-body p-1">
+            <ul class="nav nav-tabs" id="allTurnsNav" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="scores-list" data-bs-toggle="tab" data-bs-target="#scores-list-pane" type="button" role="tab" aria-controls="scores-list-pane" aria-selected="true">
+                  Feed View
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="scores-card" data-bs-toggle="tab" data-bs-target="#scores-card-pane" type="button" role="tab" aria-controls="scores-card-pane">
+                  Scorecard View
+                </button>
+              </li>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane fade show active" id="scores-list-pane" role="tabpanel" aria-labelledby="scores-list" tabindex="0">
+                {% include "scrabble/components/all_plays_list.html" %}
               </div>
-            {% empty %}
-              No turns yet.
-            {% endfor %}
+              <div class="tab-pane fade" id="scores-card-pane" role="tabpanel" aria-labelledby="scores-card" tabindex="0">
+                {% include "scrabble/components/all_plays_scorecard.html" %}
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+from collections import defaultdict
 from random import randint
 
 from django.contrib.postgres.fields import ArrayField
@@ -73,6 +74,31 @@ class ScrabbleGame(TimestampedModel):
     def total_score(self):
         return self.racks.aggregate(Sum("score"))["score__sum"]
 
+    def get_scorecard_rows(self):
+        player_count = self.racks.count()
+        player_turns = defaultdict(list)
+        if not self.all_turns().exists():
+            return []
+        # It's possible for one player to have fewer turns at the end of the game (forfeit, upwords go out)
+        for turn in self.all_turns():
+            player_turns[turn.game_player.turn_index].append(turn)
+        num_rounds = max(len(turns) for turns in player_turns.values())
+
+        cumulative_scores = defaultdict(int)
+        scorecard_rows = []
+        round_list = []
+        for round_index in range(num_rounds):
+            for turn_index in range(player_count):
+                if len(player_turns[turn_index]) < round_index + 1:
+                    round_list.append("")
+                else:
+                    turn = player_turns[turn_index][round_index]
+                    cumulative_scores[turn.game_player_id] += turn.score
+                    round_list.append(cumulative_scores[turn.game_player_id] if turn.score else "--")
+            scorecard_rows.append(round_list)
+            round_list = []
+        return scorecard_rows
+
 
 class GamePlayer(TimestampedModel):
     user = models.ForeignKey(User, related_name="game_racks", on_delete=models.PROTECT)
@@ -86,6 +112,15 @@ class GamePlayer(TimestampedModel):
 
     class Meta:
         unique_together = [('game', 'turn_index'), ('game', 'user')]
+
+    def get_player_initial(self):
+        other_names = [rack.user.get_short_name().lower() for rack in self.game.racks.exclude(id=self.id)]
+        player_name = self.user.get_short_name().lower()
+        for i in range(len(player_name)):
+            matches = [name for name in other_names if name[0:i+1] == player_name[0:i+1]]
+            if not matches:
+                return player_name[0:i+1]
+        return player_name
 
 
 class GameTurn(TimestampedModel):

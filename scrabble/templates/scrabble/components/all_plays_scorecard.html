@@ -1,0 +1,20 @@
+<table class="table overflow-x-scroll">
+  <thead>
+    <tr>
+      {% for rack in game.ordered_racks %}
+        <th class="text-center {% if not forloop.last %}border-end{% endif %}">{{ rack.get_player_initial|title }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody class="table-group-divider">
+    {% for row in game.get_scorecard_rows %}
+      <tr>
+      {% for score in row %}
+        <td class="text-center {% if not forloop.last %}border-end{% endif %}">
+          {{ score }}
+        </td>
+      {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
