@@ -9,13 +9,14 @@ from common.models import User
 from scrabble.constants import WordGame, TurnAction
 from scrabble.gameplay.scrabble_gameplay import ScrabbleCalculator
 from scrabble.gameplay.upwords_gameplay import UpwordsCalculator
-from scrabble.models import ScrabbleGame, GamePlayer
+from scrabble.models import GamePlayer
 
 
-def send_invitation_email(user, game, request):
+def send_invitation_email(user, game, creating_user, request):
     template_name = "emails/new_user_invitation.html" if user.one_time_passcode else "emails/existing_user_invitation.html"
     message = render_to_string(template_name, context={
         "user": user,
+        "creating_user": creating_user,
         "game_id": game.id,
         "game_type": game.game_type,
     }, request=request)
@@ -32,13 +33,13 @@ def send_invitation_email(user, game, request):
         messages.error(request, "The invitation email could not be sent. Please invite your opponents via another channel.")
 
 
-def create_new_game(form, user, request=None):
+def create_new_game(form, creating_user, request=None):
     game = form.save(commit=False)
     calculator = get_calculator(game)
     game.board = calculator.get_initial_board()
     game.letter_bag = calculator.get_initial_letter_bag()
     game.save()
-    GamePlayer.objects.create(user=user, game=game, turn_index=0, rack=game.draw_tiles(7, commit=True))
+    GamePlayer.objects.create(user=creating_user, game=game, turn_index=0, rack=game.draw_tiles(7, commit=True))
     turn_index = 1
     for email in [
         form.cleaned_data["player_2_email"],
@@ -51,7 +52,7 @@ def create_new_game(form, user, request=None):
             email=email, defaults={"one_time_passcode": get_random_string(32)}
         )
         GamePlayer.objects.create(user=user, game=game, turn_index=turn_index, rack=game.draw_tiles(7, commit=True))
-        send_invitation_email(user, game, request=request)
+        send_invitation_email(user, game, creating_user, request=request)
         turn_index += 1
     return game
 

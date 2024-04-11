@@ -5,7 +5,10 @@
 
 {% block body %}
   <h3 class="mb-3">You have been added to an online {{ game_type }} game!</h3>
-  <p>Click below to create an account & join the game.</p>
+  <p>
+    {{ creating_user.get_short_name }} would like to play {{ game_type }} with you.
+    Click below to create an account & join the game.
+  </p>
   <a class="btn btn-primary"
      href="{{ request.scheme }}://{{ request.get_host }}{% url 'one_time_login' user.one_time_passcode %}?next={% url 'scrabble:play_game' game_id=game_id %}"
   >Play!</a>
