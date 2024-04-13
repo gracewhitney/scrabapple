@@ -8,7 +8,7 @@
   {% url 'scrabble:update_rack' game.id as update_rack_url %}
   {% url 'scrabble:undo_turn' game.id as undo_turn_url %}
   {% render_bundle "UpwordsGame" %}
-  {% react_component "UpwordsGame" id="upwords-board-container" board=game.board rack=rack scoreUrl=score_url turnUrl=turn_url inTurn=in_turn updateRackUrl=update_rack_url canUndo=can_undo undoTurnUrl=undo_turn_url csrfToken=csrf_token|stringformat:"s" %}
+  {% react_component "UpwordsGame" id="upwords-board-container" board=game.board rack=rack scoreUrl=score_url turnUrl=turn_url inTurn=in_turn updateRackUrl=update_rack_url canUndo=can_undo undoTurnUrl=undo_turn_url csrfToken=csrf_token|stringformat:"s" enforceWordValidation=game.validate_words %}
 {% else %}
   <div id="upwords-board-container">
     <div id="upwords-board">

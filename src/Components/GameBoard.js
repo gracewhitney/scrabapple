@@ -20,6 +20,7 @@ const GameBoard = (props) => {
     canUndo,
     undoTurnUrl,
     csrfToken,
+    enforceWordValidation,
   } = props
 
   const stackHeight = props.stackHeight || 1
@@ -131,7 +132,7 @@ const GameBoard = (props) => {
     <>
       <button
         className="btn btn-primary btn-sm mt-2"
-        disabled={validationError || playedTiles.length < 1}
+        disabled={validationError || playedTiles.length < 1 || (enforceWordValidation && wordValidationError)}
         onClick={async () => {await doPlay(TURN_ACTION.play)}}
       >
         <span className="bi bi-person-arms-up"></span> <span>Play</span>
@@ -178,7 +179,11 @@ const GameBoard = (props) => {
           {
             validationError
               ? <div className="badge rounded-pill bg-danger">{validationError}</div>
-              : <div className="badge rounded-pill bg-success">{points} points</div>
+              : (
+                wordValidationError && enforceWordValidation
+                ? null
+                : <div className="badge rounded-pill bg-success">{points} points</div>
+              )
           }
           {
             wordValidationError
