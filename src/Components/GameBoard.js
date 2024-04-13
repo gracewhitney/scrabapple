@@ -47,34 +47,16 @@ const GameBoard = (props) => {
       if (resp.ok) {
         setPoints(data.points)
         setValidationError(null)
-        await checkWords(data.words)
+        if (data.invalidWords.length > 0) {
+          setWordValidationError("Invalid words: " + data.invalidWords.join(", "))
+        }
       } else {
+        setWordValidationError(null)
         setValidationError(data.error)
       }
     }
     getScore()
   }, [playedTiles, scoreUrl, setPoints, setValidationError]);
-
-  const checkWords = async (words) => {
-    const invalidWords = []
-    await Promise.all(words.map(async (word) => {
-      try {
-        const dictionary_resp = await fetch(
-          `https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`,
-        )
-        if (dictionary_resp.status === 404) {
-          invalidWords.push(word)
-        }
-      } catch (e) {
-        console.log(e)
-      }
-    }))
-    if (invalidWords.length > 0) {
-      setWordValidationError("Invalid words: " + invalidWords.join(", "))
-    } else {
-      setWordValidationError(null)
-    }
-  }
 
   const doPlay = async (action) => {
     const postData = {'action': action}

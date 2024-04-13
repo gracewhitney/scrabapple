@@ -1,6 +1,7 @@
 import json
 from collections import Counter
 
+import dawg
 from django.contrib import messages
 from django.contrib.admin.utils import flatten
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -12,7 +13,8 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
-from scrabble.constants import Multiplier, TurnAction, WordGame
+from scrabble.constants import Multiplier, TurnAction, WordGame, Dictionary
+from scrabble.dictionaries import validate_word
 from scrabble.gameplay.scrabble_gameplay import BOARD_CONFIG, TILE_SCORES
 from scrabble.forms import CreateGameForm
 from scrabble.helpers import create_new_game, get_calculator, send_turn_notification
@@ -82,9 +84,9 @@ class GameTurnView(GamePermissionMixin, View):
         with transaction.atomic():
             try:
                 cleaned_turn_data = calculator.validate_turn(turn_data, game_player)
+                turn = calculator.do_turn(cleaned_turn_data, game_player)
             except ValidationError as e:
                 return JsonResponse(status=400, data={"error": e.message})
-            turn = calculator.do_turn(cleaned_turn_data, game_player)
             if turn.turn_action == TurnAction.play:
                 success_message = f"You played {', '.join(turn.turn_words)} for {turn.score} points."
             else:
@@ -106,7 +108,8 @@ class CalculateScoreView(GamePermissionMixin, View):
         if cleaned_turn_data["action"] != TurnAction.play:
             return JsonResponse(status=400, data={"error": "Invalid action"})
         points, words = calculator.calculate_points(cleaned_turn_data["played_tiles"])
-        return JsonResponse(data={"points": points, "words": words})
+        invalid_words = calculator.validate_words(words)
+        return JsonResponse(data={"points": points, "words": words, "invalidWords": invalid_words})
 
 
 class GameTurnIndexView(GamePermissionMixin, View):

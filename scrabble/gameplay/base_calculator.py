@@ -7,6 +7,7 @@ from django.db import transaction
 from django.db.models import Max
 
 from scrabble.constants import TurnAction
+from scrabble.dictionaries import validate_word
 from scrabble.models import GameTurn
 from scrabble.serializers import GameTurnSerializer
 
@@ -69,7 +70,11 @@ class BaseGameCalculator:
         if any(tile['tile'][0] not in game_player.rack for tile in played_tiles):
             raise ValidationError("Invalid tile, not in rack")
         if board.is_first_play():
+            # Check that starting tile is included
             self.validate_first_play(played_tiles)
+            # First play must be at least 2 letters
+            if len(played_tiles) < 2:
+                raise ValidationError("First play must use at least 2 tiles")
         else:
             # Subsequent plays must be adjacent to existing word
             if not any(board.has_adjacent_tile(tile['x'], tile['y']) for tile in played_tiles):
@@ -117,6 +122,10 @@ class BaseGameCalculator:
         elif turn_action == TurnAction.play:
             played_tiles = turn_data["played_tiles"]
             points, words = self.calculate_points(played_tiles)
+            if self.game.validate_words:
+                invalid_words = self.validate_words(words)
+                if invalid_words:
+                    raise ValidationError(f"Invalid words: {', '.join(invalid_words)}")
             played_letters = [tile['tile'] for tile in played_tiles]
             new_tiles = self.game.draw_tiles(len(played_letters))
             for tile in played_letters:
@@ -167,6 +176,16 @@ class BaseGameCalculator:
 
     def calculate_word_points(self, played_tiles, board):
         raise NotImplementedError()
+
+    def validate_words(self, words):
+        dictionaries = self.game.get_dictionaries()
+        if not dictionaries:
+            return []
+        invalid_words = [
+            word for word in words
+            if not any(validate_word(word, dictionary) for dictionary in dictionaries)
+        ]
+        return invalid_words
 
     def game_over(self, game_player):
         return len(game_player.rack) == 0

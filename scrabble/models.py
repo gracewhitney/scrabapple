@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import Sum
 
 from common.models import TimestampedModel, User
-from scrabble.constants import TurnAction, WordGame
+from scrabble.constants import TurnAction, WordGame, Dictionary
 
 
 # Create your models here.
@@ -21,6 +21,8 @@ class ScrabbleGame(TimestampedModel):
     game_type = models.CharField(choices=WordGame.choices, max_length=32)
     use_old_upwords_rules = models.BooleanField(default=False, blank=True)
     prevent_stack_duplicates = models.BooleanField(default=False, blank=True)
+    validate_words = models.BooleanField(default=False, blank=True)
+    selected_dictionaries = ArrayField(models.CharField(choices=Dictionary.choices, max_length=32), null=True)
 
     def draw_tiles(self, num_tiles, commit=False):
         """Returns num_tiles tiles & new letter bag. If commit=True, also saves letter bag."""
@@ -98,6 +100,11 @@ class ScrabbleGame(TimestampedModel):
             scorecard_rows.append(round_list)
             round_list = []
         return scorecard_rows
+
+    def get_dictionaries(self):
+        if self.selected_dictionaries:
+            return self.selected_dictionaries
+        return [Dictionary.ospd2, Dictionary.ospd3]
 
 
 class GamePlayer(TimestampedModel):
