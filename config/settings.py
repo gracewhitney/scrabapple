@@ -329,7 +329,7 @@ if LOCALHOST is False:
 
     SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_AGE = 60 * 60 * 3  # 3 hours
+    SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 1 week
     CSRF_COOKIE_SECURE = True
     CSRF_COOKIE_HTTPONLY = True  # Only do this if you are not accessing the CSRF cookie with JS
 
