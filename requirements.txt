@@ -26,6 +26,8 @@ crispy-bootstrap5==2024.2
     # via -r requirements.in
 cryptography==42.0.5
     # via social-auth-core
+dawg2==0.13.0
+    # via -r requirements.in
 decorator==5.1.1
     # via ipython
 defusedxml==0.8.0rc2

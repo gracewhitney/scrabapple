@@ -20,3 +20,10 @@ class TurnAction(TextChoices):
     pass_turn = "pass"
     forfeit = "forfeit"
     end_game = "end_game"
+
+
+class Dictionary(TextChoices):
+    ospd2 = "ospd2", "OSPD2"
+    ospd3 = "ospd3", "OSPD3"
+    csw = "csw12", "CSW12"
+

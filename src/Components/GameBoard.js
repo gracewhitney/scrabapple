@@ -20,6 +20,7 @@ const GameBoard = (props) => {
     canUndo,
     undoTurnUrl,
     csrfToken,
+    enforceWordValidation,
   } = props
 
   const stackHeight = props.stackHeight || 1
@@ -47,34 +48,16 @@ const GameBoard = (props) => {
       if (resp.ok) {
         setPoints(data.points)
         setValidationError(null)
-        await checkWords(data.words)
+        if (data.invalidWords.length > 0) {
+          setWordValidationError("Invalid words: " + data.invalidWords.join(", "))
+        }
       } else {
+        setWordValidationError(null)
         setValidationError(data.error)
       }
     }
     getScore()
   }, [playedTiles, scoreUrl, setPoints, setValidationError]);
-
-  const checkWords = async (words) => {
-    const invalidWords = []
-    await Promise.all(words.map(async (word) => {
-      try {
-        const dictionary_resp = await fetch(
-          `https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`,
-        )
-        if (dictionary_resp.status === 404) {
-          invalidWords.push(word)
-        }
-      } catch (e) {
-        console.log(e)
-      }
-    }))
-    if (invalidWords.length > 0) {
-      setWordValidationError("Invalid words: " + invalidWords.join(", "))
-    } else {
-      setWordValidationError(null)
-    }
-  }
 
   const doPlay = async (action) => {
     const postData = {'action': action}
@@ -149,7 +132,7 @@ const GameBoard = (props) => {
     <>
       <button
         className="btn btn-primary btn-sm mt-2"
-        disabled={validationError || playedTiles.length < 1}
+        disabled={validationError || playedTiles.length < 1 || (enforceWordValidation && wordValidationError)}
         onClick={async () => {await doPlay(TURN_ACTION.play)}}
       >
         <span className="bi bi-person-arms-up"></span> <span>Play</span>
@@ -196,7 +179,11 @@ const GameBoard = (props) => {
           {
             validationError
               ? <div className="badge rounded-pill bg-danger">{validationError}</div>
-              : <div className="badge rounded-pill bg-success">{points} points</div>
+              : (
+                wordValidationError && enforceWordValidation
+                ? null
+                : <div className="badge rounded-pill bg-success">{points} points</div>
+              )
           }
           {
             wordValidationError

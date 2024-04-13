@@ -1,5 +1,6 @@
 Django==4.2.*  # Latest LTS version
 crispy-bootstrap5
+dawg2
 django-compressor
 django-crispy-forms
 django-environ
