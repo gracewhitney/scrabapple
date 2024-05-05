@@ -92,11 +92,11 @@ class ScrabbleGame(TimestampedModel):
         for round_index in range(num_rounds):
             for turn_index in range(player_count):
                 if len(player_turns[turn_index]) < round_index + 1:
-                    round_list.append("")
+                    round_list.append((0, ""))
                 else:
                     turn = player_turns[turn_index][round_index]
                     cumulative_scores[turn.game_player_id] += turn.score
-                    round_list.append(cumulative_scores[turn.game_player_id] if turn.score else "--")
+                    round_list.append((turn.score, cumulative_scores[turn.game_player_id] if turn.score else "--"))
             scorecard_rows.append(round_list)
             round_list = []
         return scorecard_rows

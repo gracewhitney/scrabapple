@@ -9,11 +9,18 @@
   <tbody class="table-group-divider">
     {% for row in game.get_scorecard_rows %}
       <tr>
-      {% for score in row %}
-        <td class="text-center {% if not forloop.last %}border-end{% endif %}">
-          {{ score }}
+      {% with forloop.last as last_row %}
+      {% for turn_score, total_score in row %}
+        <td class="text-center {% if not forloop.last %}border-end{% endif %} {% if last_row %}border-bottom-0{% endif %} scorecard-cell">
+          {% if turn_score %}
+            <div class="rounded-pill {% if turn_score > 0 %}bg-success-subtle{% else %}bg-danger-subtle{% endif %} scorecard-badge">
+              {% if turn_score > 0 %}+{% endif %}{{ turn_score }}
+            </div>
+          {% endif %}
+          {{ total_score }}
         </td>
       {% endfor %}
+      {% endwith %}
       </tr>
     {% endfor %}
   </tbody>

@@ -201,6 +201,20 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
     max-height: 350px;
     overflow-y: scroll;
   }
+
+  .scorecard-cell {
+    position: relative;
+  }
+  .scorecard-badge {
+    position: absolute;
+    font-size: 10px;
+    padding: 0 6px;
+    left: 6px;
+
+    @include media-breakpoint-between(sm, lg) {
+      position: static;
+    }
+  }
 }
 
 .upwords-tile {
