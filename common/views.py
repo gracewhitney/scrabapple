@@ -78,6 +78,7 @@ class UserSettingsView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         form.save()
+        messages.success(self.request, "Your changes have been saved.")
         return super().form_valid(form)
 
 
