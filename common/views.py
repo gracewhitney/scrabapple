@@ -10,6 +10,7 @@ from django.http.response import HttpResponse
 
 from common.forms import SetPasswordForm, UserSettingsForm, UpdatePasswordForm
 from common.models import User
+from scrabble.helpers import get_user_statistics
 
 
 class IndexView(TemplateView):
@@ -21,6 +22,7 @@ class IndexView(TemplateView):
             context.update({
                 "in_progress_games": self.request.user.game_racks.filter(game__over=False).order_by("-created_on"),
                 "past_games": self.request.user.game_racks.filter(game__over=True).order_by("-created_on"),
+                "user_statistics": get_user_statistics(self.request.user),
             })
         return context
 

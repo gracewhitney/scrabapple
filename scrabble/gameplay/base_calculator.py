@@ -217,6 +217,9 @@ class BaseGameCalculator:
             game_player.save()
             game_player.game.over = True
             game_player.game.save()
+            # Cache game winners
+            for player in game_player.game.winners():
+                player.update(winner=True)
 
     def get_unplayed_tile_points(self, tile):
         raise NotImplementedError()

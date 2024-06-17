@@ -114,6 +114,7 @@ class GamePlayer(TimestampedModel):
     score = models.IntegerField(default=0)
     turn_index = models.IntegerField()
     forfeited = models.BooleanField(default=False)
+    winner = models.BooleanField(default=False)
 
     send_turn_notifications = models.BooleanField(default=False)
 

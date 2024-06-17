@@ -42,6 +42,22 @@
         </div>
       </div>
       <hr>
+      {% if user_statistics %}
+        <h2>Statistics</h2>
+        <div class="card-group">
+          {% for stat, value in user_statistics.items %}
+            <div class="card">
+              <div class="card-header text-center">
+                {{ stat|title }}
+              </div>
+              <div class="card-body text-center text-info-emphasis fs-4">
+                {{ value }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <hr>
+      {% endif %}
       <h2>Past Games</h2>
       <div class="table-responsive">
         <table class="table" id="past-games-table">

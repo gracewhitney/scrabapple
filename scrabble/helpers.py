@@ -1,3 +1,5 @@
+from statistics import fmean
+
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -9,7 +11,7 @@ from common.models import User
 from scrabble.constants import WordGame, TurnAction
 from scrabble.gameplay.scrabble_gameplay import ScrabbleCalculator
 from scrabble.gameplay.upwords_gameplay import UpwordsCalculator
-from scrabble.models import GamePlayer
+from scrabble.models import GamePlayer, GameTurn
 
 
 def send_invitation_email(user, game, creating_user, request):
@@ -84,3 +86,27 @@ def send_turn_notification(game, request):
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[player.user.email],
         )
+
+
+def get_user_statistics(user):
+    stats = {}
+    all_plays = GameTurn.objects.filter(game_player__user=user, turn_action=TurnAction.play)
+    if all_plays:
+        scores = all_plays.values_list("score", flat=True)
+        all_words = [word for turn in all_plays for word in turn.turn_words if word]
+        longest_word = sorted(all_words, key=lambda x: len(x), reverse=True)[0]
+        stats.update({
+            "longest word": longest_word,
+            "highest play score": max(scores),
+            "average play score": round(fmean(scores)),
+        })
+    game_results = user.game_racks.filter(game__over=True)
+    if game_results:
+        game_scores = game_results.values_list("score", flat=True)
+        won_games = game_results.filter(winner=True).count()
+        stats.update({
+            "highest game score": max(game_scores),
+            "average game score": round(fmean(game_scores)),
+            "percent wins": f"{round(won_games / len(game_results) * 100)}%",
+        })
+    return stats
