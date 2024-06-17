@@ -12,5 +12,6 @@ urlpatterns = [
     path("play/<uuid:game_id>/update_rack/", views.UpdateRackView.as_view(), name="update_rack"),
     path("play/<uuid:game_id>/undo/", views.UndoTurnView.as_view(), name="undo_turn"),
     path("info/<uuid:game_id>/turn", views.GameTurnIndexView.as_view(), name="get_game_turn"),
-    path("play/<uuid:game_id>/update_settings/", views.ToggleNotificationsView.as_view(), name="update_game_settings"),
+    path("play/<uuid:game_id>/notifications/", views.ToggleNotificationsView.as_view(), name="update_game_settings"),
+    path("play/<uuid:game_id>/options/", views.EditGameOptionsView.as_view(), name="edit_game_options"),
 ]

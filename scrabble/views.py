@@ -16,7 +16,7 @@ from django.views.generic import FormView, TemplateView
 from scrabble.constants import Multiplier, TurnAction, WordGame, Dictionary
 from scrabble.dictionaries import validate_word
 from scrabble.gameplay.scrabble_gameplay import BOARD_CONFIG, TILE_SCORES
-from scrabble.forms import CreateGameForm
+from scrabble.forms import CreateGameForm, EditGameForm
 from scrabble.helpers import create_new_game, get_calculator, send_turn_notification
 from scrabble.models import ScrabbleGame, GamePlayer
 
@@ -74,6 +74,24 @@ class GameView(GamePermissionMixin, TemplateView):
                 "Multiplier": Multiplier,
             })
         return context
+
+
+class EditGameOptionsView(GamePermissionMixin, FormView):
+    form_class = EditGameForm
+    template_name = "scrabble/edit_game_options.html"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["instance"] = self.game
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, "Your changes have been saved")
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("scrabble:play_game", kwargs={"game_id": self.game.id})
 
 
 class GameTurnView(GamePermissionMixin, View):

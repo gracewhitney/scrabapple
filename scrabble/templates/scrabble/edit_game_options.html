@@ -1,12 +1,15 @@
 {% extends "base_templates/base.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %}Create New Game{% endblock %}
+{% block title %}Edit Game Options{% endblock %}
 
 {% block body %}
   <div class="container mt-4">
-    <h1>Create New Game</h1>
-    <p>Enter up to 3 other players below to create your game.</p>
+    <h1>Edit Options</h1>
+    <p>
+      Use the form below to modify your {{ form.instance.get_game_type_display }} game.
+      Changes to settings will take effect immediately. Please make sure all players agree before changing the settings.
+    </p>
     {% crispy form %}
   </div>
 {% endblock %}
@@ -17,7 +20,7 @@
     createApp({
       data: function () {
         return {
-          'game_type': ""
+          'game_type': "{{ form.instance.game_type }}"
         }
       }
     }).mount('#app-content')
