@@ -72,3 +72,6 @@ class CreateGameForm(EditGameForm):
             "player_4_email",
         )
 
+    class Meta(EditGameForm.Meta):
+        fields = EditGameForm.Meta.fields + ["game_type"]
+
