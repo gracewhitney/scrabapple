@@ -91,9 +91,11 @@
                 <td>
                   {{ game_rack.game.total_score }}
                 </td>
-                <td>
-                  {{ game_rack.game.all_turns.reverse.0.created_on|date }}
+               {% with completed_date=game_rack.game.all_turns.reverse.0.created_on %}
+                <td data-order="{{ completed_date|date:'Ymd' }}">
+                  {{ completed_date|date }}
                 </td>
+                {% endwith %}
               </tr>
             {% endfor %}
           </tbody>
