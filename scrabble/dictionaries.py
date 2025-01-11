@@ -1,4 +1,5 @@
 import os
+import string
 
 import dawg
 from django.conf import settings
@@ -21,12 +22,16 @@ DAWGS = {
     for dictionary in Dictionary
 }
 
+BLANK_REPLACEMENT_MAPPING = {
+    '-': [letter for letter in string.ascii_lowercase]
+}
+BLANK_REPLACEMENT = dawg.CompletionDAWG.compile_replaces(BLANK_REPLACEMENT_MAPPING)
+
 
 def validate_word(word, dictionary_name):
-    if '-' in word:
-        # TODO handle blanks
-        return True
+    """Returns first matching word in dictionary"""
     if dictionary_name not in DAWGS:
         raise Exception(f"Unsupported dictionary {dictionary_name}")
     d = DAWGS[dictionary_name]
-    return word.lower() in d
+    matches = d.similar_keys(word.lower(), BLANK_REPLACEMENT)
+    return matches[0] if matches else None
