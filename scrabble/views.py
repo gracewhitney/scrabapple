@@ -13,7 +13,7 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
-from scrabble.constants import Multiplier, TurnAction, WordGame, Dictionary
+from scrabble.constants import Multiplier, TurnAction, WordGame, Dictionary, BLANK_CHARS
 from scrabble.dictionaries import validate_word
 from scrabble.gameplay.scrabble_gameplay import BOARD_CONFIG, TILE_SCORES
 from scrabble.forms import CreateGameForm, EditGameForm
@@ -66,6 +66,7 @@ class GameView(GamePermissionMixin, TemplateView):
             "letter_counts": sorted(Counter(remaining_letters).items()),
             "TurnAction": TurnAction,
             "WordGame": WordGame,
+            "BLANK_CHARS": BLANK_CHARS,
         })
         if self.game.game_type == WordGame.scrabble:
             context.update({

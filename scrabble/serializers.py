@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from scrabble.constants import TurnAction
+from scrabble.constants import TurnAction, BLANK_CHARS
 
 
 class TileMoveSerializer(serializers.Serializer):
@@ -10,10 +10,10 @@ class TileMoveSerializer(serializers.Serializer):
     y = serializers.IntegerField(min_value=0, max_value=14)
 
     def validate_tile(self, tile):
-        if len(tile) > 1 and tile[0] != '-':
+        if len(tile) > 1 and tile[0] not in BLANK_CHARS:
             raise ValidationError("Invalid tile: multiple letters")
         # TODO: remove first condition once blanks are set to a specific letter
-        if not (tile[-1] == '-' or tile[-1].isalpha()):
+        if not (tile[-1] in BLANK_CHARS or tile[-1].isalpha()):
             raise ValidationError("Invalid tile: not letter")
         return tile.upper()
 

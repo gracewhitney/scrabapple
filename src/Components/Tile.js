@@ -9,7 +9,7 @@ const Tile = (props) => {
     className,
   } = props;
 
-  const blank = letter[0] === '-'
+  const blank = letter[0] === '-' || letter[0] === '*'
   const displayLetter = blank ? (letter.length > 1 ? letter[1] : '') : letter[0]
 
   const points = TILE_SCORES[letter[0]]

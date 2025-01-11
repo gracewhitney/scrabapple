@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 
-from scrabble.constants import Multiplier, WordGame
+from scrabble.constants import Multiplier, WordGame, BLANK_CHARS
 from scrabble.gameplay.base_calculator import BaseGameCalculator
 
 SCRABBLE_TILE_FREQUENCIES = {
@@ -30,8 +30,10 @@ SCRABBLE_TILE_FREQUENCIES = {
     'X': 1,
     'Y': 2,
     'Z': 1,
-    '-': 2,  # BLANK
 }
+
+# Use separate chars for two blank tiles to facilitate replacement validation
+SCRABBLE_TILE_FREQUENCIES.update({char: 1 for char in BLANK_CHARS})
 
 
 class ScrabbleCalculator(BaseGameCalculator):
@@ -61,14 +63,15 @@ class ScrabbleCalculator(BaseGameCalculator):
         tile_index = 0
         word_multiplier = 1
         points = 0
-        for x in range(start_x, 15):
+        blank_indexes = {}
+        for x in range(start_x, self.board_size):
             tile = board.get_tile(x, row)
             if tile:
                 points += TILE_SCORES[tile[0]]
                 word += tile[-1]
             elif tile_index < len(played_tiles) and played_tiles[tile_index]['x'] == x:
-                tile = played_tiles[tile_index]['tile']
-                letter_points = TILE_SCORES[tile[0]]
+                tile = played_tiles[tile_index]['tile'][0]
+                letter_points = TILE_SCORES[tile]
                 multiplier = BOARD_CONFIG[x][row]
                 if multiplier == Multiplier.dl:
                     letter_points *= 2
@@ -79,13 +82,16 @@ class ScrabbleCalculator(BaseGameCalculator):
                 if multiplier == Multiplier.tw:
                     word_multiplier *= 3
                 points += letter_points
-                word += tile[-1]
+                # Keep track of word index -> blank tile mapping for validation
+                if tile == "-":
+                    blank_indexes[len(word)] = played_tiles[tile_index]
+                word += tile
                 tile_index += 1
             else:
                 break
         points *= word_multiplier
         if len(word) > 1:
-            return points, word
+            return points, word,
         return 0, None
 
     def get_unplayed_tile_points(self, tile):

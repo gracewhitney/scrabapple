@@ -18,7 +18,7 @@
           {% with multiplier=BOARD_CONFIG|getitem:row_index|getitem:forloop.counter0 %}
           <div class="scrabble-board-square {{ multiplier.value }}">
             {% if col %}
-              <div class="tile {% if col.0 == '-' %}blank{% endif %}">{{ col|cut:'-' }}<span class="tile-score">{{ TILE_SCORES|getitem:col.0|default:'' }}</span></div>
+              <div class="tile {% if col.0 in BLANK_CHARS %}blank{% endif %}">{{ col|cut:'-'|cut:'*' }}<span class="tile-score">{{ TILE_SCORES|getitem:col.0|default:'' }}</span></div>
             {% elif multiplier and multiplier != Multiplier.start %}
               {{ multiplier.value|upper }}
             {% endif %}

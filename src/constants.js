@@ -26,6 +26,7 @@ export const TILE_SCORES = {
     'Y': 4,
     'Z': 10,
     '-': 0, // BLANK
+    '*': 0, // BLANK
 }
 
 export const MULTIPLIERS = {

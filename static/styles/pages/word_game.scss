@@ -161,7 +161,7 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
   padding: 0;
 
   &.blank {
-    color: red;
+    color: rgba($primary, 0.6);
     background-image: url(django-static("logo-transparent.png"));
     background-size: contain;
   }
