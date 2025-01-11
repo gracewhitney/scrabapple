@@ -38,10 +38,9 @@ def validate_word(word, dictionary_names, blank_replacements):
             raise Exception(f"Unsupported dictionary {dictionary_name}")
         d = DAWGS[dictionary_name]
         matches.update(d.similar_keys(word.lower(), replaces))
-    if matches:
-        for char in BLANK_CHARS:
-            if char in word:
-                i = word.index(char)
-                char_matches = [match[i] for match in matches]
-                blank_replacements[char] = char_matches
+    for char in BLANK_CHARS:
+        if char in word:
+            i = word.index(char)
+            char_matches = [match[i] for match in matches]
+            blank_replacements[char] = char_matches
     return bool(matches)
