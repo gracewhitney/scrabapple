@@ -258,7 +258,9 @@ class BaseGameCalculator:
                 board = GameBoard(self.game.board)
                 for play in played_tiles:
                     tile = board.get_tile(play['x'], play['y'])
-                    board.set_tile(tile[len(tile):], play['x'], play['y'], replace=True)
+                    # Either we don't have blanks or we have single stacks :)
+                    previous = "" if tile[0] in BLANK_CHARS else tile[1:]
+                    board.set_tile(previous, play['x'], play['y'], replace=True)
                     used_tiles.append(play['tile'][0])
             elif turn.turn_action == TurnAction.exchange:
                 used_tiles = turn.turn_data["exchanged_tiles"]
