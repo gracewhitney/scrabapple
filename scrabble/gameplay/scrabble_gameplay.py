@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 
-from scrabble.constants import Multiplier, WordGame
+from scrabble.constants import Multiplier, WordGame, BLANK_CHARS
 from scrabble.gameplay.base_calculator import BaseGameCalculator
 
 SCRABBLE_TILE_FREQUENCIES = {
@@ -30,8 +30,10 @@ SCRABBLE_TILE_FREQUENCIES = {
     'X': 1,
     'Y': 2,
     'Z': 1,
-    '-': 2,  # BLANK
 }
+
+# Use separate chars for two blank tiles to facilitate replacement validation
+SCRABBLE_TILE_FREQUENCIES.update({char: 1 for char in BLANK_CHARS})
 
 
 class ScrabbleCalculator(BaseGameCalculator):
@@ -61,7 +63,7 @@ class ScrabbleCalculator(BaseGameCalculator):
         tile_index = 0
         word_multiplier = 1
         points = 0
-        for x in range(start_x, 15):
+        for x in range(start_x, self.board_size):
             tile = board.get_tile(x, row)
             if tile:
                 points += TILE_SCORES[tile[0]]

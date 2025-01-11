@@ -1,4 +1,5 @@
 import json
+import string
 from collections import Counter
 
 from django.contrib.admin.utils import flatten
@@ -6,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Max
 
-from scrabble.constants import TurnAction
+from scrabble.constants import TurnAction, BLANK_CHARS
 from scrabble.dictionaries import validate_word
 from scrabble.models import GameTurn
 from scrabble.serializers import GameTurnSerializer
@@ -29,6 +30,10 @@ class BaseGameCalculator:
         if not self.tile_frequencies:
             raise NotImplementedError("Must specify tile frequencies")
         self.game = game
+        # Keep track of valid blank replacements for current play
+        self.blank_replacements = {
+            char: [letter for letter in string.ascii_lowercase] for char in BLANK_CHARS
+        }
 
     def get_initial_board(self):
         return [["" for _ in range(self.board_size)] for _ in range(self.board_size)]
@@ -122,10 +127,15 @@ class BaseGameCalculator:
         elif turn_action == TurnAction.play:
             played_tiles = turn_data["played_tiles"]
             points, words = self.calculate_points(played_tiles)
-            if self.game.validate_words:
-                invalid_words = self.validate_words(words)
-                if invalid_words:
-                    raise ValidationError(f"Invalid words: {', '.join(invalid_words)}")
+            invalid_words = self.validate_words(words)
+            if self.game.validate_words and invalid_words:
+                raise ValidationError(f"Invalid words: {', '.join(invalid_words)}")
+            # Deal with replacing blank tiles based on validation
+            for tile in played_tiles:
+                if tile['tile'] in BLANK_CHARS:
+                    if self.blank_replacements[tile['tile']]:
+                        tile['tile'] += self.blank_replacements[tile['tile']][0].upper()
+            words = [self._replace_blank_tiles(word) for word in words]
             played_letters = [tile['tile'] for tile in played_tiles]
             new_tiles = self.game.draw_tiles(len(played_letters))
             for tile in played_letters:
@@ -154,22 +164,33 @@ class BaseGameCalculator:
             self.go_out(game_player)
         return turn
 
+    def _replace_blank_tiles(self, word):
+        for char in BLANK_CHARS:
+            if self.blank_replacements[char]:
+                word = word.replace(char, self.blank_replacements[char][0].upper())
+        return word
+
     def calculate_points(self, played_tiles):
+        # Calculates points and validates words, returning (points, valid_words, invalid_words) tuple
         board = GameBoard(self.game.board)
+        points = 0
         words = []
         # Transpose vertical plays
         if len(set(tile['y'] for tile in played_tiles)) != 1:
             played_tiles = [{**tile, "x": tile["y"], "y": tile["x"]} for tile in played_tiles]
             board.transpose_board()
-        points, word = self.calculate_word_points(played_tiles, board)
-        if word:
-            words.append(word)
-        board.transpose_board()
-        for tile in played_tiles:
-            word_points, word = self.calculate_word_points([{**tile, "x": tile["y"], "y": tile["x"]}], board)
-            points += word_points
+        def _handle_word(tiles):
+            word_points, word = self.calculate_word_points(tiles, board)
             if word:
                 words.append(word)
+            return word_points
+        # Get play direction word & points
+        points += _handle_word(played_tiles)
+        # Get perpendicular words & points
+        board.transpose_board()
+        for tile in played_tiles:
+           points += _handle_word([{**tile, "x": tile["y"], "y": tile["x"]}])
+        # Add bingo points
         if len(played_tiles) == 7:
             points += self.bingo_points
         return points, words
@@ -183,7 +204,7 @@ class BaseGameCalculator:
             return []
         invalid_words = [
             word for word in words
-            if not any(validate_word(word, dictionary) for dictionary in dictionaries)
+            if not validate_word(word, dictionaries, self.blank_replacements)
         ]
         return invalid_words
 
@@ -237,7 +258,9 @@ class BaseGameCalculator:
                 board = GameBoard(self.game.board)
                 for play in played_tiles:
                     tile = board.get_tile(play['x'], play['y'])
-                    board.set_tile(tile[1:], play['x'], play['y'], replace=True)
+                    # Either we don't have blanks or we have single stacks :)
+                    previous = "" if tile[0] in BLANK_CHARS else tile[1:]
+                    board.set_tile(previous, play['x'], play['y'], replace=True)
                     used_tiles.append(play['tile'][0])
             elif turn.turn_action == TurnAction.exchange:
                 used_tiles = turn.turn_data["exchanged_tiles"]
