@@ -18,6 +18,7 @@ class ScrabbleGame(TimestampedModel):
     )
     next_turn_index = models.IntegerField(default=0)
     over = models.BooleanField(default=False)
+    archived_on = models.DateTimeField(null=True)
     game_type = models.CharField(choices=WordGame.choices, max_length=32)
     use_old_upwords_rules = models.BooleanField(default=False, blank=True)
     prevent_stack_duplicates = models.BooleanField(default=False, blank=True)
@@ -114,6 +115,7 @@ class GamePlayer(TimestampedModel):
     score = models.IntegerField(default=0)
     turn_index = models.IntegerField()
     forfeited = models.BooleanField(default=False)
+    archived = models.BooleanField(default=False)
     winner = models.BooleanField(default=False)
 
     send_turn_notifications = models.BooleanField(default=False)

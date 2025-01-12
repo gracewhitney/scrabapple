@@ -40,3 +40,6 @@ class User(AbstractUser, TimestampedModel):
 
     def get_short_name(self):
         return self.first_name or self.email
+
+    def completed_games(self):
+        return self.game_racks.filter(game__over=True, game__archived_on__isnull=True)

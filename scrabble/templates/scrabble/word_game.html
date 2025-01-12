@@ -100,9 +100,11 @@
         </div>
       </div>
     </div>
-    <a class="btn btn-link align-self-start px-0 py-3" href="{% url 'scrabble:edit_game_options' game_id=game.id %}">
-      <span class="bi bi-gear"></span> Edit Game Options
-    </a>
+    {% if not game.over %}
+      <a class="btn btn-link align-self-start px-0 py-3" href="{% url 'scrabble:edit_game_options' game_id=game.id %}">
+        <span class="bi bi-gear"></span> Edit Game Options
+      </a>
+    {% endif %}
   </div>
   <div class="d-flex flex-column mt-2 col-12 col-sm-9 overflow-x-scroll">
     {% if game.game_type == WordGame.scrabble %}

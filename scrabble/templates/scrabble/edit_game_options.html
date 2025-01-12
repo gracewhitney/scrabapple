@@ -12,6 +12,20 @@
     </p>
     {% crispy form %}
   </div>
+  <div class="container mt-4">
+    <div class="card border-danger">
+        <div class="card-body">
+          <h3 class="h5">Archive Game</h3>
+          <div class="alert alert-danger align-self-start">
+            This will remove the game from all players' history. You will no longer be able to access this game.
+          </div>
+          <form action="{% url 'scrabble:archive_game' form.instance.id %}" method="post" onsubmit="return confirm('Are you sure you want to archive this game?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Archive Game</button>
+          </form>
+        </div>
+      </div>
+  </div>
 {% endblock %}
 
 {% block javascript %}
