@@ -3,7 +3,9 @@ from statistics import fmean
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.db import transaction
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.html import strip_tags
 from sentry_sdk import capture_exception
@@ -91,7 +93,7 @@ def send_turn_notification(game, request):
 
 def get_user_statistics(user):
     stats = {}
-    all_plays = GameTurn.objects.filter(game_player__user=user, turn_action=TurnAction.play)
+    all_plays = GameTurn.objects.filter(game_player__user=user, turn_action=TurnAction.play).exclude(game_player__game__archived_on__isnull=False)
     if all_plays:
         scores = all_plays.values_list("score", flat=True)
         all_words = [word for turn in all_plays for word in turn.turn_words if word]
@@ -101,7 +103,7 @@ def get_user_statistics(user):
             "highest play score": max(scores),
             "average play score": round(fmean(scores)),
         })
-    game_results = user.game_racks.filter(game__over=True)
+    game_results = user.completed_games()
     if game_results:
         game_scores = game_results.values_list("score", flat=True)
         won_games = game_results.filter(winner=True).count()
@@ -111,3 +113,9 @@ def get_user_statistics(user):
             "percent wins": f"{round(won_games / len(game_results) * 100)}%",
         })
     return stats
+
+
+def archive_game(game_player):
+    with transaction.atomic():
+        game_player.update(archived=True)
+        game_player.game.update(over=True, archived_on=timezone.now())
