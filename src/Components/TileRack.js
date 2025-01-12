@@ -94,36 +94,36 @@ function TileRack(props) {
       </ul>
     </div>
   );
-  }
+}
 
 
-  const RackPosition = (props) => {
-    const {
+const RackPosition = (props) => {
+  const {
     tile,
     index,
     moveTile
   } = props
 
-    const [, drop] = useDrop(
+  const [, drop] = useDrop(
     () => ({
-    accept: 'tile',
-    drop: (item) => moveTile(item.id, index),
-    hover({id: draggedId}) {
-    if (draggedId !== tile.id) {
-    moveTile(draggedId, index)
-  }
-  },
-  }),
+      accept: 'tile',
+      drop: (item) => moveTile(item.id, index),
+      hover({id: draggedId}) {
+        if (draggedId !== tile.id) {
+          moveTile(draggedId, index)
+        }
+      },
+    }),
     [moveTile, tile.id, index]
-    )
+  )
 
-    return (
+  return (
     <div ref={drop}>
-    {
-      tile.letter
-        ? <Tile {...tile} className="list-group-item"></Tile>
-        : <div className={"gap"}></div>
-    }
+      {
+        tile.letter
+          ? <Tile {...tile} className="list-group-item"></Tile>
+          : <div className={"gap"}></div>
+      }
     </div>
   )
 }
