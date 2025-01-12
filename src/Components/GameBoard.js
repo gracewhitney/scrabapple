@@ -108,6 +108,11 @@ const GameBoard = (props) => {
     }
   }
 
+  const returnAllTilesToRack = () => {
+    setPlayedTiles([]);
+    setExchangedTiles([])
+  }
+
   const renderBoardCol = (letter, xIndex, yIndex) => {
     const multiplier = boardConfig ? boardConfig[yIndex][xIndex] : null
     const played_tile = playedTiles.find(tile => tile.x === xIndex && tile.y === yIndex)
@@ -163,17 +168,15 @@ const GameBoard = (props) => {
           <div id={`${gameId}-board`}>
             {board.map(renderBoardRow)}
           </div>
-          <div id="rack" className={`d-flex justify-content-center mb-3 ${gameId}-rack-container`}>
-            <button className="btn btn-secondary my-2 me-2"
-                    onClick={() => {setPlayedTiles([]); setExchangedTiles([])}}
-            >
-              <span className="bi bi-arrow-down-right-square-fill"></span>
-            </button>
-            <TileRack tiles={idTiles}
-                      removedTileIds={playedTiles.map(tile => tile.tile.id) + exchangedTiles.map(tile => tile.id)}
-                      returnToRackHandler={returnTileToRack} updateRackUrl={updateRackUrl}>
-            </TileRack>
-          </div>
+          <TileRack
+            gameId={gameId}
+            tiles={idTiles}
+            removedTileIds={playedTiles.map(tile => tile.tile.id) + exchangedTiles.map(tile => tile.id)}
+            returnToRackHandler={returnTileToRack}
+            returnAllTilesToRackHandler={returnAllTilesToRack}
+            updateRackUrl={updateRackUrl}
+          >
+          </TileRack>
         </div>
         <div className={`col d-flex flex-column actions-col ${gameId}-actions`}>
           {
