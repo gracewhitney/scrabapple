@@ -139,5 +139,5 @@ TILE_SCORES = {
     'X': 8,
     'Y': 4,
     'Z': 10,
-    '-': 0,  # BLANK
 }
+TILE_SCORES.update({char: 0 for char in BLANK_CHARS})
