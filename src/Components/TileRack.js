@@ -3,12 +3,15 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {DndProvider, useDrop} from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import Tile from "./Tile";
+import {shuffle} from "../utils";
 
 
 function TileRack(props) {
   const {
+    gameId,
     tiles,
     returnToRackHandler,
+    returnAllTilesToRackHandler,
     updateRackUrl,
   } = props
 
@@ -35,6 +38,16 @@ function TileRack(props) {
     }
   }
 
+  const shuffleTiles = () => {
+    const newRackPositions = [...rackPositions].filter(t => t.letter !== undefined)
+    shuffle(newRackPositions)
+    // Add empty spaces back to end
+    for (let i = newRackPositions.length; i < 8; i++) {
+      newRackPositions.push({id: i })
+    }
+    setRackPositions(newRackPositions)
+  }
+
   const updateRack = useCallback(
     _.debounce(async (currentRackPositions) => {
       await fetch(updateRackUrl, {
@@ -48,21 +61,38 @@ function TileRack(props) {
 
   useEffect(() => {updateRack(rackPositions)}, [rackPositions]);
 
+  const rackAction = (
+    removedTileIds.length === 0
+      ? (
+        <button className="btn btn-secondary my-2 me-2" onClick={shuffleTiles}>
+          <span className="bi bi-shuffle"></span>
+        </button>
+      )
+      : (
+        <button className="btn btn-secondary my-2 me-2" onClick={returnAllTilesToRackHandler}>
+          <span className="bi bi-arrow-down-right-square-fill"></span>
+        </button>
+      )
+  )
+
   return (
+    <div id="rack" className={`d-flex justify-content-center mb-3 ${gameId}-rack-container`}>
+      { rackAction }
       <ul className="list-group list-group-horizontal mt-1">
         <DndProvider backend={HTML5Backend}>
-        {
-          rackPositions.map((tile, i) =>
-            <RackPosition
-              tile={removedTileIds.indexOf(tile.id) < 0 ? tile : {id: tile.id}}
-              index={i}
-              key={tile.id}
-              moveTile={moveTile}>
-            </RackPosition>
-          )
-        }
+          {
+            rackPositions.map((tile, i) =>
+              <RackPosition
+                tile={removedTileIds.indexOf(tile.id) < 0 ? tile : {id: tile.id}}
+                index={i}
+                key={tile.id}
+                moveTile={moveTile}>
+              </RackPosition>
+            )
+          }
         </DndProvider>
       </ul>
+    </div>
   );
 }
 
@@ -78,7 +108,7 @@ const RackPosition = (props) => {
     () => ({
       accept: 'tile',
       drop: (item) => moveTile(item.id, index),
-      hover({ id: draggedId }) {
+      hover({id: draggedId}) {
         if (draggedId !== tile.id) {
           moveTile(draggedId, index)
         }
@@ -89,11 +119,11 @@ const RackPosition = (props) => {
 
   return (
     <div ref={drop}>
-    {
-      tile.letter
-        ? <Tile {...tile} className="list-group-item"></Tile>
-        : <div className={"gap"}></div>
-    }
+      {
+        tile.letter
+          ? <Tile {...tile} className="list-group-item"></Tile>
+          : <div className={"gap"}></div>
+      }
     </div>
   )
 }
