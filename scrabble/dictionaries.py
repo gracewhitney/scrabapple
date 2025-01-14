@@ -22,16 +22,15 @@ DAWGS = {
     for dictionary in Dictionary
 }
 
-BLANK_REPLACEMENT_MAPPING = {
-    char: [letter for letter in string.ascii_lowercase]
-    for char in BLANK_CHARS
-}
-BLANK_REPLACEMENT = dawg.CompletionDAWG.compile_replaces(BLANK_REPLACEMENT_MAPPING)
-
 
 def validate_word(word, dictionary_names, blank_replacements):
-    """Checks whether matching word exists in dictionary. Also updates blank_replacements by reference."""
-    replaces = dawg.CompletionDAWG.compile_replaces(blank_replacements) if blank_replacements else BLANK_REPLACEMENT
+    """
+    Checks whether matching word exists in dictionary.
+    Side effect: Also updates blank_replacements by reference.
+    """
+    # Empty replacement list errors -- remove from dict
+    filtered_replacements = {char: value for char, value in blank_replacements.items() if value}
+    replaces = dawg.CompletionDAWG.compile_replaces(filtered_replacements)
     matches = set()
     for dictionary_name in dictionary_names:
         if dictionary_name not in DAWGS:
@@ -42,5 +41,6 @@ def validate_word(word, dictionary_names, blank_replacements):
         if char in word:
             i = word.index(char)
             char_matches = [match[i] for match in matches]
+            # Update replacement lists in place (passed by reference)
             blank_replacements[char] = char_matches
     return bool(matches)
