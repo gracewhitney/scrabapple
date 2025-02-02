@@ -44,8 +44,8 @@ def create_new_game(form, creating_user, request=None):
     game.board = calculator.get_initial_board()
     game.letter_bag = calculator.get_initial_letter_bag()
     game.save()
-    GamePlayer.objects.create(user=creating_user, game=game, turn_index=0, rack=game.draw_tiles(7, commit=True))
-    turn_index = 1
+    players = []
+    players.append(GamePlayer(user=creating_user, game=game, rack=game.draw_tiles(7, commit=True)))
     for email in [
         form.cleaned_data["player_2_email"],
         form.cleaned_data.get("player_3_email"),
@@ -56,9 +56,14 @@ def create_new_game(form, creating_user, request=None):
         user, created = User.objects.get_or_create(
             email=email, defaults={"one_time_passcode": get_random_string(32)}
         )
-        GamePlayer.objects.create(user=user, game=game, turn_index=turn_index, rack=game.draw_tiles(7, commit=True))
-        send_invitation_email(user, game, creating_user, request=request)
-        turn_index += 1
+        players.append(GamePlayer(user=user, game=game, rack=game.draw_tiles(7, commit=True)))
+    players = sorted(players, key=lambda p: p.rack[0])
+    for turn_index, player in enumerate(players):
+        player.turn_index = turn_index
+    GamePlayer.objects.bulk_create(players)
+    for player in players:
+        if player.user != creating_user:
+            send_invitation_email(player.user, game, creating_user, request=request)
     return game
 
 
