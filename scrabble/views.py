@@ -17,7 +17,8 @@ from django.views.generic import FormView, TemplateView
 from scrabble.constants import Multiplier, TurnAction, WordGame, BLANK_CHARS
 from scrabble.gameplay.scrabble_gameplay import BOARD_CONFIG, TILE_SCORES
 from scrabble.forms import CreateGameForm, EditGameForm
-from scrabble.helpers import create_new_game, get_calculator, send_turn_notification, archive_game
+from scrabble.helpers import create_new_game, get_calculator, send_turn_notification, archive_game, \
+    send_game_over_notification
 from scrabble.models import ScrabbleGame, GamePlayer
 
 
@@ -122,7 +123,11 @@ class GameTurnView(GamePermissionMixin, View):
             else:
                 success_message = "Your turn is complete."
             messages.success(request, success_message)
-        send_turn_notification(self.game, request)
+        self.game.refresh_from_db()
+        if not self.game.over:
+            send_turn_notification(self.game, request)
+        else:
+            send_game_over_notification(self.game, request)
         return redirect('scrabble:play_game', game_id=self.game.id)
 
 

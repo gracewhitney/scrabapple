@@ -61,7 +61,9 @@ class ScrabbleGame(TimestampedModel):
     def ordered_racks(self):
         return self.racks.order_by("turn_index")
 
-    def winners(self):
+    def winners(self, cached=True):
+        if cached:
+            return self.racks.filter(winner=True)
         if not self.over:
             return []
         players = self.racks.exclude(forfeited=True).order_by('-score')

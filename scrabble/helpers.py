@@ -96,6 +96,25 @@ def send_turn_notification(game, request):
         )
 
 
+def send_game_over_notification(game, request):
+    for player in game.racks.filter(send_turn_notifications=True):
+        message = render_to_string(
+            "emails/game_over_notification.html",
+            context={
+                "game": game,
+                "player": player,
+            },
+            request=request
+        )
+        send_mail(
+            f"Game over",
+            strip_tags(message),
+            html_message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[player.user.email],
+        )
+
+
 def get_user_statistics(user):
     stats = {}
     all_plays = GameTurn.objects.filter(game_player__user=user, turn_action=TurnAction.play).exclude(game_player__game__archived_on__isnull=False)

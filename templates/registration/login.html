@@ -5,8 +5,7 @@
 {% block body %}
   <form method="post">
     {% csrf_token %}
-    {{ form.username|as_crispy_field }}
-    {{ form.password|as_crispy_field }}
+    {{ form|crispy }}
     <button class="btn btn-primary">Log In</button>
   </form>
 {% endblock body %}

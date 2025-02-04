@@ -1,0 +1,21 @@
+{% extends "base_templates/email_base.html" %}
+
+{% block title %}Game over!{% endblock %}
+
+{% block body %}
+  <p>Hi, {{ player.user.get_short_name }}. Your {{ game.get_game_type_display }} game is over.</p>
+
+  <p>
+    {% for winner in game.winners %}
+    {% if winners|length > 2 and not forloop.first %}, {% endif %}{% if forloop.last and not forloop.first %} and {% endif %}{% if winner == player %}You{% else %}{{ winner.user.get_short_name }}{% endif %}
+    {% endfor %}
+    won with {{ winners.0.score }} points.
+  </p>
+
+  <p>Thanks for playing! Start a new game using the link below.</p>
+
+  <div class="d-grid gap-2">
+    <a class="btn btn-secondary" href="{{ request.scheme }}://{{ request.get_host }}{% url 'scrabble:play_game' game.id %}">View Game</a>
+    <a class="btn btn-primary" href="{{ request.scheme }}://{{ request.get_host }}{% url 'scrabble:create_game' %}">New Game</a>
+  </div>
+{% endblock %}

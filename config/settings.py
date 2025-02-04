@@ -134,6 +134,9 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 
+APP_DISPLAY_NAME = "scrabapple"
+
+
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
@@ -162,13 +165,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 if LOCALHOST:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-    DEFAULT_FROM_EMAIL = "webmaster@localhost"
+    DEFAULT_FROM_EMAIL = f"{APP_DISPLAY_NAME.title()} <webmaster@localhost>"
 else:
     EMAIL_BACKEND = "django_ses.SESBackend"
     AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME")
     AWS_SES_REGION_ENDPOINT = env("AWS_SES_REGION_ENDPOINT")
     AWS_SES_RETURN_PATH = env("DEFAULT_FROM_EMAIL")
-    DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+    DEFAULT_FROM_EMAIL = f'{APP_DISPLAY_NAME.title()} <{env("DEFAULT_FROM_EMAIL")}>'
 
 # Logging
 # https://docs.djangoproject.com/en/dev/topics/logging/#django-security
@@ -344,6 +347,3 @@ SASS_PROCESSOR_INCLUDE_DIRS = [
 ]
 SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
 COMPRESS_ROOT = SASS_PROCESSOR_ROOT
-
-
-APP_DISPLAY_NAME = "scrabapple"
