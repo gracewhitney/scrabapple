@@ -7,7 +7,7 @@ from django.db import transaction
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.crypto import get_random_string
-from django.utils.html import strip_tags
+from markdownify import markdownify
 from sentry_sdk import capture_exception
 
 from common.models import User
@@ -28,7 +28,7 @@ def send_invitation_email(user, game, creating_user, request):
     try:
         send_mail(
             f"Play {game.game_type}!",
-            strip_tags(message),
+            markdownify(message),
             html_message=message,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
@@ -89,7 +89,7 @@ def send_turn_notification(game, request):
         )
         send_mail(
             f"It's your turn!",
-            strip_tags(message),
+            markdownify(message),
             html_message=message,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[player.user.email],
@@ -108,7 +108,7 @@ def send_game_over_notification(game, request):
         )
         send_mail(
             f"Game over",
-            strip_tags(message),
+            markdownify(message),
             html_message=message,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[player.user.email],

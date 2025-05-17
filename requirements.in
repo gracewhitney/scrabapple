@@ -13,6 +13,7 @@ django-storages
 django-webpack-loader==0.7.0
 libsass
 psycopg2
+markdownify
 requests
 sentry-sdk
 social-auth-app-django
