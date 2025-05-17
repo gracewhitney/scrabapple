@@ -2,6 +2,7 @@ import uuid
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Max
 
 from common.managers import UserManager
 
@@ -43,3 +44,12 @@ class User(AbstractUser, TimestampedModel):
 
     def completed_games(self):
         return self.game_racks.filter(game__over=True, game__archived_on__isnull=True)
+
+    def in_progress_games(self):
+        """Return in-progress games sorted by most recent turn or creation timestamp"""
+        racks = self.game_racks.filter(game__over=False)
+        return sorted(
+            racks,
+            key=lambda r: r.game.all_turns().aggregate(latest=Max("created_on"))["latest"] or r.game.created_on,
+            reverse=True
+        )

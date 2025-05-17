@@ -6,7 +6,7 @@
         <span class="bi bi-exclamation-triangle text-warning" title="Your turn!"></span>
       {% endif %}
     </div>
-    <div class="text-small d-flex">Last play: {{ game.all_turns.last.created_on|date }}</div>
+    <div class="text-small d-flex">{% if game.all_turns.exists %}Last play: {{ game.all_turns.last.created_on|date}}{% else %}No plays yet{% endif %}</div>
   </div>
   <ul class="list-group list-group-flush">
     {% for rack in game.ordered_racks %}

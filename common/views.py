@@ -20,7 +20,7 @@ class IndexView(TemplateView):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
             context.update({
-                "in_progress_games": self.request.user.game_racks.filter(game__over=False).order_by("-created_on"),
+                "in_progress_games": self.request.user.in_progress_games(),
                 "past_games": self.request.user.completed_games().order_by("-created_on"),
                 "user_statistics": get_user_statistics(self.request.user),
             })
