@@ -1,9 +1,11 @@
 {% extends "base_templates/base.html" %}
+{% load webpack_loader %}
 {% load crispy_forms_tags %}
 
 {% block title %}Create New Game{% endblock %}
 
 {% block body %}
+  {% render_bundle 'runtime' %}
   <div class="container mt-4">
     <h1>Create New Game</h1>
     <p>Enter up to 3 other players below to create your game.</p>
@@ -20,6 +22,6 @@
           'game_type': ""
         }
       }
-    }).mount('#app-content')
+    }).mount('#vue-anchor')
   </script>
 {% endblock %}

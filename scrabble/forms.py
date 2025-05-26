@@ -1,9 +1,11 @@
 from crispy_forms.bootstrap import InlineCheckboxes
 from crispy_forms.layout import Layout, Field, Div
 from django import forms
+from django.core.exceptions import ValidationError
 from django.forms import CheckboxSelectMultiple
 
 from common.forms import CrispyFormMixin
+from common.widgets import EmailAutocompleteWidget
 from scrabble.constants import WordGame, Dictionary
 from scrabble.models import ScrabbleGame
 
@@ -55,16 +57,22 @@ class CreateGameForm(EditGameForm):
     player_3_email = forms.EmailField(required=False)
     player_4_email = forms.EmailField(required=False)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, user, **kwargs):
         super().__init__(*args, **kwargs)
+        self.user = user
+        for field in ["player_2_email", "player_3_email", "player_4_email"]:
+            self.fields[field].widget = EmailAutocompleteWidget(user=user)
         self.helper.layout = Layout(
-            Field("game_type", v_model="game_type"),
-            Field("validate_words"),
             Div(
-                Field("use_old_upwords_rules"),
-                Field("prevent_stack_duplicates"),
-                v_if=f"game_type === '{WordGame.upwords.value}'",
-                v_cloak=True,
+                Field("game_type", v_model="game_type"),
+                Field("validate_words"),
+                Div(
+                    Field("use_old_upwords_rules"),
+                    Field("prevent_stack_duplicates"),
+                    v_if=f"game_type === '{WordGame.upwords.value}'",
+                    v_cloak=True,
+                ),
+                css_id="vue-anchor"
             ),
             InlineCheckboxes("selected_dictionaries", wrapper_class="override-legend"),
             "player_2_email",
@@ -74,4 +82,14 @@ class CreateGameForm(EditGameForm):
 
     class Meta(EditGameForm.Meta):
         fields = EditGameForm.Meta.fields + ["game_type"]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        emails = list(filter(
+            None,
+            [cleaned_data.get('player_2_email'), cleaned_data.get('player_3_email'), cleaned_data.get('player_4_email')]
+        )) + [self.user.email]
+        if len(set(emails)) != len(emails):
+            raise ValidationError("You cannot invite the same person to a game twice.")
+        return cleaned_data
 

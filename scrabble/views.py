@@ -22,10 +22,14 @@ from scrabble.helpers import create_new_game, get_calculator, send_turn_notifica
 from scrabble.models import ScrabbleGame, GamePlayer
 
 
-# Create your views here.
 class CreateGameView(LoginRequiredMixin, FormView):
     template_name = "scrabble/new_game.html"
     form_class = CreateGameForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         game = create_new_game(form, self.request.user, self.request)
