@@ -53,3 +53,9 @@ class User(AbstractUser, TimestampedModel):
             key=lambda r: r.game.all_turns().aggregate(latest=Max("created_on"))["latest"] or r.game.created_on,
             reverse=True
         )
+
+    def known_users(self):
+        """Users which have been in a game with this user"""
+        return User.objects.filter(
+            game_racks__game_id__in=self.game_racks.values('game_id')
+        ).exclude(id=self.id).distinct('id')

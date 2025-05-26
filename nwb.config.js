@@ -9,6 +9,7 @@ const BundleTracker = require('webpack-bundle-tracker')
  */
 
 const ENTRIES = {
+  Autocomplete: './src/Components/Autocomplete.js',
   TileRack: './src/Components/TileRack.js',
   ScrabbleGame: './src/Pages/ScrabbleGame.js',
   UpwordsGame: './src/Pages/UpwordsGame.js',

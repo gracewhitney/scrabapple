@@ -1,0 +1,4 @@
+{% load django_react_components %}
+{% load webpack_loader %}
+{% render_bundle "Autocomplete" %}
+{% react_component "Autocomplete" attrs=widget.attrs name=widget.name options=users %}
