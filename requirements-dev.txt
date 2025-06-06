@@ -69,7 +69,7 @@ defusedxml==0.7.1
     #   social-auth-core
 distlib==0.3.8
     # via virtualenv
-django==4.2.21
+django==4.2.22
     # via
     #   -c requirements.txt
     #   -r requirements.in
