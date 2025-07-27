@@ -21,6 +21,11 @@ $bootstrap-icons-font-src: url(django-static('bootstrap-icons/font/fonts/bootstr
     @include full-height-mixin();
   }
 }
+.full-height-md {
+  @include media-breakpoint-up(md) {
+    @include full-height-mixin();
+  }
+}
 
 .text-small {
   font-size: 0.75 * $font-size-base;

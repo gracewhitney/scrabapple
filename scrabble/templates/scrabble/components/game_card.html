@@ -11,7 +11,7 @@
   <ul class="list-group list-group-flush">
     {% for rack in game.ordered_racks %}
       <li class="list-group-item d-flex justify-content-between">
-        <span>{{ rack.user.get_short_name }}</span>
+        <span class="text-truncate" title="{{ rack.user.get_short_name }}">{{ rack.user.get_short_name }}</span>
         {% if rack.turn_index == game.next_turn_index %}<span class="bi bi-hourglass-split text-info-emphasis"></span>{% endif %}
       </li>
     {% endfor %}
