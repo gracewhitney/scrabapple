@@ -41,7 +41,10 @@
             <ul class="list-group">
               <li class="list-group-item fst-italic">Counts include opponents' racks.</li>
               {% for letter, count in letter_counts %}
-                <li class="list-group-item">{{ letter }} x {{ count }}</li>
+                <li class="list-group-item">
+                  {% if letter|isalpha %}{{ letter }}{% else %}<img src="{% static 'logo-transparent.png' %}" height="14px" class="border rounded-1">{% endif %}
+                  x {{ count }}
+                </li>
               {% endfor %}
             </ul>
           </div>

@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='scrabblegame',
             name='selected_dictionaries',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.CharField(choices=[('ospd2', 'OSPD2'), ('ospd3', 'OSPD3'), ('csw12', 'CSW12')], max_length=32), null=True, size=None),
+            field=django.contrib.postgres.fields.ArrayField(base_field=models.CharField(choices=[('ospd2', 'OSPD2'), ('ospd3', 'OSPD3'), ('csw12', 'CSW12'), ('ENABLE', 'ENABLE'), ('long', 'Long Words')], max_length=32), null=True, size=None),
         ),
         migrations.AddField(
             model_name='scrabblegame',

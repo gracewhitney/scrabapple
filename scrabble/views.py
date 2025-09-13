@@ -74,6 +74,7 @@ class GameView(GamePermissionMixin, TemplateView):
         remaining_letters = self.game.letter_bag + flatten(
             self.game.racks.exclude(user=self.request.user).values_list('rack', flat=True)
         )
+        remaining_letters = [l if l.isalpha() else '*' for l in remaining_letters] # Make blanks the same
         context.update({
             "game": self.game,
             "game_player": self.game_player,
