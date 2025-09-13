@@ -26,6 +26,7 @@ class Dictionary(TextChoices):
     ospd2 = "ospd2", "OSPD2"
     ospd3 = "ospd3", "OSPD3"
     csw = "csw12", "CSW12"
+    enable = "ENABLE", "ENABLE"
 
 
 BLANK_CHARS = ['-', '*']
