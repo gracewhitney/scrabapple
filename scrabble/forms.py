@@ -12,8 +12,11 @@ from scrabble.models import ScrabbleGame
 
 class EditGameForm(CrispyFormMixin, forms.ModelForm):
     selected_dictionaries = forms.MultipleChoiceField(
-        choices=Dictionary.choices, initial=[Dictionary.ospd2, Dictionary.ospd3], widget=CheckboxSelectMultiple,
-        label="Choose dictionaries", required=False
+        choices=[choice for choice in Dictionary.choices if choice[0] != Dictionary.long],
+        initial=[Dictionary.ospd2, Dictionary.ospd3],
+        widget=CheckboxSelectMultiple,
+        label="Choose dictionaries",
+        required=False
     )
 
     class Meta:
