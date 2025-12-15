@@ -105,7 +105,7 @@ class ScrabbleGame(TimestampedModel):
         return scorecard_rows
 
     def get_dictionaries(self):
-        ospds = [Dictionary.ospd2, Dictionary.ospd3]
+        ospds = [Dictionary.ospd2, Dictionary.ospd3, Dictionary.ospd4]
         if self.selected_dictionaries:
             dicts = list(self.selected_dictionaries)
             if set(dicts).intersection(ospds):

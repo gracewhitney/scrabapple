@@ -25,6 +25,7 @@ class TurnAction(TextChoices):
 class Dictionary(TextChoices):
     ospd2 = "ospd2", "OSPD2"
     ospd3 = "ospd3", "OSPD3"
+    ospd4 = "ospd4", "OSPD4"
     csw = "csw12", "CSW12"
     enable = "ENABLE", "ENABLE"
     long = "long", "Long Words"
