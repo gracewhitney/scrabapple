@@ -38,34 +38,39 @@ def send_invitation_email(user, game, creating_user, request):
         messages.error(request, "The invitation email could not be sent. Please invite your opponents via another channel.")
 
 
-def create_new_game(form, creating_user, request=None):
+def create_new_game(form, request):
     game = form.save(commit=False)
-    calculator = get_calculator(game)
-    game.board = calculator.get_initial_board()
-    game.letter_bag = calculator.get_initial_letter_bag()
-    game.save()
-    players = []
-    players.append(GamePlayer(user=creating_user, game=game, rack=game.draw_tiles(7, commit=True)))
+    players = [request.user]
     for email in [
         form.cleaned_data["player_2_email"],
         form.cleaned_data.get("player_3_email"),
         form.cleaned_data.get("player_4_email")
     ]:
         if not email:
-            break
+            continue
         user, created = User.objects.get_or_create(
             email=email, defaults={"one_time_passcode": get_random_string(32)}
         )
+        players.append(user)
+    return start_game(game, players, request)
+
+
+def start_game(game, users, request):
+    calculator = get_calculator(game)
+    game.board = calculator.get_initial_board()
+    game.letter_bag = calculator.get_initial_letter_bag()
+    game.save()
+    players = []
+    for user in users:
         players.append(GamePlayer(user=user, game=game, rack=game.draw_tiles(7, commit=True)))
     players = sorted(players, key=lambda p: p.rack[0])
     for turn_index, player in enumerate(players):
         player.turn_index = turn_index
     GamePlayer.objects.bulk_create(players)
     for player in players:
-        if player.user != creating_user:
-            send_invitation_email(player.user, game, creating_user, request=request)
+        if player.user != request.user:
+            send_invitation_email(player.user, game, request.user, request=request)
     return game
-
 
 def get_calculator(game):
     calculator_mapping = {

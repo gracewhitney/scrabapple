@@ -66,6 +66,10 @@
           </p>
         {% endif %}
       {% endwith %}
+      <form action="{% url 'scrabble:start_rematch' game.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary mb-3"><i class="bi bi-magic"></i> Rematch</button>
+      </form>
     {% endif %}
     <h3 class="h4">{% if game.over %}Final {% endif %}Scores</h3>
     {% for rack in game.ordered_racks %}

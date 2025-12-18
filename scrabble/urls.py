@@ -14,5 +14,6 @@ urlpatterns = [
     path("info/<uuid:game_id>/turn", views.GameTurnIndexView.as_view(), name="get_game_turn"),
     path("play/<uuid:game_id>/notifications/", views.ToggleNotificationsView.as_view(), name="update_game_settings"),
     path("play/<uuid:game_id>/options/", views.EditGameOptionsView.as_view(), name="edit_game_options"),
-    path("play/<uuid:game_id>/archive/", views.ArchiveGameView.as_view(), name="archive_game")
+    path("play/<uuid:game_id>/archive/", views.ArchiveGameView.as_view(), name="archive_game"),
+    path("rematch/<uuid:game_id>/", views.StartRematchView.as_view(), name="start_rematch"),
 ]

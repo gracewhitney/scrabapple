@@ -7,6 +7,7 @@ from django.contrib.admin.utils import flatten
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -14,11 +15,12 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import FormView, TemplateView
 
+from common.models import User
 from scrabble.constants import Multiplier, TurnAction, WordGame, BLANK_CHARS
 from scrabble.gameplay.scrabble_gameplay import BOARD_CONFIG, TILE_SCORES
 from scrabble.forms import CreateGameForm, EditGameForm
 from scrabble.helpers import create_new_game, get_calculator, send_turn_notification, archive_game, \
-    send_game_over_notification
+    send_game_over_notification, start_game
 from scrabble.models import ScrabbleGame, GamePlayer
 
 
@@ -32,7 +34,7 @@ class CreateGameView(LoginRequiredMixin, FormView):
         return kwargs
 
     def form_valid(self, form):
-        game = create_new_game(form, self.request.user, self.request)
+        game = create_new_game(form, self.request)
         messages.success(
             self.request, f"New game created with {game.racks.count()} players. Invitation emails have been issued."
         )
@@ -194,3 +196,11 @@ class ArchiveGameView(GamePermissionMixin, View):
         archive_game(self.game_player)
         messages.info(request, "This game has been archived and removed from all players' history.")
         return redirect("index")
+
+
+class StartRematchView(GamePermissionMixin, View):
+    def post(self, request, *args, **kwargs):
+        new_game = ScrabbleGame(**model_to_dict(self.game, fields=CreateGameForm.Meta.fields))
+        start_game(new_game, User.objects.filter(game_racks__game=self.game), request)
+        messages.success(request, "The rematch has started! Invitation emails have been issued.")
+        return redirect("scrabble:play_game", game_id=new_game.id)
