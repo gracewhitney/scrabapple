@@ -19,6 +19,7 @@ class BaseGameCalculator:
     board_size = None
     tile_frequencies = None
     winner_takes_unplayed_points = True
+    game_over_on_first_out = True
 
     def __init__(self, game):
         if not self.game_type:
@@ -209,10 +210,21 @@ class BaseGameCalculator:
         return invalid_words
 
     def game_over(self, game_player):
-        return len(game_player.rack) == 0
+        # Game isn't over if there are still tiles to draw
+        if len(self.game.letter_bag) != 0:
+            return False
+        if self.game_over_on_first_out and len(game_player.rack) == 0:
+            return True
+        players_with_tiles = self.game.racks.exclude(rack=[]).count()
+        if players_with_tiles == 0:
+            return True
+        # If all players have passed consecutively, game is over
+        previous_turns = self.game.all_turns().reverse()[:players_with_tiles]
+        if all(turn.turn_action == TurnAction.pass_turn for turn in previous_turns):
+            return True
 
     def go_out(self, game_player):
-        first_turn_count = self.game.racks.aggregate(current_count=Max("turns__turn_count"))['current_count'] or 0
+        first_turn_count = self.game.racks.aggregate(cur_count=Max("turns__turn_count", default=0))['cur_count'] + 1
         turn_count = first_turn_count + 1
         with transaction.atomic():
             extra_points = 0
@@ -229,12 +241,14 @@ class BaseGameCalculator:
                     opponent.score -= lost_points
                     opponent.save()
                 turn_count += 1
-            # Also deduct tile points from this player (only affects old-style upwords)
+            # Also deduct tile points from this player
             for tile in game_player.rack:
                 extra_points -= self.get_unplayed_tile_points(tile)
             GameTurn.objects.create(game_player=game_player, turn_action=TurnAction.end_game,
                                     turn_count=first_turn_count, score=extra_points, rack_before_turn=game_player.rack)
-            game_player.score += extra_points
+            # Only gain points if you actually went out
+            if len(game_player.rack) == 0:
+                game_player.score += extra_points
             game_player.save()
             game_player.game.over = True
             game_player.game.save()
