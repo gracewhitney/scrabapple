@@ -71,7 +71,14 @@ def start_game(game, users, request):
     game.save()
     players = []
     for user in users:
-        players.append(GamePlayer(user=user, game=game, rack=game.draw_tiles(7, commit=True)))
+        players.append(
+            GamePlayer(
+                user=user,
+                game=game,
+                rack=game.draw_tiles(7, commit=True),
+                send_turn_notifications=user.enable_email_default
+            )
+        )
     players = sorted(players, key=lambda p: p.rack[0])
     for turn_index, player in enumerate(players):
         player.turn_index = turn_index

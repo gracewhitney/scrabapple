@@ -30,7 +30,11 @@ class UpdatePasswordForm(CrispyFormMixin, PasswordChangeForm):
 class UserSettingsForm(CrispyFormMixin, forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'email']
+        fields = ['first_name', 'email', 'enable_email_default']
         labels = {
             'first_name': "Display Name",
+            'enable_email_default': "By default, enable email game notifications",
+        }
+        help_texts = {
+            'enable_email_default': "You can also enable or disable this setting on each game individually."
         }
