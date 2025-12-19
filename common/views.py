@@ -108,7 +108,7 @@ class PrivacyPolicyView(TemplateView):
 
 class NotificationTimestampView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        timestamp = None
+        timestamp = ""
         notifications = self.request.user.unread_notifications()
         if notifications:
             timestamp = notifications.order_by("-created_on")[0].created_on.isoformat()
