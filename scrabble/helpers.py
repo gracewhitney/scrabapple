@@ -5,12 +5,15 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.db import transaction
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from markdownify import markdownify
 from sentry_sdk import capture_exception
 
-from common.models import User
+from common.constants import NotificationType
+from common.models import User, Notification
+from common.notifications import create_notification
 from scrabble.constants import WordGame, TurnAction
 from scrabble.gameplay.scrabble_gameplay import ScrabbleCalculator
 from scrabble.gameplay.upwords_gameplay import UpwordsCalculator
@@ -18,6 +21,12 @@ from scrabble.models import GamePlayer, GameTurn
 
 
 def send_invitation_email(user, game, creating_user, request):
+    create_notification(
+        user,
+        NotificationType.new_game,
+        "You have been added to a new game!",
+        reverse("scrabble:play_game", kwargs={"game_id": game.id})
+    )
     template_name = "emails/new_user_invitation.html" if user.one_time_passcode else "emails/existing_user_invitation.html"
     message = render_to_string(template_name, context={
         "user": user,
@@ -82,6 +91,9 @@ def get_calculator(game):
 
 def send_turn_notification(game, request):
     player = game.next_player()
+    create_notification(
+        player.user, NotificationType.play, f"It's your turn in {game.get_game_type_display()}!", reverse("scrabble:play_game", kwargs={"game_id": game.id})
+    )
     if player.send_turn_notifications:
         message = render_to_string(
             "emails/turn_notification.html",
@@ -102,22 +114,29 @@ def send_turn_notification(game, request):
 
 
 def send_game_over_notification(game, request):
-    for player in game.racks.filter(send_turn_notifications=True):
-        message = render_to_string(
-            "emails/game_over_notification.html",
-            context={
-                "game": game,
-                "player": player,
-            },
-            request=request
+    for player in game.racks.all():
+        create_notification(
+            player.user,
+            NotificationType.game_over,
+            f"Your {game.get_game_type_display()} game is over.",
+            reverse("scrabble:play_game", kwargs={"game_id": game.id})
         )
-        send_mail(
-            f"Game over",
-            markdownify(message),
-            html_message=message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[player.user.email],
-        )
+        if player.send_turn_notifications:
+            message = render_to_string(
+                "emails/game_over_notification.html",
+                context={
+                    "game": game,
+                    "player": player,
+                },
+                request=request
+            )
+            send_mail(
+                f"Game over",
+                markdownify(message),
+                html_message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[player.user.email],
+            )
 
 
 def get_user_statistics(user):

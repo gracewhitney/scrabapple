@@ -68,6 +68,10 @@ class GamePermissionMixin(UserPassesTestMixin):
 class GameView(GamePermissionMixin, TemplateView):
     template_name = "scrabble/word_game.html"
 
+    def get(self, *args, **kwargs):
+        self.request.user.notifications.filter(view_url=self.request.path).update(read=True)
+        return super().get(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         in_turn = self.game_player.turn_index == self.game.next_turn_index and not self.game.over

@@ -25,6 +25,22 @@
         <div class="collapse navbar-collapse justify-content-end" id="navbar-items">
           <div class="navbar-nav gap-1">
             {% if user.is_authenticated %}
+              <div class="dropdown">
+                <button class="nav-link dropdown-toggle" type="button" id="notifications-label" data-bs-toggle="dropdown" aria-expanded="false">
+                  {% with unread_count=user.unread_notifications.count %}
+                  {% if unread_count %}<span class="badge bg-primary">{{ unread_count }}</span> {% endif %} Notifications
+                  {% endwith %}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifications-label">
+                  {% for notification in user.display_notifications %}
+                  <li><a class="dropdown-item text-truncate {% if not notification.read %}fw-bold{% endif %}" href="{{ notification.view_url }}">
+                    {{ notification.notification_text }}
+                  </a></li>
+                  {% empty %}
+                    <li class="dropdown-item disabled">No new notifications</li>
+                  {% endfor %}
+                </ul>
+              </div>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="user-menu-dropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <span class="bi-person"></span> {{ user.get_short_name }}

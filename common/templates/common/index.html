@@ -112,4 +112,14 @@
   <script>
     let table = new DataTable('#past-games-table');
   </script>
+  <script>
+    const notificationTimestamp = "{{ user.display_notifications.0.created_on.isoformat|default_if_none:'' }}"
+    setInterval(async () => {
+      const resp = await fetch("{% url 'notification_timestamp_poll' %}")
+      const data = await resp.json()
+      if (data["timestamp"] !== notificationTimestamp) {
+       location.reload()
+      }
+    }, 30000)
+  </script>
 {% endblock %}

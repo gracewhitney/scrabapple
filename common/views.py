@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import logout, login
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic import FormView
@@ -103,6 +104,17 @@ class UpdatePasswordView(LoginRequiredMixin, FormView):
 
 class PrivacyPolicyView(TemplateView):
     template_name = "common/privacy_policy.html"
+
+
+class NotificationTimestampView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        timestamp = None
+        notifications = self.request.user.unread_notifications()
+        if notifications:
+            timestamp = notifications.order_by("-created_on")[0].created_on.isoformat()
+        return JsonResponse({
+            "timestamp": timestamp
+        })
 
 
 def error_404(request, exception):

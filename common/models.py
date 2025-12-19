@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import Max
 
+from common.constants import NotificationType
 from common.managers import UserManager
 
 
@@ -34,6 +35,8 @@ class User(AbstractUser, TimestampedModel):
 
     one_time_passcode = models.CharField(max_length=32, default="")
 
+    enable_email_default = models.BooleanField(default=False)
+
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
@@ -59,3 +62,16 @@ class User(AbstractUser, TimestampedModel):
         return User.objects.filter(
             game_racks__game_id__in=self.game_racks.values('game_id')
         ).exclude(id=self.id).distinct('id')
+
+    def display_notifications(self):
+        return self.unread_notifications().order_by("-created_on")[:5]
+
+    def unread_notifications(self):
+        return self.notifications.filter(read=False)
+
+class Notification(TimestampedModel):
+    user = models.ForeignKey(User, related_name="notifications", on_delete=models.CASCADE)
+    notification_type = models.CharField(max_length=32, choices=NotificationType.choices)
+    notification_text = models.CharField(max_length=256)
+    view_url = models.URLField(max_length=1024)
+    read = models.BooleanField(default=False)

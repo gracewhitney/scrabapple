@@ -11,6 +11,7 @@ urlpatterns = [
     path("robots.txt", views.RobotsTxtView.as_view(), name="robots_txt"),
     path("one-time/<str:one_time_passcode>/", views.OneTimeLoginView.as_view(), name="one_time_login"),
     path("privacy-policy/", views.PrivacyPolicyView.as_view(), name="privacy_policy"),
+    path("update-poll/", views.NotificationTimestampView.as_view(), name="notification_timestamp_poll"),
 ]
 
 # START_FEATURE debug_toolbar
