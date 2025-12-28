@@ -121,7 +121,7 @@ const GameBoard = (props) => {
       tile.letter += letter
     }
     const playTileOnSquare = (letter, id) => {playTile(letter[0], id, xIndex, yIndex)}
-    return <BoardSquare tile={tile} multiplier={multiplier} key={xIndex} gameId={gameId}
+    return <BoardSquare hasPlay={!!played_tile} tile={tile} multiplier={multiplier} key={xIndex} gameId={gameId}
                         playTile={playTileOnSquare} stackHeight={stackHeight} extraClass={`pos-${xIndex}${yIndex}`}></BoardSquare>
   }
 
@@ -211,6 +211,7 @@ const GameBoard = (props) => {
 const BoardSquare = (props) => {
   const {
     tile,
+    hasPlay,
     multiplier,
     playTile,
     gameId,
@@ -221,7 +222,7 @@ const BoardSquare = (props) => {
   const [{isOver}, drop] = useDrop(
     () => ({
       accept: 'tile',
-      canDrop: () => !tile || tile.letter.length < stackHeight,
+      canDrop: () => !hasPlay && (!tile || tile.letter.length < stackHeight),
       drop: (item) => playTile(item.letter, item.id),
       collect: monitor => ({isOver: !!monitor.isOver()})
     }),
