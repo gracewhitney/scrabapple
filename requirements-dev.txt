@@ -332,7 +332,7 @@ wcwidth==0.2.13
     # via
     #   -c requirements.txt
     #   prompt-toolkit
-werkzeug==3.1.4
+werkzeug==3.1.5
     # via -r requirements-dev.in
 wheel==0.42.0
     # via pip-tools
