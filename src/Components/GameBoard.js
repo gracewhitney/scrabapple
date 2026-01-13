@@ -27,34 +27,40 @@ const GameBoard = (props) => {
   const idTiles = rack.map((tile, i) => {return {...tile, id: i}})
   const [playedTiles, setPlayedTiles] = useState([])
   const [points, setPoints] = useState(0)
-  const [validationError, setValidationError] = useState("")
+  const [validationError, setValidationError] = useState()
   const [wordValidationError, setWordValidationError] = useState("")
+  const [processing, setProcessing] = useState(false)
   const [exchangedTiles, setExchangedTiles] = useState([])
 
   useEffect(() => {
     const getScore = async () => {
-      setWordValidationError(null)
       if (playedTiles.length === 0) {
         setPoints(0)
         setValidationError(null)
+        setWordValidationError(null)
         return
       }
+      const t = setTimeout(() => setProcessing(true), 300)
       const resp = await fetch(scoreUrl, {
         method: 'post',
         headers: {'X-CSRFToken': csrfToken},
         body: JSON.stringify({'action': TURN_ACTION.play, 'played_tiles': serializePlayedTiles(playedTiles)})
       })
       const data = await resp.json()
+      clearTimeout(t)
       if (resp.ok) {
         setPoints(data.points)
         setValidationError(null)
         if (data.invalidWords.length > 0) {
           setWordValidationError("Invalid words: " + data.invalidWords.join(", "))
+        } else {
+          setWordValidationError(null)
         }
       } else {
         setWordValidationError(null)
         setValidationError(data.error)
       }
+      setProcessing(false)
     }
     getScore()
   }, [playedTiles, scoreUrl, setPoints, setValidationError]);
@@ -67,6 +73,7 @@ const GameBoard = (props) => {
     if (action === TURN_ACTION.exchange) {
       postData["exchanged_tiles"] = exchangedTiles.map(tile => tile.letter)
     }
+    setProcessing(true)
     const resp = await fetch(turnUrl, {
       method: 'post',
       headers: {'X-CSRFToken': window.csrfmiddlewaretoken},
@@ -77,6 +84,7 @@ const GameBoard = (props) => {
     } else {
       const data = await resp.json()
       setValidationError(data.error)
+      setProcessing(false)
     }
   }
 
@@ -181,16 +189,16 @@ const GameBoard = (props) => {
         <div className={`col d-flex flex-column actions-col ${gameId}-actions`}>
           {
             validationError
-              ? <div className="badge rounded-pill bg-danger">{validationError}</div>
+              ? <div className={`badge rounded-pill ${processing ? 'bg-danger-subtle' : 'bg-danger'}`}>{validationError}</div>
               : (
                 wordValidationError && enforceWordValidation
                 ? null
-                : <div className="badge rounded-pill bg-success">{points} points</div>
+                : <div className={`badge rounded-pill ${processing ? 'bg-success-subtle' : 'bg-success'}`}>{points} points</div>
               )
           }
           {
             wordValidationError
-              ? <div className="badge rounded-pill bg-danger mt-2">{wordValidationError}</div>
+              ? <div className={`badge rounded-pill ${processing ? 'bg-danger-subtle' : 'bg-danger'} mt-2`}>{wordValidationError}</div>
               : null
           }
           { inTurn ? turnActions : null }
