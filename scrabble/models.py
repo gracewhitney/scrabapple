@@ -59,7 +59,7 @@ class ScrabbleGame(TimestampedModel):
         return self.racks.get(turn_index=self.next_turn_index)
 
     def ordered_racks(self):
-        return self.racks.order_by("turn_index")
+        return self.racks.order_by("turn_index").select_related("user")
 
     def winners(self, cached=True):
         if cached:

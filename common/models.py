@@ -50,7 +50,7 @@ class User(AbstractUser, TimestampedModel):
 
     def in_progress_games(self):
         """Return in-progress games sorted by most recent turn or creation timestamp"""
-        racks = self.game_racks.filter(game__over=False)
+        racks = self.game_racks.select_related("game").filter(game__over=False)
         return sorted(
             racks,
             key=lambda r: r.game.all_turns().aggregate(latest=Max("created_on"))["latest"] or r.game.created_on,
