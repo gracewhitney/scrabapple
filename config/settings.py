@@ -229,7 +229,8 @@ STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
-    #os.path.join(BASE_DIR, "node_modules"),
+    ("bootstrap", os.path.join(BASE_DIR, "node_modules/bootstrap")),
+    ("bootstrap-icons", os.path.join(BASE_DIR, "node_modules/bootstrap-icons")),
 ]
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
