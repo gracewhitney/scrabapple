@@ -194,8 +194,10 @@ oauthlib==3.2.2
     #   -c requirements.txt
     #   requests-oauthlib
     #   social-auth-core
-packaging==23.2
-    # via build
+packaging==26.0
+    # via
+    #   build
+    #   wheel
 parso==0.8.4
     # via
     #   -c requirements.txt
@@ -334,7 +336,7 @@ wcwidth==0.2.13
     #   prompt-toolkit
 werkzeug==3.1.5
     # via -r requirements-dev.in
-wheel==0.42.0
+wheel==0.46.2
     # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
