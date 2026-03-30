@@ -236,7 +236,7 @@ pycparser==2.22
     #   cffi
 pyflakes==3.2.0
     # via flake8
-pygments==2.19.1
+pygments==2.20.0
     # via
     #   -c requirements.txt
     #   ipython
