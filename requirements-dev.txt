@@ -50,7 +50,7 @@ crispy-bootstrap5==2025.4
     # via
     #   -c requirements.txt
     #   -r requirements.in
-cryptography==46.0.5
+cryptography==46.0.7
     # via
     #   -c requirements.txt
     #   social-auth-core
