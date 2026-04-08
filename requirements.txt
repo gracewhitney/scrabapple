@@ -26,7 +26,7 @@ charset-normalizer==3.4.2
     # via requests
 crispy-bootstrap5==2025.4
     # via -r requirements.in
-cryptography==46.0.5
+cryptography==46.0.7
     # via social-auth-core
 dawg2==0.13.1
     # via -r requirements.in
