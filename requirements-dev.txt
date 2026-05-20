@@ -148,7 +148,7 @@ flake8==7.0.0
     # via -r requirements-dev.in
 identify==2.5.35
     # via pre-commit
-idna==3.10
+idna==3.15
     # via
     #   -c requirements.txt
     #   requests

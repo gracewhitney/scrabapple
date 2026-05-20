@@ -78,7 +78,7 @@ ec2-metadata==2.14.0
     # via -r requirements.in
 executing==2.2.0
     # via stack-data
-idna==3.10
+idna==3.15
     # via requests
 ipython==9.2.0
     # via -r requirements.in
