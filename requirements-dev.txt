@@ -322,7 +322,7 @@ typing-extensions==4.13.2
     #   -c requirements.txt
     #   beautifulsoup4
     #   ipython
-urllib3==2.6.3
+urllib3==2.7.0
     # via
     #   -c requirements.txt
     #   botocore
