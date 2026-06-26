@@ -5,7 +5,7 @@ const Autocomplete = (props) => {
   const [search, setSearch] = useState("")
   const [result, setResult] = useState("")
 
-  const validOptions = options.filter(opt => search && opt.label.includes(search))
+  const validOptions = options.filter(opt => search && opt.label.toLowerCase().includes(search.toLowerCase()))
 
   const handleChange = (event) => {
     setResult("")
