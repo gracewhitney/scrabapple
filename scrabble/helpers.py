@@ -58,7 +58,7 @@ def create_new_game(form, request):
         if not email:
             continue
         user, created = User.objects.get_or_create(
-            email=email, defaults={"one_time_passcode": get_random_string(32)}
+            email__iexact=email, defaults={"one_time_passcode": get_random_string(32), "email": email.lower()}
         )
         players.append(user)
     return start_game(game, players, request)
