@@ -303,7 +303,7 @@ soupsieve==2.7
     # via
     #   -c requirements.txt
     #   beautifulsoup4
-sqlparse==0.5.4
+sqlparse==0.6.0
     # via
     #   -c requirements.txt
     #   django
