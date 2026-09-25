@@ -291,7 +291,7 @@ six==1.17.0
     #   -c requirements.txt
     #   markdownify
     #   python-dateutil
-social-auth-app-django==5.4.3
+social-auth-app-django==5.6.0
     # via
     #   -c requirements.txt
     #   -r requirements.in
