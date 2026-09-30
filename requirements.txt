@@ -96,7 +96,7 @@ markdownify==1.1.0
     # via -r requirements.in
 matplotlib-inline==0.1.7
     # via ipython
-oauthlib==3.2.2
+oauthlib==4.0.0
     # via
     #   requests-oauthlib
     #   social-auth-core
